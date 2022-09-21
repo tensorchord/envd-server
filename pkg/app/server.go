@@ -18,7 +18,7 @@ import (
 	"github.com/sirupsen/logrus"
 	cli "github.com/urfave/cli/v2"
 
-	"github.com/tensorchord/envd-server/pkg/api"
+	"github.com/tensorchord/envd-server/pkg/server"
 	"github.com/tensorchord/envd-server/pkg/version"
 )
 
@@ -66,14 +66,14 @@ func New() EnvdServerApp {
 }
 
 func runServer(clicontext *cli.Context) error {
-	server, err := api.New(api.ServerOpt{
+	s, err := server.New(server.Opt{
 		Debug:      clicontext.Bool("debug"),
 		KubeConfig: clicontext.Path("kube-config"),
 	})
 	if err != nil {
 		return err
 	}
-	if err := server.Run(); err != nil {
+	if err := s.Run(); err != nil {
 		return err
 	}
 	return nil

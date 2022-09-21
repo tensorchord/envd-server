@@ -12,13 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package api
+package server
 
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	ginlogrus "github.com/toorop/gin-logrus"
-	"golang.org/x/crypto/ssh"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 )
@@ -27,16 +26,16 @@ type Server struct {
 	Router      *gin.Engine
 	AdminRouter *gin.Engine
 
-	client *kubernetes.Clientset
-	keys   []ssh.PublicKey
+	client   *kubernetes.Clientset
+	authInfo []AuthInfo
 }
 
-type ServerOpt struct {
+type Opt struct {
 	Debug      bool
 	KubeConfig string
 }
 
-func New(opt ServerOpt) (*Server, error) {
+func New(opt Opt) (*Server, error) {
 	// use the current context in kubeconfig
 	k8sConfig, err := clientcmd.BuildConfigFromFlags(
 		"", opt.KubeConfig)
@@ -56,7 +55,7 @@ func New(opt ServerOpt) (*Server, error) {
 		Router:      router,
 		AdminRouter: admin,
 		client:      cli,
-		keys:        make([]ssh.PublicKey, 0),
+		authInfo:    make([]AuthInfo, 0),
 	}
 	s.bindHandlers()
 	return s, nil
@@ -68,10 +67,11 @@ func (s *Server) bindHandlers() {
 	v1 := engine.Group("/v1")
 	v1.GET("/", handlePing)
 	v1.POST("/pods", s.podCreate)
-	v1.POST("/keys", s.KeyCreate)
+	v1.POST("/auth", s.auth)
 	engine.POST("/config", s.OnConfig)
 	engine.POST("/pubkey", s.OnPubKey)
 }
+
 func (s *Server) Run() error {
 	return s.Router.Run()
 }

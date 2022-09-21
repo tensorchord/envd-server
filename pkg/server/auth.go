@@ -12,39 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package api
+package server
 
 import (
 	"github.com/gin-gonic/gin"
-	v1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"golang.org/x/crypto/ssh"
+
+	"github.com/tensorchord/envd-server/api/types"
 )
 
-func (s *Server) podCreate(c *gin.Context) {
-	podSpec := v1.Pod{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      "test",
-			Namespace: "default",
-			Labels: map[string]string{
-				"name": "test",
-			},
-		},
-		Spec: v1.PodSpec{
-			Containers: []v1.Container{
-				{
-					Name:  "envd",
-					Image: "gaocegege/test-envd",
-				},
-			},
-		},
-	}
+type AuthInfo struct {
+	IdentityToken string
+	PublicKey     ssh.PublicKey
+}
 
-	created, err := s.client.CoreV1().Pods(
-		"default").Create(c, &podSpec, metav1.CreateOptions{})
-	if err != nil {
-		c.Writer.Header().Set("Content-Type", "application/json; charset=utf-8")
-		c.Writer.WriteHeader(500)
+func (s *Server) auth(c *gin.Context) {
+	var req types.AuthRequest
+	if err := c.BindJSON(&req); err != nil {
+		c.JSON(500, err)
 		return
 	}
-	c.JSON(201, created)
+
+	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(req.PublicKey))
+	if err != nil {
+		c.JSON(500, err)
+		return
+	}
+	s.authInfo = append(s.authInfo, AuthInfo{
+		PublicKey:     key,
+		IdentityToken: req.IdentityToken,
+	})
+	res := types.AuthResponse{
+		IdentityToken: req.IdentityToken,
+		Status:        "login succeeded",
+	}
+	c.JSON(200, res)
 }

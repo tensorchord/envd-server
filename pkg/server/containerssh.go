@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package api
+package server
 
 import (
 	"bytes"
@@ -47,7 +47,7 @@ func (s *Server) OnPubKey(c *gin.Context) {
 		c.Writer.WriteHeader(500)
 		return
 	}
-	for _, k := range s.keys {
+	for _, k := range s.authInfo {
 		key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(req.PublicKey.PublicKey))
 		if err != nil {
 			fmt.Println("parseerr", err)
@@ -55,7 +55,7 @@ func (s *Server) OnPubKey(c *gin.Context) {
 			return
 		}
 		// https://github.com/golang/go/issues/21704#issuecomment-342760478
-		if bytes.Equal(key.Marshal(), k.Marshal()) {
+		if bytes.Equal(key.Marshal(), k.PublicKey.Marshal()) {
 			res := auth.ResponseBody{
 				Success: true,
 			}
