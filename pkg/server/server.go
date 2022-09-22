@@ -66,10 +66,10 @@ func (s *Server) bindHandlers() {
 	engine.GET("/", handlePing)
 	v1 := engine.Group("/v1")
 	v1.GET("/", handlePing)
-	v1.POST("/pods", s.podCreate)
+	v1.POST("/environments", s.environmentCreate)
 	v1.POST("/auth", s.auth)
-	engine.POST("/config", s.OnConfig)
-	engine.POST("/pubkey", s.OnPubKey)
+	v1.POST("/config", s.OnConfig)
+	v1.POST("/pubkey", s.OnPubKey)
 }
 
 func (s *Server) Run() error {

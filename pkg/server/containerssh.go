@@ -17,9 +17,9 @@ package server
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"go.containerssh.io/libcontainerssh/auth"
 	"go.containerssh.io/libcontainerssh/config"
 	"golang.org/x/crypto/ssh"
@@ -28,12 +28,23 @@ import (
 func (s *Server) OnConfig(c *gin.Context) {
 	var req config.Request
 	if err := c.BindJSON(&req); err != nil {
-		c.Writer.Header().Set("Content-Type", "application/json; charset=utf-8")
-		c.Writer.WriteHeader(500)
+		c.JSON(500, err)
 		return
 	}
 
-	cfg := config.AppConfig{}
+	cfg := config.AppConfig{
+		Backend: "sshproxy",
+		SSHProxy: config.SSHProxyConfig{
+			Server: "localhost",
+			Port:   22222,
+		},
+	}
+	fingerprints := []string{"SHA256:SJDm6++T0v4k5Y7InvFJ2kMQd6ui0RTi6RwvK8g3bJI"}
+	for _, k := range s.authInfo {
+		fingerprints = append(
+			fingerprints, ssh.FingerprintSHA256(k.PublicKey))
+	}
+	cfg.SSHProxy.AllowedHostKeyFingerprints = fingerprints
 	res := config.ResponseBody{
 		Config: cfg,
 	}
@@ -43,14 +54,15 @@ func (s *Server) OnConfig(c *gin.Context) {
 func (s *Server) OnPubKey(c *gin.Context) {
 	var req auth.PublicKeyAuthRequest
 	if err := c.BindJSON(&req); err != nil {
-		c.Writer.Header().Set("Content-Type", "application/json; charset=utf-8")
-		c.Writer.WriteHeader(500)
+		logrus.Error(err)
+		c.JSON(500, err)
 		return
 	}
 	for _, k := range s.authInfo {
+		logrus.Info(k.PublicKey, k.IdentityToken)
 		key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(req.PublicKey.PublicKey))
 		if err != nil {
-			fmt.Println("parseerr", err)
+			logrus.Error(err)
 			c.JSON(500, err)
 			return
 		}
@@ -59,12 +71,10 @@ func (s *Server) OnPubKey(c *gin.Context) {
 			res := auth.ResponseBody{
 				Success: true,
 			}
-			fmt.Println("Success")
 			c.JSON(200, res)
 			return
 		}
 	}
-	fmt.Println("fail")
 	res := auth.ResponseBody{
 		Success: false,
 	}
