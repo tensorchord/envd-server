@@ -139,7 +139,7 @@ debug-local:
 	done
 
 addlicense: addlicense-install  ## Add license to GO code files
-	addlicense -c "TensorChord Inc." $$(find . -type f -name '*.go')
+	addlicense -l mpl -c "TensorChord Inc." $$(find . -type f -name '*.go')
 
 test-local:
 	@go test -v -race -coverprofile=coverage.out ./...
