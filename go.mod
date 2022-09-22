@@ -13,7 +13,7 @@ require (
 	go.containerssh.io/libcontainerssh v0.0.0-20220919135854-4f8e76dc0aed
 	golang.org/x/crypto v0.0.0-20220919173607-35f4265a4bc0
 	k8s.io/api v0.25.1
-	k8s.io/apimachinery v0.25.1
+	k8s.io/apimachinery v0.25.2
 	k8s.io/client-go v0.25.1
 )
 
