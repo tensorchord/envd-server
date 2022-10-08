@@ -13,9 +13,9 @@ type EnvironmentCreateRequest struct {
 type EnvironmentCreateResponse struct {
 	// The ID of the created container
 	// Required: true
-	ID string `json:"Id"`
+	ID string `json:"id"`
 
 	// Warnings encountered when creating the pod
 	// Required: true
-	Warnings []string `json:"Warnings"`
+	Warnings []string `json:"warnings"`
 }
