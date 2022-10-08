@@ -30,8 +30,8 @@ func New() EnvdServerApp {
 			Usage: "enable debug output in logs",
 		},
 		&cli.PathFlag{
-			Name:    "kube-config",
-			Usage:   "kube-config path",
+			Name:    "kubeconfig",
+			Usage:   "kubeconfig path",
 			EnvVars: []string{"KUBE_CONFIG", "KUBECONFIG"},
 		},
 	}
@@ -58,7 +58,7 @@ func New() EnvdServerApp {
 func runServer(clicontext *cli.Context) error {
 	s, err := server.New(server.Opt{
 		Debug:      clicontext.Bool("debug"),
-		KubeConfig: clicontext.Path("kube-config"),
+		KubeConfig: clicontext.Path("kubeconfig"),
 	})
 	if err != nil {
 		return err
