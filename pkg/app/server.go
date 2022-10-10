@@ -34,6 +34,11 @@ func New() EnvdServerApp {
 			Usage:   "kubeconfig path",
 			EnvVars: []string{"KUBE_CONFIG", "KUBECONFIG"},
 		},
+		&cli.PathFlag{
+			Name:    "hostkey",
+			Usage:   "hostkey in the backend pod, used to generate fingerprint here",
+			EnvVars: []string{"ENVD_SERVER_HOST_KEY"},
+		},
 	}
 	internalApp.Action = runServer
 
@@ -57,8 +62,9 @@ func New() EnvdServerApp {
 
 func runServer(clicontext *cli.Context) error {
 	s, err := server.New(server.Opt{
-		Debug:      clicontext.Bool("debug"),
-		KubeConfig: clicontext.Path("kubeconfig"),
+		Debug:       clicontext.Bool("debug"),
+		KubeConfig:  clicontext.Path("kubeconfig"),
+		HostKeyPath: clicontext.Path("hostkey"),
 	})
 	if err != nil {
 		return err

@@ -25,15 +25,12 @@ func (s *Server) OnConfig(c *gin.Context) {
 	cfg := config.AppConfig{
 		Backend: "sshproxy",
 		SSHProxy: config.SSHProxyConfig{
-			Server: "localhost",
-			Port:   22222,
+			Server:   req.Username,
+			Port:     2222,
+			Username: "envd",
 		},
 	}
-	fingerprints := []string{"SHA256:SJDm6++T0v4k5Y7InvFJ2kMQd6ui0RTi6RwvK8g3bJI"}
-	for _, k := range s.authInfo {
-		fingerprints = append(
-			fingerprints, ssh.FingerprintSHA256(k.PublicKey))
-	}
+	fingerprints := s.serverFingerPrints
 	cfg.SSHProxy.AllowedHostKeyFingerprints = fingerprints
 	res := config.ResponseBody{
 		Config: cfg,
@@ -44,7 +41,7 @@ func (s *Server) OnConfig(c *gin.Context) {
 func (s *Server) OnPubKey(c *gin.Context) {
 	var req auth.PublicKeyAuthRequest
 	if err := c.BindJSON(&req); err != nil {
-		logrus.Error(err)
+		logrus.WithError(err).WithField("req", req).Error("failed to bind the json")
 		c.JSON(500, err)
 		return
 	}
@@ -52,7 +49,7 @@ func (s *Server) OnPubKey(c *gin.Context) {
 		logrus.Info(k.PublicKey, k.IdentityToken)
 		key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(req.PublicKey.PublicKey))
 		if err != nil {
-			logrus.Error(err)
+			logrus.WithError(err).Error("failed to parse key")
 			c.JSON(500, err)
 			return
 		}

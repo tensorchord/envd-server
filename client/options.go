@@ -24,17 +24,18 @@ type Opt func(*Client) error
 //
 // FromEnv uses the following environment variables:
 //
-// DOCKER_HOST (EnvOverrideHost) to set the URL to the docker server.
+// ENVD_SERVER_HOST (EnvOverrideHost) to set the URL to the docker server.
 //
-// DOCKER_API_VERSION (EnvOverrideAPIVersion) to set the version of the API to
-// use, leave empty for latest.
-//
-// DOCKER_CERT_PATH (EnvOverrideCertPath) to specify the directory from which to
+// ENVD_SERVER_CERT_PATH (EnvOverrideCertPath) to specify the directory from which to
 // load the TLS certificates (ca.pem, cert.pem, key.pem).
 //
-// DOCKER_TLS_VERIFY (EnvTLSVerify) to enable or disable TLS verification (off by
+// ENVD_SERVER_TLS_VERIFY (EnvTLSVerify) to enable or disable TLS verification (off by
 // default).
 func FromEnv(c *Client) error {
+	// TODO(gaocegege): Support:
+	// ENVD_SERVER_API_VERSION (EnvOverrideAPIVersion) to set the version of the API to
+	// use, leave empty for latest.
+	//
 	ops := []Opt{
 		WithTLSClientConfigFromEnv(),
 		WithHostFromEnv(),
