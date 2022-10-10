@@ -1,0 +1,213 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: containerssh-secret
+type: Opaque
+data:
+  privatekey: |
+    LS0tLS1CRUdJTiBPUEVOU1NIIFBSSVZBVEUgS0VZLS0tLS0KYjNCbGJuTnphQzFyWlhrdGRqRUFB
+    QUFBQkc1dmJtVUFBQUFFYm05dVpRQUFBQUFBQUFBQkFBQUJsd0FBQUFkemMyZ3RjbgpOaEFBQUFB
+    d0VBQVFBQUFZRUF4L2cxeXJTVkFSYVlBSEV3M1NVM0o3aDluTmhVVEZQazlqT2FQTi90bnBSR3NB
+    M1lUNWtPCnF5WXV1NnNzcmIyekVCVHpsdHg5U1REM2E2R0xsclhSdFBWSmp1dm5qa2ZsREw5UEpo
+    eTlKb0JsUkNMV0s1T3dyZmRXOXgKbWpGWCtsaFlBS0xza2ZxSHVlMEFxc0FNL3JqTGwramhxMFRX
+    UVFnaExkN1d4emlLdHJPUG52bzZsdTZkNHoydkdncUlzQQpJZGI1VTZBbUJiUGUwR0d3VjAraEgz
+    dTlybnFDMzdZUTF6VkhKOGdxWFQvTHpiRzh5NWxodTVabjZ3ZXJ6ZWxnMVhnbTU3ClhUWG9XWUJU
+    aDRwa0o3Tkd2MTk4NURwbk5qQnNoV3NYU3Z4bkJzV2Rtemdjc2pkZzBWeGF6SlFoOUtnSitXOXpV
+    bm9ROHAKTEZkV3BXQVJsZ0NjeUlZNW9rT1hkSUJzb2N2elBuUVNBdWM4WVA1VkdHOHFtRjdxLzEx
+    YVpvUzhMVXdOeERMZVhjajhLVAo1K29RWEE3UitBSjVtMDVKa1FsczlNNTJHdmpuaXViejF0azcv
+    ZWdWbXI1dy9UZzVzdUwwczFSZEh3NHpSNzRlcDhxa0Y5CjY2V1JFS2RvWFRMaVk4OHYxdE40dWVW
+    WjNHbTZvUVh4ejdlelVQRGJBQUFGaUp3OEpNR2NQQ1RCQUFBQUIzTnphQzF5YzIKRUFBQUdCQU1m
+    NE5jcTBsUUVXbUFCeE1OMGxOeWU0Zlp6WVZFeFQ1UFl6bWp6ZjdaNlVSckFOMkUrWkRxc21McnVy
+    TEsyOQpzeEFVODViY2ZVa3c5MnVoaTVhMTBiVDFTWTdyNTQ1SDVReS9UeVljdlNhQVpVUWkxaXVU
+    c0szM1Z2Y1pveFYvcFlXQUNpCjdKSDZoN250QUtyQURQNjR5NWZvNGF0RTFrRUlJUzNlMXNjNGly
+    YXpqNTc2T3BidW5lTTlyeG9LaUxBQ0hXK1ZPZ0pnV3oKM3RCaHNGZFBvUjk3dmE1Nmd0KzJFTmMx
+    UnlmSUtsMC95ODJ4dk11WllidVdaK3NIcTgzcFlOVjRKdWUxMDE2Rm1BVTRlSwpaQ2V6UnI5ZmZP
+    UTZaell3YklWckYwcjhad2JGblpzNEhMSTNZTkZjV3N5VUlmU29DZmx2YzFKNkVQS1N4WFZxVmdF
+    WllBCm5NaUdPYUpEbDNTQWJLSEw4ejUwRWdMblBHRCtWUmh2S3BoZTZ2OWRXbWFFdkMxTURjUXkz
+    bDNJL0NrK2ZxRUZ3TzBmZ0MKZVp0T1NaRUpiUFRPZGhyNDU0cm04OWJaTy8zb0ZacStjUDA0T2JM
+    aTlMTlVYUjhPTTBlK0hxZktwQmZldWxrUkNuYUYweQo0bVBQTDliVGVMbmxXZHhwdXFFRjhjKzNz
+    MUR3MndBQUFBTUJBQUVBQUFHQVBuWktueW12RFdyNFNkTVJkMUpqbXhXbXJ2CkpueW51K0hpVmFQ
+    VCtaSXBxZ1JlZmROR2ZUekNRZUh1TEdEdk1kVnAya3hPL1VkcU5EOWF1OVJYTS9zTzJaYjNwQ2x3
+    L2YKL1E1WTg4ZXdVYkZ6Y0VnTmJBa3krL1F4aHZmTUdEQUtETnhFMGY1aTFDYmhJWXpqMDFFZSs1
+    TUpjK3ZsZS9NUXNRQ2hyOApMYmg4bzdzTTFwVEU3bFpVblNHc2EwNzFDVDF2NG1YVGUrQ0xQNW1r
+    K1pYSHgwRUxoL05GdnlPMXpNZjl5VmdGaW0ydi9OCmNrL2RjQjlXQnRsaFZtbk1BWUt1L1hBQmFI
+    ZjA2dEZGRDcrbE1jTnlsSGFQT3V1QTk2ZUp4aG56MzlrZ1RibnNXcFAyeHAKTi9na3YyZ29JQ0k4
+    Zy80cVdDYVVWdlppYmg1b3lQbmNHNExFRWpFWm93bTVsMTgrTWVSTFZNMUdzOEM0UWg3NTJrU1dn
+    YgpzUFdoMTRpOWgwWmFPRVQyNk1KWUtBUjZkb3M5akVzczE4eGpHY29VREtwUjZVdVBTU1ZhTUJn
+    clY2YkdjQ3N0aGJ4eDJyClArb2dSSzkzajhWNXR3NTIwVkMzaXpqQnhYaG1remtNY2hDU3NNSnV0
+    dVpmdUphd09FVWNuTDdlMnZFR1dBMTRkaEFBQUEKd0RucnZWb2lCUVRyRDdkSDJtSFdDVDFXZ2pu
+    aVlLTk5uajN1MUhWVzhNblc0RlJ1MUtUZGhMMG1JYUV2NUdnbW1jYmk0KwpLc1VxUkVQcXJuVFNj
+    dXMwNm4vdWxTYm9kWUgwQUlneVhMUk5kR2Y5VlF5MmhPVmJIbkNBVlRJTnhmaDhZQm85ckVod1Fz
+    ClZqQS9yUVdzZlBsVSt6RUpsWDFpRXRwME1WbGwzdnE3KzQvS1hEQUMrU1hPdGVFdEZ3ZUlxcXoz
+    aitkamlHcDZyR1lscVgKRkEraXpsLzNVb1BhMW45em4zMCtyZTNvNWZoUnV4U1FQclhoYkZuNWYv
+    enUzcXB3QUFBTUVBL0RwemorL3ljNy9xT3FBNAp6TVpZd0R5UGxFd25uclNRQ3Zmdkcxa3RGTjhM
+    aFV0eGpyUWdINVZQL0xiUW50SWRoODAxdHlUVWc5NlVyb0paL0hZNHBCCnlCd2xpMi9NdFR3SHNz
+    Vy9XK2p4VE5SbEdYSTRiQ1pyL0tBcnd3SlAyMHJaRjZrWU16TEVhem1mSjRrUzZFMXhtMkJaZnEK
+    SE5NVExaTllPS2F1TWhVandZN3p6MjhLSlJyS0pxRXdhLzF6dSt3NFNMSXAxZWpKNHVzMWp3aytK
+    MzQrMDc5cnRuUlRmUQpPMkV4M0VlTXdybXZHSk5YL1NkYW5DTUhQK1JQYVJBQUFBd1FESzliVldl
+    dmRCTlRSVFJWMGJkK2RIYWVyQTNYYXJDUzB0Cmc2dlUwcEJteUQwbFZsUWdOTkFFalF2L1dtNnEy
+    WlE3Szhmc1VQNmxBaWl6aGxtdktYbnRyM0RkZUJwZG5NTFhuRHBjSUgKNkZZTDBFZzVIQ2V4YVor
+    RDdlYlJWMENLdTh4MFN0VndvRWlzWjZtUXNrQ2tXbkpkRDNmd3ZOM0FGdmFVZ2ZrQklXYTlTbQo0
+    UnQwMzVVVWFQVDZxcFRUMmFVZmNxdjRvYUF4OHVBUElXT0hsL3liOHp3T3Y1ZDlnYUdDUVNPMk92
+    blRJWHVWbml4WjJuCmRWOGpic29QN0hYcXNBQUFBUFoyRnZZMlZuWldkbFFHTmxaMkZ2QVFJREJB
+    PT0KLS0tLS1FTkQgT1BFTlNTSCBQUklWQVRFIEtFWS0tLS0tCg==
+  publickey: |
+    c3NoLXJzYSBBQUFBQjNOemFDMXljMkVBQUFBREFRQUJBQUFCZ1FESCtEWEt0SlVCRnBnQWNURGRK
+    VGNudUgyYzJGUk1VK1QyTTVvODMrMmVsRWF3RGRoUG1RNnJKaTY3cXl5dHZiTVFGUE9XM0gxSk1Q
+    ZHJvWXVXdGRHMDlVbU82K2VPUitVTXYwOG1ITDBtZ0dWRUl0WXJrN0N0OTFiM0dhTVZmNldGZ0Fv
+    dXlSK29lNTdRQ3F3QXordU11WDZPR3JSTlpCQ0NFdDN0YkhPSXEyczQrZStqcVc3cDNqUGE4YUNv
+    aXdBaDF2bFRvQ1lGczk3UVliQlhUNkVmZTcydWVvTGZ0aERYTlVjbnlDcGRQOHZOc2J6TG1XRzds
+    bWZyQjZ2TjZXRFZlQ2JudGROZWhaZ0ZPSGltUW5zMGEvWDN6a09tYzJNR3lGYXhkSy9HY0d4WjJi
+    T0J5eU4yRFJYRnJNbENIMHFBbjViM05TZWhEeWtzVjFhbFlCR1dBSnpJaGptaVE1ZDBnR3loeS9N
+    K2RCSUM1enhnL2xVWWJ5cVlYdXIvWFZwbWhMd3RUQTNFTXQ1ZHlQd3BQbjZoQmNEdEg0QW5tYlRr
+    bVJDV3owem5ZYStPZUs1dlBXMlR2OTZCV2F2bkQ5T0RteTR2U3pWRjBmRGpOSHZoNm55cVFYM3Jw
+    WkVRcDJoZE11Smp6eS9XMDNpNTVWbmNhYnFoQmZIUHQ3TlE4TnM9IGdhb2NlZ2VnZUBjZWdhbwo=
+  hostkey: |
+    LS0tLS1CRUdJTiBPUEVOU1NIIFBSSVZBVEUgS0VZLS0tLS0KYjNCbGJuTnphQzFyWlhrdGRqRUFB
+    QUFBQkc1dmJtVUFBQUFFYm05dVpRQUFBQUFBQUFBQkFBQUJsd0FBQUFkemMyZ3RjbgpOaEFBQUFB
+    d0VBQVFBQUFZRUF6aUZUd2tMbThWekFEdnFuWHQraGMrZ04ydlZhSE5BQmtnY1lTWDlBVWUrT0tV
+    RytpdkR2Cjh6NVZXanAwQmo1QVFsQVJvUTltUklyazFLVnZHMzhLaUZhdDBiNk1jVzg0V2FORWhm
+    eXRpa1JwVDdtSmp6bnhPN0puZGoKNUJpZkY5MVkyUmJYbDFMQ294ZTJKWnloQzNOajZRMk9OQ2kw
+    b041NHFwMFp0Q3Jxb1ZOMUlsWjZ5dWppaEVwZ2JDQmlncgpLUmFjR0NJSzIwSk5NaXZDdTVtUlds
+    bHJua0R4cWs4bkxQNWtpOEw1cjBPMWhHS1NwT1V6NWV0TmRGa1VsdHE3MnEwSTVCCk40VEI4cG1n
+    b0VDUEhBMUNGNGlUSldQcDNTN2xCWkNEMEJWQ1pPdEhSOGkrSGNVM25XaHlNczhiNTB3bFRsVS80
+    NTdORUEKN1pDcXVYZ0xWcGdzNFljUEhQNDI1TFNBUFBVc2lkQ2ZGYnlDTlQ5Vzd1WnljTktSRW03
+    cXV4d3BvOEQ5SEpNelVheTRxQwo3WFBCS0tmK2JJZklla3I1c05LSXEwQ0U5elJucWM1SmdNK2Nx
+    YStLbVA5V3RWRld3RUtrMVpqNEUvS042bEsyVnh2K2YrCmErUVNLVUk2UGdiUFBoeW5VV2lOQkxP
+    WUg0NGN3d0lOcmxxWFdjMUZBQUFGaUhKcHhxVnlhY2FsQUFBQUIzTnphQzF5YzIKRUFBQUdCQU00
+    aFU4SkM1dkZjd0E3NnAxN2ZvWFBvRGRyMVdoelFBWklIR0VsL1FGSHZqaWxCdm9ydzcvTStWVm82
+    ZEFZKwpRRUpRRWFFUFprU0s1TlNsYnh0L0NvaFdyZEcrakhGdk9GbWpSSVg4cllwRWFVKzVpWTg1
+    OFR1eVozWStRWW54ZmRXTmtXCjE1ZFN3cU1YdGlXY29RdHpZK2tOampRb3RLRGVlS3FkR2JRcTZx
+    RlRkU0pXZXNybzRvUktZR3dnWW9LeWtXbkJnaUN0dEMKVFRJcndydVprVnBaYTU1QThhcFBKeXor
+    Wkl2QythOUR0WVJpa3FUbE0rWHJUWFJaRkpiYXU5cXRDT1FUZUV3Zktab0tCQQpqeHdOUWhlSWt5
+    Vmo2ZDB1NVFXUWc5QVZRbVRyUjBmSXZoM0ZONTFvY2pMUEcrZE1KVTVWUCtPZXpSQU8yUXFybDRD
+    MWFZCkxPR0hEeHorTnVTMGdEejFMSW5RbnhXOGdqVS9WdTdtY25EU2tSSnU2cnNjS2FQQS9SeVRN
+    MUdzdUtndTF6d1Npbi9teUgKeUhwSytiRFNpS3RBaFBjMFo2bk9TWURQbkttdmlwai9WclZSVnNC
+    Q3BOV1krQlB5amVwU3RsY2Ivbi9tdmtFaWxDT2o0Rwp6ejRjcDFGb2pRU3ptQitPSE1NQ0RhNWFs
+    MW5OUlFBQUFBTUJBQUVBQUFHQUlNazhRVkhTMmVFZXkwTWpDL3dWK2hHVzRwClRUMkhGZFRwVENV
+    QzVsVktMOXdhSXJaSDRlTEZwbHlRd3pHQ3NlblcyTzRFZEt4T3d5cVlBR3hDRFkxQWExYnY4WDU1
+    TUIKSzRERWpXczdUeHJDaFdQRmRYcUozQ3pzTitwL0VpblBFZ0NLZVJjd2crM1NJUVhyc2pBbWRB
+    SlBsNi9PRGNtaG5JcDVxRgpWQnJmWnZtWFQvYmhZUlRac3FFQjVURGhlbGhjdUsyR3ZSdmo0MWVS
+    MXN3OW9SUElXc2tHZFVDUHErQ0hJT0hBelBHZ2x5Ci9iT1FENXBGUHZUR1JSTkdLeGh2TDYxaUp5
+    TVNjNWRsYXNET2QrTkFITjJoVG1PQVRkNWJLeUMrcW5HQ0wrN3h4Z0RIZCsKd09pSHNhdklaZ0R2
+    ZHlWY3BWdGhLcWluOVpuMlo3eXRBYS83aUtHUHlweEFqSWN5Y2sySHNaYTEzQVZHV21jYzFUL2dz
+    ZAptLzV2MDc4WTNrd3U1ZFprQUE2RnAreU9WNndHYlQxVk4rdXBtN3BvVE5TZWZMNVFhSG9taWJj
+    VjltV2pMdFJGTTRzV3pVCnAyMktON0Y0UXVqdlpPU2VibHZmYW5vdDVhN21LMUpOeG42QnRQV0RJ
+    QTNMa1N3UUwvZE00NlhRdHoxODlsS0t1aEFBQUEKd0ErWm1zVHJYdVVJMTU4bENINEptWGZXUWll
+    UEVFTnIrRTdXelJlcFJvTXc5dlNxM3NKUWtYTlEwQWo1ZjZ2QitUNjlnTQpJZ3VINFMvZGovak9N
+    K2N1YXRyMnhQZ285dUlPU0s1aVlpTytLbkxUdmN2Rzh6cGszb0dMdkFJYVE0NVFwdVphZ201RmFK
+    Cmc2bHN4ZnBCdjZPSGZBdUIrd082R0kwWTI1V2hLNWtJWjFpYTY4UTNQZGVkK2Y1TU1VaXF0N2hP
+    ODhTTjZ1WS9tdkp4QUoKZURiSnc1d3JSYnpsOVFTdlMvai96NkRHc2JSTVJienlOOGlQWTh2M2th
+    Y3lIU2VnQUFBTUVBNXEzRXVuemxlbTVSRWRIdQp0TVZhaThQdDZSSWlrVlJDVUhBelZmUm1nMEpY
+    V3lUd0NlQmdMZFNPZ3BKeTlkQ3JBK0R2Tkp6dmtPMUNmam9SY1grc2V5CmhtVGV4b2YyRGxDc3g1
+    azI1L2xOdW1hSzhqaitaV2dxWVF6MEM1MVZOWWhPVzVnc3IzWlNKdGhnWnNYVWkyZ0ZwNGlrc3QK
+    ZDFIUnd3ZFZRTjREL2Evb2ZjZUlRSlZUcVF5ZVF2K1YxNW5TRlFDMzdoN2NzRnJRWU9zNk4wT1lI
+    V1cwMzlKL3RGQTBBSQpMWVVqWXhhOEZUZ0MrbUF3MExmZFYwbmhBdE5ySzNBQUFBd1FEa3dibnU2
+    WEhZVTAwdXJDcTZHVmVMYXIvM2I4M2ZPVHVDClJoSXE2V1pTdXFwb1lFK1Z3ejN6Z1hIZi9xTVAr
+    eDIwVVg1RUhGQ0U1OFRBckpMMlZ1MGJBWUwwR2VWRnV1QmtPeUg3RC8KWVV6aTBVcERCSzRRTkpm
+    NDRPSGprRzZKSjQ0Mlp6dmNsd1FhMFVGN1FmQnk1MGdUSGEzY2M5c2VUU1UyUXM2UkxsT3l1WgpC
+    QWkzeEFMaHdBeWcxTC96dmlmMXdLdWxUNHErYXF6Y1FaOFlYd0xiSkR0N092REYybFMzcEFDb3JL
+    d25iRXZ2UVBBbXh3CmYwck43dFBWTllVK01BQUFBUFoyRnZZMlZuWldkbFFHTmxaMkZ2QVFJREJB
+    PT0KLS0tLS1FTkQgT1BFTlNTSCBQUklWQVRFIEtFWS0tLS0tCg==
+
+---
+apiVersion: v1
+data:
+  config.yaml: |
+    ssh:
+      hostkeys: 
+        - /etc/containerssh/hostkey
+    auth:
+      url: http://127.0.0.1:8080/v1
+    configserver:
+      url: "http://127.0.0.1:8080/v1/config"
+    log:
+      level: debug
+    backend: sshproxy
+    sshproxy:
+      privateKey: /etc/containerssh/privatekey
+kind: ConfigMap
+metadata:
+  name: containerssh-config
+---
+# Create a service account ContainerSSH can use
+apiVersion: v1
+kind: ServiceAccount
+automountServiceAccountToken: true
+metadata:
+  name: containerssh
+---
+# Create a role ContainerSSH can use
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: containerssh
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - pods/logs
+  - pods/exec
+  - services
+  verbs:
+  - '*'
+---
+# Bind the role to the service account
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: containerssh
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: containerssh
+subjects:
+- kind: ServiceAccount
+  name: containerssh
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: envd-server
+spec:
+  containers:
+  - name: envd
+    image: gaocegege/envd-server:latest
+    imagePullPolicy: Always
+    command:
+      - /envd-server
+      - --hostkey
+      - /etc/containerssh/hostkey
+    ports:
+    - containerPort: 8080
+    volumeMounts:
+    - mountPath: /etc/containerssh/hostkey
+      name: secret
+      subPath: hostkey
+  - image: gaocegege/containerssh:latest
+    imagePullPolicy: Always
+    name: containerssh
+    ports:
+    - containerPort: 2222
+      protocol: TCP
+    volumeMounts:
+    - mountPath: /etc/containerssh/config.yaml
+      name: config
+      subPath: config.yaml
+    - mountPath: /etc/containerssh/hostkey
+      name: secret
+      subPath: hostkey
+    - mountPath: /etc/containerssh/privatekey
+      name: secret
+      subPath: privatekey
+  volumes:
+  - configMap:
+      name: containerssh-config
+    name: config
+  - secret:
+      secretName: containerssh-secret
+      defaultMode: 0600
+    name: secret
+  serviceAccount: containerssh
+  serviceAccountName: containerssh

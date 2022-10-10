@@ -18,12 +18,15 @@ func (s *Server) environmentCreate(c *gin.Context) {
 		c.JSON(500, err)
 		return
 	}
+	hostKeyPath := "/var/envd/hostkey"
+	authKeyPath := "/var/envd/authkey"
+	var defaultPermMode int32 = 0600
 	expectedPod := v1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      req.IdentityToken,
 			Namespace: "default",
 			Labels: map[string]string{
-				"name": "test",
+				"name": req.IdentityToken,
 			},
 		},
 		Spec: v1.PodSpec{
@@ -35,6 +38,41 @@ func (s *Server) environmentCreate(c *gin.Context) {
 						{
 							Name:          "ssh",
 							ContainerPort: 2222,
+						},
+					},
+					Env: []v1.EnvVar{
+						{
+							Name:  "ENVD_HOST_KEY",
+							Value: hostKeyPath,
+						},
+						{
+							Name:  "ENVD_AUTHORIZED_KEYS_PATH",
+							Value: authKeyPath,
+						},
+					},
+					VolumeMounts: []v1.VolumeMount{
+						{
+							Name:      "secret",
+							ReadOnly:  true,
+							MountPath: hostKeyPath,
+							SubPath:   "hostkey",
+						},
+						{
+							Name:      "secret",
+							ReadOnly:  true,
+							MountPath: authKeyPath,
+							SubPath:   "publickey",
+						},
+					},
+				},
+			},
+			Volumes: []v1.Volume{
+				{
+					Name: "secret",
+					VolumeSource: v1.VolumeSource{
+						Secret: &v1.SecretVolumeSource{
+							SecretName:  "containerssh-secret",
+							DefaultMode: &defaultPermMode,
 						},
 					},
 				},
