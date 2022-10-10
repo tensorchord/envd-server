@@ -113,5 +113,8 @@ func (s *Server) environmentCreate(c *gin.Context) {
 		return
 	}
 
-	c.JSON(201, created)
+	resp := types.EnvironmentCreateResponse{
+		ID: created.Name,
+	}
+	c.JSON(201, resp)
 }
