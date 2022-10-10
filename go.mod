@@ -9,7 +9,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.0
 	github.com/toorop/gin-logrus v0.0.0-20210225092905-2c785434f26f
-	github.com/urfave/cli/v2 v2.17.1
+	github.com/urfave/cli/v2 v2.19.2
 	go.containerssh.io/libcontainerssh v0.0.0-20220919135854-4f8e76dc0aed
 	golang.org/x/crypto v0.0.0-20220919173607-35f4265a4bc0
 	k8s.io/api v0.25.2
