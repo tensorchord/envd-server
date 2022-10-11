@@ -44,20 +44,12 @@ jobs:
         run: |
           make addlicense && git add client api pkg cmd &&
           git diff --cached --exit-code || (echo 'Please run "make addlicense" to verify license' && exit 1);
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v4
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
         with:
-          python-version: '3.11.0-beta.3'
-        env:
-          AGENT_TOOLSDIRECTORY: /opt/hostedtoolcache
-          RUNNER_TOOL_CACHE: /opt/hostedtoolcache
-      - id: file_changes
-        uses: trilom/file-changes-action@v1.2.4
-        with:
-          output: ' '
-      - uses: pre-commit/action@v3.0.0
-        with:
-          extra_args: --files ${{ steps.file_changes.outputs.files}}
+          version: latest
+          # Ref https://github.com/golangci/golangci-lint-action/issues/244
+          skip-pkg-cache: true
   build:
     name: build
     strategy:

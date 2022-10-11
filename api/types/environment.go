@@ -4,6 +4,8 @@
 
 package types
 
+import v1 "k8s.io/api/core/v1"
+
 type EnvironmentCreateRequest struct {
 	// Use auth instead of in the requrest body.
 	IdentityToken string `json:"identity_token,omitempty"`
@@ -18,4 +20,13 @@ type EnvironmentCreateResponse struct {
 	// Warnings encountered when creating the pod
 	// Required: true
 	Warnings []string `json:"warnings"`
+}
+
+type EnvironmentListRequest struct {
+	// Use auth instead of in the requrest body.
+	IdentityToken string `json:"identity_token,omitempty" uri:"identity_token"`
+}
+
+type EnvironmentListResponse struct {
+	Pod v1.Pod
 }

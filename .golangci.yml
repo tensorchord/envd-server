@@ -1,0 +1,29 @@
+linters:
+  enable:
+    - gofmt
+    - bodyclose
+    - errcheck
+    - goimports
+    - errorlint
+    - exportloopref
+    - gosimple
+    - govet
+    - ineffassign
+    - misspell
+    - rowserrcheck
+    - sqlclosecheck
+    - staticcheck
+    - typecheck
+    - unparam
+linters-settings:
+  goimports:
+    local-prefixes: github.com/tensorchord/envd-server/
+run:
+  timeout: "1m"
+  issue-exit-code: 1
+  tests: true
+  skip-dirs-use-default: true
+  allow-parallel-runners: false
+  skip-dirs:
+    - client
+    - pkg/errdefs
