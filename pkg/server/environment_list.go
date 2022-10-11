@@ -7,8 +7,9 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"github.com/tensorchord/envd-server/api/types"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"github.com/tensorchord/envd-server/api/types"
 )
 
 func (s *Server) environmentList(c *gin.Context) {
