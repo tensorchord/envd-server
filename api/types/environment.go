@@ -7,8 +7,9 @@ package types
 import v1 "k8s.io/api/core/v1"
 
 type EnvironmentCreateRequest struct {
+	// TODO(gaocegege): Move it to URI.
 	// Use auth instead of in the requrest body.
-	IdentityToken string `json:"identity_token,omitempty"`
+	IdentityToken string `json:"identity_token"  example:"a332139d39b89a241400013700e665a3"`
 	Image         string `json:"image,omitempty"`
 }
 
@@ -24,7 +25,7 @@ type EnvironmentCreateResponse struct {
 
 type EnvironmentListRequest struct {
 	// Use auth instead of in the requrest body.
-	IdentityToken string `json:"identity_token,omitempty" uri:"identity_token"`
+	IdentityToken string `uri:"identity_token"  example:"a332139d39b89a241400013700e665a3"`
 }
 
 type EnvironmentListResponse struct {

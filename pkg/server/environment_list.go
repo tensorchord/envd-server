@@ -12,6 +12,14 @@ import (
 	"github.com/tensorchord/envd-server/api/types"
 )
 
+// @Summary List the environment.
+// @Description List the environment. Currently, every user can only create one environment. And the environment's name is the identity token.
+// @Tags environment
+// @Accept json
+// @Produce json
+// @Param identity_token path string true "identity token" example("a332139d39b89a241400013700e665a3")
+// @Success 200 {object} types.EnvironmentListResponse
+// @Router /users/{identity_token}/environments [get]
 func (s *Server) environmentList(c *gin.Context) {
 	var req types.EnvironmentListRequest
 	if err := c.BindUri(&req); err != nil {

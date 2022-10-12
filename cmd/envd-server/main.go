@@ -32,6 +32,20 @@ func handleErr(err error) {
 	logrus.Error(err)
 }
 
+// @title envd server API
+// @version v0.0.3
+// @description envd backend server
+
+// @contact.name envd maintainers
+// @contact.url https://github.com/tensorchord/envd
+// @contact.email envd-maintainers@tensorchord.ai
+
+// @license.name MPL 2.0
+// @license.url https://mozilla.org/MPL/2.0/
+
+// @host localhost:8080
+// @BasePath /v1
+// @schemes http
 func main() {
 	err := run(os.Args)
 	handleErr(err)
