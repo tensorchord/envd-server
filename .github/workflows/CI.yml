@@ -76,5 +76,7 @@ jobs:
             ${{ runner.OS }}-build-${{ env.cache-name }}-
             ${{ runner.OS }}-build-
             ${{ runner.OS }}-
+      - name: Generate API documentation
+        run: make swag
       - name: Build
         run: make
