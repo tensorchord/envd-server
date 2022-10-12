@@ -117,6 +117,10 @@ data:
     ssh:
       hostkeys: 
         - /etc/containerssh/hostkey
+    security:
+      forwarding:
+        reverseForwardingMode: enable
+        forwardingMode: enable
     auth:
       url: http://127.0.0.1:8080/v1
     configserver:
