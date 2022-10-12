@@ -122,6 +122,10 @@ mockgen-install:
 addlicense-install:
 	go install github.com/google/addlicense@latest
 
+# https://github.com/swaggo/swag/pull/1322, we should use master instead of latest for now.
+swag-install:
+	go install github.com/swaggo/swag/cmd/swag@master
+
 build-local:
 	@for target in $(TARGETS); do                                                      \
 	  CGO_ENABLED=$(CGO_ENABLED) go build -trimpath -v -o $(OUTPUT_DIR)/$${target}     \
@@ -139,7 +143,7 @@ debug-local:
 	done
 
 addlicense: addlicense-install  ## Add license to GO code files
-	addlicense -l mpl -c "TensorChord Inc." $$(find . -type f -name '*.go')
+	addlicense -l mpl -c "TensorChord Inc." $$(find . -type f -name '*.go' | grep -v pkg/docs/docs.go)
 
 test-local:
 	@go test -v -race -coverprofile=coverage.out ./...
@@ -158,6 +162,9 @@ fmt: ## Run go fmt against code.
 
 vet: ## Run go vet against code.
 	go vet ./...
+
+swag: swag-install
+	swag init -g ./cmd/envd-server/main.go --parseDependency --output ./pkg/docs 
 
 release:
 	@if [ ! -f ".release-env" ]; then \

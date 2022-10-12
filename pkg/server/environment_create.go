@@ -12,6 +12,14 @@ import (
 	"github.com/tensorchord/envd-server/api/types"
 )
 
+// @Summary Create the environment.
+// @Description Create the environment.
+// @Tags environment
+// @Accept json
+// @Produce json
+// @Param request body types.EnvironmentCreateRequest true "query params"
+// @Success 200 {object} types.EnvironmentCreateResponse
+// @Router /environments [post]
 func (s *Server) environmentCreate(c *gin.Context) {
 	var req types.EnvironmentCreateRequest
 	if err := c.BindJSON(&req); err != nil {

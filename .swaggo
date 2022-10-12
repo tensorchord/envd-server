@@ -1,0 +1,4 @@
+replace go.containerssh.io/libcontainerssh/metadata.RemoteAddress string
+replace go.containerssh.io/libcontainerssh/config.SSHCipherList string
+replace go.containerssh.io/libcontainerssh/config.SSHKexList string
+replace go.containerssh.io/libcontainerssh/config.SSHMACList string

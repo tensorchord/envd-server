@@ -10,10 +10,14 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	ginlogrus "github.com/toorop/gin-logrus"
 	"golang.org/x/crypto/ssh"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
+
+	_ "github.com/tensorchord/envd-server/pkg/docs"
 )
 
 type Server struct {
@@ -75,7 +79,9 @@ func New(opt Opt) (*Server, error) {
 
 func (s *Server) bindHandlers() {
 	engine := s.Router
-	engine.GET("/", s.handlePing)
+
+	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+
 	v1 := engine.Group("/v1")
 	v1.GET("/", s.handlePing)
 	v1.POST("/environments", s.environmentCreate)
