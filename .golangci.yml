@@ -27,3 +27,4 @@ run:
   skip-dirs:
     - client
     - pkg/errdefs
+    - pkg/docs

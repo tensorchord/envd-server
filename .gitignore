@@ -67,4 +67,4 @@ share/python-wheels/
 MANIFEST
 .editorconfig
 .demo/
-pkg/docs/
+pkg/docs/swagger.*
