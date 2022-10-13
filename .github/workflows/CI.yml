@@ -44,6 +44,7 @@ jobs:
         run: |
           make addlicense && git add client api pkg cmd &&
           git diff --cached --exit-code || (echo 'Please run "make addlicense" to verify license' && exit 1);
+      - run: go mod tidy
       - name: Generate API documentation
         run: |
           make swag && git add pkg &&
@@ -76,6 +77,7 @@ jobs:
             ${{ runner.OS }}-build-${{ env.cache-name }}-
             ${{ runner.OS }}-build-
             ${{ runner.OS }}-
+      - run: go mod tidy
       - name: Generate API documentation
         run: make swag
       - name: Build
