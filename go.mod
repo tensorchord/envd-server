@@ -18,7 +18,7 @@ require (
 	golang.org/x/crypto v0.0.0-20221010152910-d6f0a8c073c2
 	k8s.io/api v0.25.3
 	k8s.io/apimachinery v0.25.3
-	k8s.io/client-go v0.25.2
+	k8s.io/client-go v0.25.3
 )
 
 require (
