@@ -5,7 +5,13 @@
 package server
 
 import (
+	"context"
+	"fmt"
+
+	"github.com/containers/image/v5/docker"
+	"github.com/containers/image/v5/image"
 	"github.com/gin-gonic/gin"
+	imagespecv1 "github.com/opencontainers/image-spec/specs-go/v1"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
@@ -26,16 +32,30 @@ func (s *Server) environmentCreate(c *gin.Context) {
 		c.JSON(500, err)
 		return
 	}
+
+	cfg, err := getImageConfig(c.Request.Context(), req.Image)
+	if err != nil {
+		c.JSON(500, err)
+		return
+	}
+	// Merge image labels to pod.
+	labels := map[string]string{
+		"name": req.IdentityToken,
+	}
+	annotations := map[string]string{}
+	for k, v := range cfg.Labels {
+		annotations[k] = v
+	}
+
 	hostKeyPath := "/var/envd/hostkey"
 	authKeyPath := "/var/envd/authkey"
 	var defaultPermMode int32 = 0600
 	expectedPod := v1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      req.IdentityToken,
-			Namespace: "default",
-			Labels: map[string]string{
-				"name": req.IdentityToken,
-			},
+			Name:        req.IdentityToken,
+			Namespace:   "default",
+			Labels:      labels,
+			Annotations: annotations,
 		},
 		Spec: v1.PodSpec{
 			Containers: []v1.Container{
@@ -94,6 +114,7 @@ func (s *Server) environmentCreate(c *gin.Context) {
 		c.JSON(500, err)
 		return
 	}
+
 	expectedService := v1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      req.IdentityToken,
@@ -125,4 +146,25 @@ func (s *Server) environmentCreate(c *gin.Context) {
 		ID: created.Name,
 	}
 	c.JSON(201, resp)
+}
+
+func getImageConfig(ctx context.Context, imagename string) (
+	*imagespecv1.ImageConfig, error) {
+	ref, err := docker.ParseReference(fmt.Sprintf("//%s", imagename))
+	if err != nil {
+		return nil, err
+	}
+	src, err := ref.NewImageSource(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	img, err := image.FromUnparsedImage(ctx, nil, image.UnparsedInstance(src, nil))
+	if err != nil {
+		return nil, err
+	}
+	c, err := img.OCIConfig(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &c.Config, nil
 }

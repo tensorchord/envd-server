@@ -6,10 +6,11 @@ package client // import "github.com/docker/docker/client"
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/pkg/errors"
 
-	"github.com/tensorchord/envd-server/pkg/errdefs"
+	"github.com/tensorchord/envd-server/errdefs"
 )
 
 // errConnectionFailed implements an error returned when connection failed.
@@ -85,4 +86,17 @@ func (e pluginPermissionDenied) Error() string {
 // Deprecated: use errdefs.IsNotImplemented
 func IsErrNotImplemented(err error) bool {
 	return errdefs.IsNotImplemented(err)
+}
+
+func wrapResponseError(err error, resp serverResponse, object, id string) error {
+	switch {
+	case err == nil:
+		return nil
+	case resp.statusCode == http.StatusNotFound:
+		return objectNotFoundError{object: object, id: id}
+	case resp.statusCode == http.StatusNotImplemented:
+		return errdefs.NotImplemented(err)
+	default:
+		return err
+	}
 }

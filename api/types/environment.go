@@ -31,3 +31,11 @@ type EnvironmentListRequest struct {
 type EnvironmentListResponse struct {
 	Pod v1.Pod
 }
+
+type EnvironmentRemoveRequest struct {
+	// Use auth instead of in the requrest body.
+	IdentityToken string `uri:"identity_token"  example:"a332139d39b89a241400013700e665a3"`
+}
+
+type EnvironmentRemoveResponse struct {
+}
