@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "envd-server.fullname" . }}
+data:
+  config.yaml: |
+    ssh:
+      hostkeys: 
+        - /etc/containerssh/hostkey
+    security:
+      forwarding:
+        reverseForwardingMode: enable
+        forwardingMode: enable
+    auth:
+      url: http://127.0.0.1:8080/v1
+    configserver:
+      url: "http://127.0.0.1:8080/v1/config"
+    log:
+      level: debug
+    backend: sshproxy
+    sshproxy:
+      privateKey: /etc/containerssh/privatekey

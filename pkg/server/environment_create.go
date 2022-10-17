@@ -79,7 +79,7 @@ func (s *Server) environmentCreate(c *gin.Context) {
 					Name: "secret",
 					VolumeSource: v1.VolumeSource{
 						Secret: &v1.SecretVolumeSource{
-							SecretName:  "containerssh-secret",
+							SecretName:  "envd-server",
 							DefaultMode: &defaultPermMode,
 						},
 					},
