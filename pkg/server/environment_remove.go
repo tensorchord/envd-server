@@ -22,16 +22,12 @@ import (
 // @Success 200 {object} types.EnvironmentListResponse
 // @Router /users/{identity_token}/environments [delete]
 func (s *Server) environmentRemove(c *gin.Context) {
-	var req types.EnvironmentRemoveRequest
-	if err := c.BindUri(&req); err != nil {
-		logrus.Error(err, "failed to bind URI")
-		c.JSON(500, err)
-		return
-	}
+	it := c.GetString("identity_token")
+
 	err := s.client.CoreV1().Pods(
-		"default").Delete(c, req.IdentityToken, metav1.DeleteOptions{})
+		"default").Delete(c, it, metav1.DeleteOptions{})
 	if err != nil {
-		logrus.WithField("req", req).Error(err)
+		logrus.WithField("identity_token", it).Error(err)
 		if k8serrors.IsNotFound(err) {
 			c.JSON(200, types.EnvironmentListResponse{})
 			return
