@@ -47,7 +47,7 @@ spec:
             - --hostkey
             - /etc/containerssh/hostkey
           ports:
-            - name: http
+            - name: envdserver
               containerPort: 8080
               protocol: TCP
           livenessProbe:

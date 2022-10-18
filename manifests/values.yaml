@@ -5,16 +5,16 @@
 replicaCount: 1
 
 image:
-  repository: gaocegege/envd-server
+  repository: tensorchord/envd-server
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
 
 containersshimage:
-  repository: gaocegege/containerssh
-  pullPolicy: Always
+  repository: tensorchord/containerssh
+  pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
+  tag: "0.0.6"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -44,7 +44,13 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 80
+  serverPort: 8080
+  containersshPort: 2222
+  # type: NodePort
+  # serverPort: 8080
+  # containersshPort: 2222
+  # serverNodePort: 30080
+  # containersshNodePort: 32222
 
 ingress:
   enabled: false

@@ -7,9 +7,15 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: http
+    - port: {{ .Values.service.serverPort }}
+      targetPort: envdserver
       protocol: TCP
-      name: http
+      name: envd-server
+      nodePort: {{ .Values.service.serverNodePort }}
+    - port: {{ .Values.service.containersshPort }}
+      targetPort: ssh
+      protocol: TCP
+      name: ssh
+      nodePort: {{ .Values.service.containersshNodePort }}
   selector:
     {{- include "envd-server.selectorLabels" . | nindent 4 }}
