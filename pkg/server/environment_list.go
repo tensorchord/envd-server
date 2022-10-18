@@ -22,16 +22,11 @@ import (
 // @Success 200 {object} types.EnvironmentListResponse
 // @Router /users/{identity_token}/environments [get]
 func (s *Server) environmentList(c *gin.Context) {
-	var req types.EnvironmentListRequest
-	if err := c.BindUri(&req); err != nil {
-		logrus.Error(err, "failed to bind URI")
-		c.JSON(500, err)
-		return
-	}
+	it := c.GetString("identity_token")
 	pod, err := s.client.CoreV1().Pods(
-		"default").Get(c, req.IdentityToken, metav1.GetOptions{})
+		"default").Get(c, it, metav1.GetOptions{})
 	if err != nil {
-		logrus.WithField("req", req).Error(err)
+		logrus.WithField("identity_token", it).Error(err)
 		if k8serrors.IsNotFound(err) {
 			c.JSON(404, types.EnvironmentListResponse{})
 			return

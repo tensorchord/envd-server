@@ -83,10 +83,14 @@ func (s *Server) bindHandlers() {
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	v1 := engine.Group("/v1")
+	authorized := engine.Group("/v1/users")
+	authorized.Use(s.AuthMiddleware())
+	{
+		authorized.GET("/:identity_token/environments", s.environmentList)
+		authorized.DELETE("/:identity_token/environments", s.environmentRemove)
+	}
 	v1.GET("/", s.handlePing)
 	v1.POST("/environments", s.environmentCreate)
-	v1.GET("/users/:identity_token/environments", s.environmentList)
-	v1.DELETE("/users/:identity_token/environments", s.environmentRemove)
 	v1.POST("/auth", s.auth)
 	v1.POST("/config", s.OnConfig)
 	v1.POST("/pubkey", s.OnPubKey)

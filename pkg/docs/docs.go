@@ -473,7 +473,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "identity_token": {
-                    "description": "TODO(gaocegege): Move it to URI.\nUse auth instead of in the requrest body.",
+                    "description": "TODO(gaocegege): Move it to URI.\nUse auth instead of in the request body.",
                     "type": "string",
                     "example": "a332139d39b89a241400013700e665a3"
                 },
