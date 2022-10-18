@@ -7,15 +7,13 @@ package client
 import (
 	"context"
 	"fmt"
-
-	"github.com/tensorchord/envd-server/api/types"
 )
 
 // EnvironmentList lists the environment.
 func (cli *Client) EnvironmentRemove(ctx context.Context,
-	req types.EnvironmentRemoveRequest) error {
-	url := fmt.Sprintf("/users/%s/environments", req.IdentityToken)
+	owner, name string) error {
+	url := fmt.Sprintf("/users/%s/environments/%s", owner, name)
 	resp, err := cli.delete(ctx, url, nil, nil)
 	defer ensureReaderClosed(resp)
-	return wrapResponseError(err, resp, "environment", req.IdentityToken)
+	return wrapResponseError(err, resp, "environment", name)
 }

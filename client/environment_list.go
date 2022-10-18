@@ -13,13 +13,13 @@ import (
 )
 
 // EnvironmentList lists the environment.
-func (cli *Client) EnvironmentList(ctx context.Context, req types.EnvironmentListRequest) (types.EnvironmentListResponse, error) {
-	url := fmt.Sprintf("/users/%s/environments", req.IdentityToken)
+func (cli *Client) EnvironmentList(ctx context.Context, owner string) (types.EnvironmentListResponse, error) {
+	url := fmt.Sprintf("/users/%s/environments", owner)
 	resp, err := cli.get(ctx, url, nil, nil)
 	defer ensureReaderClosed(resp)
 
 	if err != nil {
-		return types.EnvironmentListResponse{}, wrapResponseError(err, resp, "environment", req.IdentityToken)
+		return types.EnvironmentListResponse{}, wrapResponseError(err, resp, "owner", owner)
 	}
 
 	var response types.EnvironmentListResponse

@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"github.com/tensorchord/envd-server/sshname"
 	"go.containerssh.io/libcontainerssh/auth"
 	"go.containerssh.io/libcontainerssh/config"
 	"golang.org/x/crypto/ssh"
@@ -30,10 +31,16 @@ func (s *Server) OnConfig(c *gin.Context) {
 		return
 	}
 
+	_, name, err := sshname.GetInfo(req.Username)
+	if err != nil {
+		c.JSON(500, err)
+		return
+	}
+
 	cfg := config.AppConfig{
 		Backend: "sshproxy",
 		SSHProxy: config.SSHProxyConfig{
-			Server:   req.Username,
+			Server:   name,
 			Port:     2222,
 			Username: "envd",
 		},
@@ -61,8 +68,14 @@ func (s *Server) OnPubKey(c *gin.Context) {
 		c.JSON(500, err)
 		return
 	}
+
+	owner, _, err := sshname.GetInfo(req.Username)
+	if err != nil {
+		c.JSON(500, err)
+		return
+	}
+
 	for _, k := range s.authInfo {
-		logrus.Info(k.PublicKey, k.IdentityToken)
 		key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(req.PublicKey.PublicKey))
 		if err != nil {
 			logrus.WithError(err).Error("failed to parse key")
@@ -70,7 +83,8 @@ func (s *Server) OnPubKey(c *gin.Context) {
 			return
 		}
 		// https://github.com/golang/go/issues/21704#issuecomment-342760478
-		if bytes.Equal(key.Marshal(), k.PublicKey.Marshal()) {
+		if owner == k.IdentityToken &&
+			bytes.Equal(key.Marshal(), k.PublicKey.Marshal()) {
 			res := auth.ResponseBody{
 				Success: true,
 			}

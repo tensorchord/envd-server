@@ -27,5 +27,5 @@ type AuthResponse struct {
 
 type AuthMiddlewareRequest struct {
 	// Use auth instead of in the request body.
-	IdentityToken string `uri:"identity_token"  example:"a332139d39b89a241400013700e665a3"`
+	IdentityToken string `uri:"identity_token" example:"a332139d39b89a241400013700e665a3"`
 }

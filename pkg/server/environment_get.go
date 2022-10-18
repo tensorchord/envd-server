@@ -16,16 +16,16 @@ import (
 	"github.com/tensorchord/envd-server/pkg/consts"
 )
 
-// @Summary Remove the environment.
-// @Description Remove the environment.
+// @Summary Get the environment.
+// @Description Get the environment with the given environment name.
 // @Tags environment
 // @Accept json
 // @Produce json
 // @Param identity_token path string true "identity token" example("a332139d39b89a241400013700e665a3")
 // @Param name path string true "environment name" example("pytorch-example")
-// @Success 200 {object} types.EnvironmentRemoveResponse
-// @Router /users/{identity_token}/environments/{name} [delete]
-func (s *Server) environmentRemove(c *gin.Context) {
+// @Success 200 {object} types.EnvironmentGetResponse
+// @Router /users/{identity_token}/environments/{name} [get]
+func (s *Server) environmentGet(c *gin.Context) {
 	it := c.GetString("identity_token")
 
 	var req types.EnvironmentRemoveRequest
@@ -37,7 +37,7 @@ func (s *Server) environmentRemove(c *gin.Context) {
 	pod, err := s.client.CoreV1().Pods("default").Get(c, req.Name, metav1.GetOptions{})
 	if err != nil {
 		if k8serrors.IsNotFound(err) {
-			c.JSON(200, types.EnvironmentListResponse{})
+			c.JSON(http.StatusNotFound, types.EnvironmentGetResponse{})
 			return
 		}
 		c.JSON(500, err)
@@ -51,17 +51,17 @@ func (s *Server) environmentRemove(c *gin.Context) {
 		respondWithError(c, http.StatusUnauthorized, "unauthorized")
 	}
 
-	err = s.client.CoreV1().Pods(
-		"default").Delete(c, req.Name, metav1.DeleteOptions{})
-	if err != nil {
-		logrus.WithField("identity_token", it).Error(err)
-		if k8serrors.IsNotFound(err) {
-			c.JSON(200, types.EnvironmentRemoveResponse{})
-			return
-		}
-		c.JSON(500, err)
+	if pod == nil {
+		c.JSON(http.StatusNotFound, types.EnvironmentGetResponse{})
 		return
 	}
 
-	c.JSON(200, types.EnvironmentRemoveResponse{})
+	e, err := generateEnvironmentFromPod(*pod)
+	if err != nil {
+		c.JSON(500, err)
+	}
+
+	c.JSON(http.StatusOK, types.EnvironmentGetResponse{
+		Environment: e,
+	})
 }
