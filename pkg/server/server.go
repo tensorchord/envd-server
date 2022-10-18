@@ -86,6 +86,7 @@ func (s *Server) bindHandlers() {
 	v1.GET("/", s.handlePing)
 	v1.POST("/environments", s.environmentCreate)
 	v1.GET("/users/:identity_token/environments", s.environmentList)
+	v1.DELETE("/users/:identity_token/environments", s.environmentRemove)
 	v1.POST("/auth", s.auth)
 	v1.POST("/config", s.OnConfig)
 	v1.POST("/pubkey", s.OnPubKey)

@@ -6,23 +6,16 @@ package client
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 
 	"github.com/tensorchord/envd-server/api/types"
 )
 
 // EnvironmentList lists the environment.
-func (cli *Client) EnvironmentList(ctx context.Context, req types.EnvironmentListRequest) (types.EnvironmentListResponse, error) {
+func (cli *Client) EnvironmentRemove(ctx context.Context,
+	req types.EnvironmentRemoveRequest) error {
 	url := fmt.Sprintf("/users/%s/environments", req.IdentityToken)
-	resp, err := cli.get(ctx, url, nil, nil)
+	resp, err := cli.delete(ctx, url, nil, nil)
 	defer ensureReaderClosed(resp)
-
-	if err != nil {
-		return types.EnvironmentListResponse{}, wrapResponseError(err, resp, "environment", req.IdentityToken)
-	}
-
-	var response types.EnvironmentListResponse
-	err = json.NewDecoder(resp.body).Decode(&response)
-	return response, err
+	return wrapResponseError(err, resp, "environment", req.IdentityToken)
 }
