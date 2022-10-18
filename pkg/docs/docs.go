@@ -183,6 +183,37 @@ const docTemplate = `{
         },
         "/users/{identity_token}/environments": {
             "get": {
+                "description": "List the environment. Currently, every user can only create one environment. And the environment's name is the identity token.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "environment"
+                ],
+                "summary": "List the environment.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "\"a332139d39b89a241400013700e665a3\"",
+                        "description": "identity token",
+                        "name": "identity_token",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.EnvironmentListResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
                 "description": "Remove the environment.",
                 "consumes": [
                     "application/json"

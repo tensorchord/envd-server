@@ -20,7 +20,7 @@ import (
 // @Produce json
 // @Param identity_token path string true "identity token" example("a332139d39b89a241400013700e665a3")
 // @Success 200 {object} types.EnvironmentListResponse
-// @Router /users/{identity_token}/environments [get]
+// @Router /users/{identity_token}/environments [delete]
 func (s *Server) environmentRemove(c *gin.Context) {
 	var req types.EnvironmentRemoveRequest
 	if err := c.BindUri(&req); err != nil {
