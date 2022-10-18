@@ -61,6 +61,7 @@ func (s *Server) environmentList(c *gin.Context) {
 	c.JSON(200, res)
 }
 
+// nolint:unparam
 func generateEnvironmentFromPod(p v1.Pod) (types.Environment, error) {
 	e := types.Environment{
 		Spec: types.EnvironmentSpec{

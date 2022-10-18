@@ -10,10 +10,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"github.com/tensorchord/envd-server/sshname"
 	"go.containerssh.io/libcontainerssh/auth"
 	"go.containerssh.io/libcontainerssh/config"
 	"golang.org/x/crypto/ssh"
+
+	"github.com/tensorchord/envd-server/sshname"
 )
 
 // @Summary Update the config of containerssh.
