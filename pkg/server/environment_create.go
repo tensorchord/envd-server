@@ -37,7 +37,7 @@ func (s *Server) environmentCreate(c *gin.Context) {
 		return
 	}
 
-	cfg, err := getImageConfig(c.Request.Context(), req.Image)
+	cfg, err := getImageConfig(c.Request.Context(), req.Spec.Image)
 	if err != nil {
 		c.JSON(500, err)
 		return
@@ -66,7 +66,7 @@ func (s *Server) environmentCreate(c *gin.Context) {
 			Containers: []v1.Container{
 				{
 					Name:  "envd",
-					Image: req.Image,
+					Image: req.Spec.Image,
 					Ports: []v1.ContainerPort{
 						{
 							Name:          "ssh",

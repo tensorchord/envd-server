@@ -8,23 +8,21 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net/url"
 
 	"github.com/tensorchord/envd-server/api/types"
 )
 
-// EnvironmentCreate creates the environment.
-func (cli *Client) EnvironmentCreate(ctx context.Context, owner string,
-	req types.EnvironmentCreateRequest) (types.EnvironmentCreateResponse, error) {
-	urlString := fmt.Sprintf("/users/%s/environments", owner)
-	resp, err := cli.post(ctx, urlString, url.Values{}, req, nil)
+// EnvironmentList lists the environment.
+func (cli *Client) EnvironmentGet(ctx context.Context, owner, name string) (types.EnvironmentGetResponse, error) {
+	url := fmt.Sprintf("/users/%s/environments/%s", owner, name)
+	resp, err := cli.get(ctx, url, nil, nil)
 	defer ensureReaderClosed(resp)
 
 	if err != nil {
-		return types.EnvironmentCreateResponse{}, err
+		return types.EnvironmentGetResponse{}, wrapResponseError(err, resp, "owner", owner)
 	}
 
-	var response types.EnvironmentCreateResponse
+	var response types.EnvironmentGetResponse
 	err = json.NewDecoder(resp.body).Decode(&response)
 	return response, err
 }

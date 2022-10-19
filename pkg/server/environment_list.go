@@ -64,13 +64,17 @@ func (s *Server) environmentList(c *gin.Context) {
 // nolint:unparam
 func generateEnvironmentFromPod(p v1.Pod) (types.Environment, error) {
 	e := types.Environment{
-		Spec: types.EnvironmentSpec{
-			Name: p.Name,
+		// TODO(gaocegege): Filter non `envd.tensorchord.ai/` labels
+		ObjectMeta: types.ObjectMeta{
+			Labels: p.Annotations,
+			Name:   p.Name,
 		},
+		Spec: types.EnvironmentSpec{},
 	}
 	if len(p.Spec.Containers) != 0 {
 		e.Spec.Image = p.Spec.Containers[0].Image
 	}
+
 	e.Status.Phase = string(p.Status.Phase)
 	return e, nil
 }
