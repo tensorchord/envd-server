@@ -5,12 +5,18 @@
 package types
 
 type Environment struct {
-	Spec   EnvironmentSpec
-	Status EnvironmentStatus
+	ObjectMeta `json:",inline"`
+	Spec       EnvironmentSpec   `json:"spec,omitempty"`
+	Status     EnvironmentStatus `json:"status,omitempty"`
+}
+
+type ObjectMeta struct {
+	Name string `json:"name,omitempty"`
+
+	Labels map[string]string `json:"labels,omitempty"`
 }
 
 type EnvironmentSpec struct {
-	Name  string            `json:"name,omitempty"`
 	Owner string            `json:"owner,omitempty"`
 	Image string            `json:"image,omitempty"`
 	Env   []string          `json:"env,omitempty"`
@@ -29,7 +35,7 @@ type EnvironmentPort struct {
 }
 
 type EnvironmentCreateRequest struct {
-	EnvironmentSpec `json:",inline"`
+	Environment `json:",inline,omitempty"`
 }
 
 type EnvironmentCreateResponse struct {
