@@ -50,6 +50,9 @@ func New(opt Opt) (*Server, error) {
 	router := gin.New()
 	router.Use(ginlogrus.Logger(logrus.StandardLogger()))
 	router.Use(gin.Recovery())
+	if gin.Mode() == gin.DebugMode {
+		logrus.SetLevel(logrus.DebugLevel)
+	}
 	admin := gin.New()
 	s := &Server{
 		Router:             router,
@@ -86,11 +89,13 @@ func (s *Server) bindHandlers() {
 	authorized := engine.Group("/v1/users")
 	authorized.Use(s.AuthMiddleware())
 	{
+		authorized.POST("/:identity_token/environments", s.environmentCreate)
 		authorized.GET("/:identity_token/environments", s.environmentList)
-		authorized.DELETE("/:identity_token/environments", s.environmentRemove)
+		authorized.GET("/:identity_token/environments/:name", s.environmentGet)
+		authorized.DELETE("/:identity_token/environments/:name", s.environmentRemove)
 	}
+
 	v1.GET("/", s.handlePing)
-	v1.POST("/environments", s.environmentCreate)
 	v1.POST("/auth", s.auth)
 	v1.POST("/config", s.OnConfig)
 	v1.POST("/pubkey", s.OnPubKey)

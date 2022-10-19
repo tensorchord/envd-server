@@ -16,6 +16,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/tensorchord/envd-server/api/types"
+	"github.com/tensorchord/envd-server/pkg/consts"
 )
 
 // @Summary Create the environment.
@@ -23,10 +24,13 @@ import (
 // @Tags environment
 // @Accept json
 // @Produce json
+// @Param identity_token path string true "identity token" example("a332139d39b89a241400013700e665a3")
 // @Param request body types.EnvironmentCreateRequest true "query params"
 // @Success 200 {object} types.EnvironmentCreateResponse
-// @Router /environments [post]
+// @Router /users/{identity_token}/environments [post]
 func (s *Server) environmentCreate(c *gin.Context) {
+	it := c.GetString("identity_token")
+
 	var req types.EnvironmentCreateRequest
 	if err := c.BindJSON(&req); err != nil {
 		c.JSON(500, err)
@@ -40,7 +44,8 @@ func (s *Server) environmentCreate(c *gin.Context) {
 	}
 	// Merge image labels to pod.
 	labels := map[string]string{
-		"name": req.IdentityToken,
+		consts.LabelUID:             it,
+		consts.LabelEnvironmentName: req.Name,
 	}
 	annotations := map[string]string{}
 	for k, v := range cfg.Labels {
@@ -52,7 +57,7 @@ func (s *Server) environmentCreate(c *gin.Context) {
 	var defaultPermMode int32 = 0600
 	expectedPod := v1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:        req.IdentityToken,
+			Name:        req.Name,
 			Namespace:   "default",
 			Labels:      labels,
 			Annotations: annotations,
@@ -117,17 +122,13 @@ func (s *Server) environmentCreate(c *gin.Context) {
 
 	expectedService := v1.Service{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      req.IdentityToken,
+			Name:      req.Name,
 			Namespace: "default",
-			Labels: map[string]string{
-				"name": req.IdentityToken,
-			},
+			Labels:    labels,
 		},
 		Spec: v1.ServiceSpec{
-			Selector: map[string]string{
-				"name": req.IdentityToken,
-			},
-			Type: v1.ServiceTypeClusterIP,
+			Selector: labels,
+			Type:     v1.ServiceTypeClusterIP,
 			Ports: []v1.ServicePort{
 				{
 					Name: "ssh",

@@ -4,8 +4,6 @@
 
 package types
 
-import v1 "k8s.io/api/core/v1"
-
 type Environment struct {
 	Spec   EnvironmentSpec
 	Status EnvironmentStatus
@@ -31,10 +29,7 @@ type EnvironmentPort struct {
 }
 
 type EnvironmentCreateRequest struct {
-	// TODO(gaocegege): Move it to URI.
-	// Use auth instead of in the request body.
-	IdentityToken string `json:"identity_token"  example:"a332139d39b89a241400013700e665a3"`
-	Image         string `json:"image,omitempty"`
+	EnvironmentSpec `json:",inline"`
 }
 
 type EnvironmentCreateResponse struct {
@@ -48,18 +43,23 @@ type EnvironmentCreateResponse struct {
 }
 
 type EnvironmentListRequest struct {
-	// Use auth instead of in the request body.
-	IdentityToken string `uri:"identity_token"  example:"a332139d39b89a241400013700e665a3"`
 }
 
 type EnvironmentListResponse struct {
-	Pod v1.Pod
+	Items []Environment `json:"items,omitempty"`
 }
 
 type EnvironmentRemoveRequest struct {
-	// Use auth instead of in the requrest body.
-	IdentityToken string `uri:"identity_token"  example:"a332139d39b89a241400013700e665a3"`
+	Name string `uri:"name" example:"pytorch-example"`
 }
 
 type EnvironmentRemoveResponse struct {
+}
+
+type EnvironmentGetRequest struct {
+	Name string `uri:"name" example:"pytorch-example"`
+}
+
+type EnvironmentGetResponse struct {
+	Environment `json:",inline"`
 }

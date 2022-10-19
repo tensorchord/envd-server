@@ -7,14 +7,17 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	v1 "k8s.io/api/core/v1"
 	k8serrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 
 	"github.com/tensorchord/envd-server/api/types"
+	"github.com/tensorchord/envd-server/pkg/consts"
 )
 
 // @Summary List the environment.
-// @Description List the environment. Currently, every user can only create one environment. And the environment's name is the identity token.
+// @Description List the environment.
 // @Tags environment
 // @Accept json
 // @Produce json
@@ -23,8 +26,15 @@ import (
 // @Router /users/{identity_token}/environments [get]
 func (s *Server) environmentList(c *gin.Context) {
 	it := c.GetString("identity_token")
-	pod, err := s.client.CoreV1().Pods(
-		"default").Get(c, it, metav1.GetOptions{})
+
+	ls := labels.Set{
+		consts.LabelUID: it,
+	}
+
+	pods, err := s.client.CoreV1().Pods(
+		"default").List(c, metav1.ListOptions{
+		LabelSelector: ls.String(),
+	})
 	if err != nil {
 		logrus.WithField("identity_token", it).Error(err)
 		if k8serrors.IsNotFound(err) {
@@ -36,7 +46,31 @@ func (s *Server) environmentList(c *gin.Context) {
 	}
 
 	res := types.EnvironmentListResponse{
-		Pod: *pod,
+		Items: []types.Environment{},
+	}
+
+	for _, p := range pods.Items {
+		e, err := generateEnvironmentFromPod(p)
+		if err != nil {
+			logrus.WithField("identity_token", it).Error(err)
+			c.JSON(500, err)
+			return
+		}
+		res.Items = append(res.Items, e)
 	}
 	c.JSON(200, res)
+}
+
+// nolint:unparam
+func generateEnvironmentFromPod(p v1.Pod) (types.Environment, error) {
+	e := types.Environment{
+		Spec: types.EnvironmentSpec{
+			Name: p.Name,
+		},
+	}
+	if len(p.Spec.Containers) != 0 {
+		e.Spec.Image = p.Spec.Containers[0].Image
+	}
+	e.Status.Phase = string(p.Status.Phase)
+	return e, nil
 }

@@ -32,6 +32,7 @@ func (s *Server) AuthMiddleware() gin.HandlerFunc {
 	}
 }
 
+// nolint:unparam
 func respondWithError(c *gin.Context, code int, message interface{}) {
 	c.AbortWithStatusJSON(code, gin.H{"error": message})
 }
