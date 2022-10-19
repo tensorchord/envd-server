@@ -505,6 +505,15 @@ const docTemplate = `{
         "types.Environment": {
             "type": "object",
             "properties": {
+                "labels": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
                 "spec": {
                     "$ref": "#/definitions/types.EnvironmentSpec"
                 },
@@ -516,32 +525,20 @@ const docTemplate = `{
         "types.EnvironmentCreateRequest": {
             "type": "object",
             "properties": {
-                "cmd": {
-                    "type": "array",
-                    "items": {
+                "labels": {
+                    "type": "object",
+                    "additionalProperties": {
                         "type": "string"
                     }
-                },
-                "env": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "image": {
-                    "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
-                "owner": {
-                    "type": "string"
+                "spec": {
+                    "$ref": "#/definitions/types.EnvironmentSpec"
                 },
-                "ports": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/types.EnvironmentPort"
-                    }
+                "status": {
+                    "$ref": "#/definitions/types.EnvironmentStatus"
                 }
             }
         },
@@ -564,6 +561,15 @@ const docTemplate = `{
         "types.EnvironmentGetResponse": {
             "type": "object",
             "properties": {
+                "labels": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
                 "spec": {
                     "$ref": "#/definitions/types.EnvironmentSpec"
                 },
@@ -613,9 +619,6 @@ const docTemplate = `{
                     }
                 },
                 "image": {
-                    "type": "string"
-                },
-                "name": {
                     "type": "string"
                 },
                 "owner": {
