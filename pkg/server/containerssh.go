@@ -85,7 +85,7 @@ func (s *Server) OnPubKey(c *gin.Context) {
 		}
 		// https://github.com/golang/go/issues/21704#issuecomment-342760478
 		if owner == k.IdentityToken &&
-			subtle.ConstantTimeCompare(key.Marshal(), k.PublicKey.Marshal()) == 0 {
+			subtle.ConstantTimeCompare(key.Marshal(), k.PublicKey.Marshal()) == 1 {
 			res := auth.ResponseBody{
 				Success: true,
 			}
