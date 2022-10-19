@@ -5,7 +5,7 @@
 package server
 
 import (
-	"bytes"
+	"crypto/subtle"
 	"encoding/json"
 
 	"github.com/gin-gonic/gin"
@@ -85,7 +85,7 @@ func (s *Server) OnPubKey(c *gin.Context) {
 		}
 		// https://github.com/golang/go/issues/21704#issuecomment-342760478
 		if owner == k.IdentityToken &&
-			bytes.Equal(key.Marshal(), k.PublicKey.Marshal()) {
+			subtle.ConstantTimeCompare(key.Marshal(), k.PublicKey.Marshal()) == 0 {
 			res := auth.ResponseBody{
 				Success: true,
 			}
