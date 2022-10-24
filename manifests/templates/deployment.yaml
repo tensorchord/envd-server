@@ -34,7 +34,7 @@ spec:
           name: config
         - secret:
             secretName: {{ include "envd-server.fullname" . }}
-            defaultMode: 0600
+            defaultMode: 0666
           name: secret
       containers:
         - name: {{ .Chart.Name }}
@@ -50,18 +50,18 @@ spec:
             - name: envdserver
               containerPort: 8080
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /v1
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /v1
-              port: http
+          # livenessProbe:
+          #   httpGet:
+          #     path: /v1
+          #     port: http
+          # readinessProbe:
+          #   httpGet:
+          #     path: /v1
+          #     port: http
           volumeMounts:
-                - mountPath: /etc/containerssh/hostkey
-                  name: secret
-                  subPath: hostkey
+            - mountPath: /etc/containerssh/hostkey
+              name: secret
+              subPath: hostkey
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

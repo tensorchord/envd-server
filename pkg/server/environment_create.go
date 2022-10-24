@@ -12,6 +12,8 @@ import (
 	"github.com/containers/image/v5/image"
 	"github.com/gin-gonic/gin"
 	imagespecv1 "github.com/opencontainers/image-spec/specs-go/v1"
+	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
@@ -48,20 +50,26 @@ func (s *Server) environmentCreate(c *gin.Context) {
 		consts.LabelUID:             it,
 		consts.LabelEnvironmentName: req.Name,
 	}
+
+	logrus.WithFields(logrus.Fields{
+		"identity_token": it,
+		"image_labels":   cfg.Labels,
+		"environment":    req.Environment,
+	}).Debug("creating the environment")
 	annotations := map[string]string{}
 	for k, v := range cfg.Labels {
 		annotations[k] = v
 	}
 
-	ports, err := imageutil.PortsFromLabel(consts.ImageLabelPorts)
+	ports, err := imageutil.PortsFromLabel(cfg.Labels[consts.ImageLabelPorts])
 	if err != nil {
-		c.JSON(500, err)
+		c.JSON(500, errors.Wrap(err, "failed to get ports from label"))
 		return
 	}
 
 	hostKeyPath := "/var/envd/hostkey"
 	authKeyPath := "/var/envd/authkey"
-	var defaultPermMode int32 = 0600
+	var defaultPermMode int32 = 0666
 	expectedPod := v1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:        req.Name,
