@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/cockroachdb/errors v1.9.0
 	github.com/containers/image/v5 v5.23.0
-	github.com/docker/docker v20.10.18+incompatible
+	github.com/docker/docker v20.10.20+incompatible
 	github.com/docker/go-connections v0.4.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/opencontainers/image-spec v1.1.0-rc2
