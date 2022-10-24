@@ -7,4 +7,6 @@ package consts
 const (
 	LabelUID             = "envd.tensorchord.ai/uid"
 	LabelEnvironmentName = "envd.tensorchord.ai/environment-name"
+
+	ImageLabelPorts = "ai.tensorchord.envd.ports"
 )

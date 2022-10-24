@@ -17,6 +17,7 @@ import (
 
 	"github.com/tensorchord/envd-server/api/types"
 	"github.com/tensorchord/envd-server/pkg/consts"
+	"github.com/tensorchord/envd-server/pkg/util/imageutil"
 )
 
 // @Summary Create the environment.
@@ -50,6 +51,12 @@ func (s *Server) environmentCreate(c *gin.Context) {
 	annotations := map[string]string{}
 	for k, v := range cfg.Labels {
 		annotations[k] = v
+	}
+
+	ports, err := imageutil.PortsFromLabel(consts.ImageLabelPorts)
+	if err != nil {
+		c.JSON(500, err)
+		return
 	}
 
 	hostKeyPath := "/var/envd/hostkey"
@@ -113,7 +120,7 @@ func (s *Server) environmentCreate(c *gin.Context) {
 		},
 	}
 
-	created, err := s.client.CoreV1().Pods(
+	_, err = s.client.CoreV1().Pods(
 		"default").Create(c, &expectedPod, metav1.CreateOptions{})
 	if err != nil {
 		c.JSON(500, err)
@@ -144,8 +151,9 @@ func (s *Server) environmentCreate(c *gin.Context) {
 	}
 
 	resp := types.EnvironmentCreateResponse{
-		ID: created.Name,
+		Created: req.Environment,
 	}
+	resp.Created.Spec.Ports = ports
 	c.JSON(201, resp)
 }
 
