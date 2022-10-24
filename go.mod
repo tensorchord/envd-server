@@ -13,7 +13,7 @@ require (
 	github.com/sirupsen/logrus v1.9.0
 	github.com/swaggo/files v0.0.0-20220728132757-551d4a08d97a
 	github.com/swaggo/gin-swagger v1.5.3
-	github.com/swaggo/swag v1.8.6
+	github.com/swaggo/swag v1.8.7
 	github.com/toorop/gin-logrus v0.0.0-20210225092905-2c785434f26f
 	github.com/urfave/cli/v2 v2.20.2
 	go.containerssh.io/libcontainerssh v0.0.0-20220919135854-4f8e76dc0aed
