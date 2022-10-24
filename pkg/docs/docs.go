@@ -545,9 +545,8 @@ const docTemplate = `{
         "types.EnvironmentCreateResponse": {
             "type": "object",
             "properties": {
-                "id": {
-                    "description": "The ID of the created container\nRequired: true",
-                    "type": "string"
+                "environment": {
+                    "$ref": "#/definitions/types.Environment"
                 },
                 "warnings": {
                     "description": "Warnings encountered when creating the pod\nRequired: true",
