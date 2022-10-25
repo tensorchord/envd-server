@@ -14,6 +14,7 @@ import (
 
 	"github.com/tensorchord/envd-server/api/types"
 	"github.com/tensorchord/envd-server/pkg/consts"
+	"github.com/tensorchord/envd-server/pkg/util/imageutil"
 )
 
 // @Summary List the environment.
@@ -74,6 +75,12 @@ func generateEnvironmentFromPod(p v1.Pod) (types.Environment, error) {
 	if len(p.Spec.Containers) != 0 {
 		e.Spec.Image = p.Spec.Containers[0].Image
 	}
+
+	ports, err := imageutil.PortsFromLabel(p.Annotations[consts.ImageLabelPorts])
+	if err != nil {
+		return e, err
+	}
+	e.Spec.Ports = ports
 
 	e.Status.Phase = string(p.Status.Phase)
 	return e, nil
