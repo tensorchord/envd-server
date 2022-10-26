@@ -6,14 +6,22 @@ envd-server is the backend server for envd, which talks to Kubernetes and manage
 
 ```bash
 helm install --debug envd-server ./manifests
-export POD_NAME=$(kubectl get pods --namespace default -l "app.kubernetes.io/name=envd-server,app.kubernetes.io/instance=envd-server" -o jsonpath="{.items[0].metadata.name}")
-kubectl --namespace default port-forward $POD_NAME 8080:8080
-kubectl --namespace default port-forward $POD_NAME 2222:2222
+# skip 8080 if you're going to run the envd-server locally
+kubectl --namespace default port-forward service/envd-server 8080:8080 &
+kubectl --namespace default port-forward service/envd-server 2222:2222 &
+```
+
+To run the envd-server locally:
+
+```bash
+make build-local
+./bin/envd-server --kubeconfig $HOME/.kube/config --hostkey manifests/secretkeys/hostkey
 ```
 
 ## Usage
 
 ```bash
+envd context create --name server --runner envd-server --runner-address http://localhost:8080 --use
 envd login
 envd create --image gaocegege/test-envd
 ```
