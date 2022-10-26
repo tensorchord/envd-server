@@ -21,6 +21,7 @@ make build-local
 ## Usage
 
 ```bash
+envd context create --name server --runner envd-server --runner-address http://localhost:8080 --use
 envd login
 envd create --image gaocegege/test-envd
 ```
