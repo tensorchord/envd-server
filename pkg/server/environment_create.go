@@ -22,15 +22,15 @@ import (
 	"github.com/tensorchord/envd-server/pkg/util/imageutil"
 )
 
-// @Summary Create the environment.
+// @Summary     Create the environment.
 // @Description Create the environment.
-// @Tags environment
-// @Accept json
-// @Produce json
-// @Param identity_token path string true "identity token" example("a332139d39b89a241400013700e665a3")
-// @Param request body types.EnvironmentCreateRequest true "query params"
-// @Success 200 {object} types.EnvironmentCreateResponse
-// @Router /users/{identity_token}/environments [post]
+// @Tags        environment
+// @Accept      json
+// @Produce     json
+// @Param       identity_token path     string                         true "identity token" example("a332139d39b89a241400013700e665a3")
+// @Param       request        body     types.EnvironmentCreateRequest true "query params"
+// @Success     200            {object} types.EnvironmentCreateResponse
+// @Router      /users/{identity_token}/environments [post]
 func (s *Server) environmentCreate(c *gin.Context) {
 	it := c.GetString("identity_token")
 

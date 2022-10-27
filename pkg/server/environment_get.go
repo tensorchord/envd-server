@@ -16,15 +16,15 @@ import (
 	"github.com/tensorchord/envd-server/pkg/consts"
 )
 
-// @Summary Get the environment.
+// @Summary     Get the environment.
 // @Description Get the environment with the given environment name.
-// @Tags environment
-// @Accept json
-// @Produce json
-// @Param identity_token path string true "identity token" example("a332139d39b89a241400013700e665a3")
-// @Param name path string true "environment name" example("pytorch-example")
-// @Success 200 {object} types.EnvironmentGetResponse
-// @Router /users/{identity_token}/environments/{name} [get]
+// @Tags        environment
+// @Accept      json
+// @Produce     json
+// @Param       identity_token path     string true "identity token" example("a332139d39b89a241400013700e665a3")
+// @Param       name           path     string true "environment name" example("pytorch-example")
+// @Success     200            {object} types.EnvironmentGetResponse
+// @Router      /users/{identity_token}/environments/{name} [get]
 func (s *Server) environmentGet(c *gin.Context) {
 	it := c.GetString("identity_token")
 
