@@ -124,7 +124,7 @@ addlicense-install:
 
 # https://github.com/swaggo/swag/pull/1322, we should use master instead of latest for now.
 swag-install:
-	go install github.com/swaggo/swag/cmd/swag@master
+	go install github.com/swaggo/swag/cmd/swag@v1.8.7
 
 build-local:
 	@for target in $(TARGETS); do                                                      \

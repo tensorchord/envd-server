@@ -16,15 +16,15 @@ import (
 	"github.com/tensorchord/envd-server/pkg/consts"
 )
 
-// @Summary Remove the environment.
+// @Summary     Remove the environment.
 // @Description Remove the environment.
-// @Tags environment
-// @Accept json
-// @Produce json
-// @Param identity_token path string true "identity token" example("a332139d39b89a241400013700e665a3")
-// @Param name path string true "environment name" example("pytorch-example")
-// @Success 200 {object} types.EnvironmentRemoveResponse
-// @Router /users/{identity_token}/environments/{name} [delete]
+// @Tags        environment
+// @Accept      json
+// @Produce     json
+// @Param       identity_token path     string true "identity token" example("a332139d39b89a241400013700e665a3")
+// @Param       name           path     string true "environment name" example("pytorch-example")
+// @Success     200            {object} types.EnvironmentRemoveResponse
+// @Router      /users/{identity_token}/environments/{name} [delete]
 func (s *Server) environmentRemove(c *gin.Context) {
 	it := c.GetString("identity_token")
 

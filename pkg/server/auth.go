@@ -16,14 +16,14 @@ type AuthInfo struct {
 	PublicKey     ssh.PublicKey
 }
 
-// @Summary authenticate the user.
+// @Summary     authenticate the user.
 // @Description authenticate the user for the given public key.
-// @Tags user
-// @Accept json
-// @Produce json
-// @Param request body types.AuthRequest true "query params"
-// @Success 200 {object} types.AuthResponse
-// @Router /auth [post]
+// @Tags        user
+// @Accept      json
+// @Produce     json
+// @Param       request body     types.AuthRequest true "query params"
+// @Success     200     {object} types.AuthResponse
+// @Router      /auth [post]
 func (s *Server) auth(c *gin.Context) {
 	var req types.AuthRequest
 	if err := c.BindJSON(&req); err != nil {

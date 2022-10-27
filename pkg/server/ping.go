@@ -11,13 +11,13 @@ import (
 )
 
 // handlePing is the handler for ping requrets.
-// @Summary Show the status of server.
+// @Summary     Show the status of server.
 // @Description get the status of server.
-// @Tags root
-// @Accept */*
-// @Produce json
-// @Success 200 {object} map[string]interface{}
-// @Router / [get]
+// @Tags        root
+// @Accept      */*
+// @Produce     json
+// @Success     200 {object} map[string]interface{}
+// @Router      / [get]
 func (s *Server) handlePing(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"hello": "world!", "goto": "https://github.com/tensorchord/envd"})
 }

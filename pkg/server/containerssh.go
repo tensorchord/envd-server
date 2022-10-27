@@ -17,14 +17,14 @@ import (
 	"github.com/tensorchord/envd-server/sshname"
 )
 
-// @Summary Update the config of containerssh.
+// @Summary     Update the config of containerssh.
 // @Description It is called by the containerssh webhook. and is not expected to be used externally.
-// @Tags ssh-internal
-// @Accept json
-// @Produce json
-// @Param request body config.Request true "query params"
-// @Success 200
-// @Router /config [post]
+// @Tags        ssh-internal
+// @Accept      json
+// @Produce     json
+// @Param       request body config.Request true "query params"
+// @Success     200
+// @Router      /config [post]
 func (s *Server) OnConfig(c *gin.Context) {
 	var req config.Request
 	if err := c.BindJSON(&req); err != nil {
@@ -54,14 +54,14 @@ func (s *Server) OnConfig(c *gin.Context) {
 	c.JSON(200, res)
 }
 
-// @Summary authenticate the public key.
+// @Summary     authenticate the public key.
 // @Description It is called by the containerssh webhook. and is not expected to be used externally.
-// @Tags ssh-internal
-// @Accept json
-// @Produce json
-// @Param request body auth.PublicKeyAuthRequest true "query params"
-// @Success 200 {object} auth.ResponseBody
-// @Router /pubkey [post]
+// @Tags        ssh-internal
+// @Accept      json
+// @Produce     json
+// @Param       request body     auth.PublicKeyAuthRequest true "query params"
+// @Success     200     {object} auth.ResponseBody
+// @Router      /pubkey [post]
 func (s *Server) OnPubKey(c *gin.Context) {
 	var req auth.PublicKeyAuthRequest
 	if err := c.BindJSON(&req); err != nil {
