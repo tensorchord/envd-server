@@ -164,6 +164,7 @@ vet: ## Run go vet against code.
 	go vet ./...
 
 swag: swag-install
+	swag fmt
 	swag init -g ./cmd/envd-server/main.go --parseDependency --output ./pkg/docs 
 
 release:
