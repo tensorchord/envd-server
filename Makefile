@@ -157,14 +157,14 @@ clean:  ## Clean the outputs and artifacts
 	@-rm -vrf ${DEBUG_DIR}
 	@-rm -vrf build dist .eggs *.egg-info
 
-fmt: ## Run go fmt against code.
+fmt: swag-install ## Run go fmt against code.
 	go fmt ./...
+	swag fmt
 
 vet: ## Run go vet against code.
 	go vet ./...
 
 swag: swag-install
-	swag fmt
 	swag init -g ./cmd/envd-server/main.go --parseDependency --output ./pkg/docs 
 
 release:
