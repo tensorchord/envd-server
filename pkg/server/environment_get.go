@@ -49,6 +49,7 @@ func (s *Server) environmentGet(c *gin.Context) {
 			"identity_token_in_request": it,
 		}).Debug("mismatch identity_token")
 		respondWithError(c, http.StatusUnauthorized, "unauthorized")
+		return
 	}
 
 	if pod == nil {
@@ -59,6 +60,7 @@ func (s *Server) environmentGet(c *gin.Context) {
 	e, err := generateEnvironmentFromPod(*pod)
 	if err != nil {
 		c.JSON(500, err)
+		return
 	}
 
 	c.JSON(http.StatusOK, types.EnvironmentGetResponse{

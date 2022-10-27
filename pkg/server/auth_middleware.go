@@ -19,6 +19,8 @@ func (s *Server) AuthMiddleware() gin.HandlerFunc {
 		if err := c.BindUri(&amr); err != nil {
 			respondWithError(c, http.StatusUnauthorized,
 				fmt.Sprintf("auth failed: %v", err))
+			c.Next()
+			return
 		}
 		for _, k := range s.authInfo {
 			if k.IdentityToken == amr.IdentityToken {
