@@ -18,3 +18,11 @@ func PortsFromLabel(label string) ([]types.EnvironmentPort, error) {
 
 	return ports, nil
 }
+
+func RepoInfoFromLabel(label string) (*types.EnvironmentRepoInfo, error) {
+	var repo *types.EnvironmentRepoInfo
+	if err := json.Unmarshal([]byte(label), &repo); err != nil {
+		return nil, err
+	}
+	return repo, nil
+}

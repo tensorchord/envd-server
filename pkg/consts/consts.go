@@ -9,4 +9,5 @@ const (
 	LabelEnvironmentName = "envd.tensorchord.ai/environment-name"
 
 	ImageLabelPorts = "ai.tensorchord.envd.ports"
+	ImageLabelRepo  = "ai.tensorchord.envd.repo"
 )

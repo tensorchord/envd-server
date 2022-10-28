@@ -34,6 +34,11 @@ type EnvironmentPort struct {
 	Port int32  `json:"port,omitempty"`
 }
 
+type EnvironmentRepoInfo struct {
+	URL         string `json:"url,omitempty"`
+	Description string `json:"description,omitempty"`
+}
+
 type EnvironmentCreateRequest struct {
 	Environment `json:",inline,omitempty"`
 }
