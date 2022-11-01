@@ -7,6 +7,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/containers/image/v5/docker"
 	"github.com/containers/image/v5/image"
@@ -66,12 +67,15 @@ func (s *Server) environmentCreate(c *gin.Context) {
 		c.JSON(500, errors.Wrap(err, "failed to get ports from label"))
 		return
 	}
-	repoInfo, err := imageutil.RepoInfoFromLabel(cfg.Labels[consts.ImageLabelRepo])
-	// if err != nil {
-	// 	c.JSON(500, errors.Wrap(err, "failed to get repo information from label"))
-	// 	return
-	// }
-
+	v, ok := cfg.Labels[consts.ImageLabelRepo]
+	repoInfo := &types.EnvironmentRepoInfo{}
+	if ok {
+		repoInfo, err = imageutil.RepoInfoFromLabel(v)
+		if err != nil {
+			c.JSON(500, errors.Wrap(err, "failed to get repo information from label"))
+			return
+		}
+	}
 	hostKeyPath := "/var/envd/hostkey"
 	authKeyPath := "/var/envd/authkey"
 	var defaultPermMode int32 = 0666
@@ -132,10 +136,9 @@ func (s *Server) environmentCreate(c *gin.Context) {
 			},
 		},
 	}
-	repoInfo = &types.EnvironmentRepoInfo{}
-	repoInfo.URL = "https://github.com/VoVAllen/tf-dlpack.git"
 	if len(repoInfo.URL) > 0 {
 		logrus.Debugf("clone code from %s", repoInfo.URL)
+		repoName := repoInfo.URL[strings.LastIndex(repoInfo.URL, "/")+1:]
 		expectedPod.Spec.InitContainers = append(expectedPod.Spec.InitContainers, v1.Container{
 			Name:  "git-cloner",
 			Image: "alpine/git",
@@ -149,7 +152,7 @@ func (s *Server) environmentCreate(c *gin.Context) {
 		})
 		expectedPod.Spec.Containers[0].VolumeMounts = append(expectedPod.Spec.Containers[0].VolumeMounts, v1.VolumeMount{
 			Name:      "code-dir",
-			MountPath: fmt.Sprintf("/home/envd/%s", req.Name),
+			MountPath: fmt.Sprintf("/home/envd/%s", repoName),
 		})
 		expectedPod.Spec.Volumes = append(expectedPod.Spec.Volumes, v1.Volume{
 			Name: "code-dir",
