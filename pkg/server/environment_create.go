@@ -75,7 +75,10 @@ func (s *Server) environmentCreate(c *gin.Context) {
 			return
 		}
 	}
-	workDir := cfg.Labels[consts.ContainerLabelName]
+	projectName, ok := cfg.Labels[consts.ImageLabelEnvironmentName]
+	if !ok {
+		c.JSON(500, errors.New("failed to get the project name(working dir) from label"))
+	}
 	hostKeyPath := "/var/envd/hostkey"
 	authKeyPath := "/var/envd/authkey"
 	var defaultPermMode int32 = 0666
@@ -105,6 +108,10 @@ func (s *Server) environmentCreate(c *gin.Context) {
 						{
 							Name:  "ENVD_AUTHORIZED_KEYS_PATH",
 							Value: authKeyPath,
+						},
+						{
+							Name:  "ENVD_WORKDIR",
+							Value: fmt.Sprintf("/home/envd/%s", projectName),
 						},
 					},
 					VolumeMounts: []v1.VolumeMount{
@@ -151,7 +158,7 @@ func (s *Server) environmentCreate(c *gin.Context) {
 		})
 		expectedPod.Spec.Containers[0].VolumeMounts = append(expectedPod.Spec.Containers[0].VolumeMounts, v1.VolumeMount{
 			Name:      "code-dir",
-			MountPath: fmt.Sprintf("/home/envd/%s", workDir),
+			MountPath: fmt.Sprintf("/home/envd/%s", projectName),
 		})
 		expectedPod.Spec.Volumes = append(expectedPod.Spec.Volumes, v1.Volume{
 			Name: "code-dir",

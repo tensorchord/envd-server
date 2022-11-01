@@ -8,7 +8,7 @@ const (
 	LabelUID             = "envd.tensorchord.ai/uid"
 	LabelEnvironmentName = "envd.tensorchord.ai/environment-name"
 
-	ContainerLabelName = "ai.tensorchord.envd.name"
-	ImageLabelPorts    = "ai.tensorchord.envd.ports"
-	ImageLabelRepo     = "ai.tensorchord.envd.repo"
+	ImageLabelEnvironmentName = "ai.tensorchord.envd.env.name"
+	ImageLabelPorts           = "ai.tensorchord.envd.ports"
+	ImageLabelRepo            = "ai.tensorchord.envd.repo"
 )
