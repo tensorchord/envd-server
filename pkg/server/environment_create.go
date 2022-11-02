@@ -71,7 +71,7 @@ func (s *Server) environmentCreate(c *gin.Context) {
 		c.JSON(500, errors.Wrap(err, "failed to get ports from label"))
 		return
 	}
-	v, ok := cfg.Labels[consts.ImageLabelRepo]
+	v, ok := summary.Labels[consts.ImageLabelRepo]
 	repoInfo := &types.EnvironmentRepoInfo{}
 	if ok {
 		repoInfo, err = imageutil.RepoInfoFromLabel(v)
@@ -80,7 +80,7 @@ func (s *Server) environmentCreate(c *gin.Context) {
 			return
 		}
 	}
-	projectName, ok := cfg.Labels[consts.ImageLabelEnvironmentName]
+	projectName, ok := summary.Labels[consts.ImageLabelEnvironmentName]
 	if !ok {
 		c.JSON(500, errors.New("failed to get the project name(working dir) from label"))
 	}
