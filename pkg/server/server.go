@@ -17,6 +17,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 
+	"github.com/tensorchord/envd-server/api/types"
 	_ "github.com/tensorchord/envd-server/pkg/docs"
 )
 
@@ -27,6 +28,7 @@ type Server struct {
 	client             *kubernetes.Clientset
 	authInfo           []AuthInfo
 	serverFingerPrints []string
+	imageInfo          []types.ImageInfo
 }
 
 type Opt struct {
@@ -82,6 +84,7 @@ func New(opt Opt) (*Server, error) {
 
 func (s *Server) bindHandlers() {
 	engine := s.Router
+	engine.UseRawPath = true
 
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
@@ -89,10 +92,14 @@ func (s *Server) bindHandlers() {
 	authorized := engine.Group("/v1/users")
 	authorized.Use(s.AuthMiddleware())
 	{
+		// env
 		authorized.POST("/:identity_token/environments", s.environmentCreate)
 		authorized.GET("/:identity_token/environments", s.environmentList)
 		authorized.GET("/:identity_token/environments/:name", s.environmentGet)
 		authorized.DELETE("/:identity_token/environments/:name", s.environmentRemove)
+		// image
+		authorized.GET("/:identity_token/images/:name", s.imageGet)
+		authorized.GET("/:identity_token/images", s.imageList)
 	}
 
 	v1.GET("/", s.handlePing)

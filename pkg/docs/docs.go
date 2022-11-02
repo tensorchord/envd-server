@@ -211,8 +211,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/types.EnvironmentCreateResponse"
                         }
@@ -295,6 +295,88 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/types.EnvironmentRemoveResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{identity_token}/images": {
+            "get": {
+                "description": "List the images.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "image"
+                ],
+                "summary": "List the images.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "\"a332139d39b89a241400013700e665a3\"",
+                        "description": "identity token",
+                        "name": "identity_token",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"pytorch-example\"",
+                        "description": "image name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.ImageListResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{identity_token}/images/{name}": {
+            "get": {
+                "description": "Get the image with the given image name.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "image"
+                ],
+                "summary": "Get the image.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "\"a332139d39b89a241400013700e665a3\"",
+                        "description": "identity token",
+                        "name": "identity_token",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"pytorch-example\"",
+                        "description": "image name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.ImageGetResponse"
                         }
                     }
                 }
@@ -636,6 +718,139 @@ const docTemplate = `{
             "properties": {
                 "phase": {
                     "type": "string"
+                }
+            }
+        },
+        "types.ImageGetResponse": {
+            "type": "object",
+            "properties": {
+                "Containers": {
+                    "description": "containers\nRequired: true",
+                    "type": "integer"
+                },
+                "Created": {
+                    "description": "created\nRequired: true",
+                    "type": "integer"
+                },
+                "Id": {
+                    "description": "Id\nRequired: true",
+                    "type": "string"
+                },
+                "Labels": {
+                    "description": "labels\nRequired: true",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "ParentId": {
+                    "description": "parent Id\nRequired: true",
+                    "type": "string"
+                },
+                "RepoDigests": {
+                    "description": "repo digests\nRequired: true",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "RepoTags": {
+                    "description": "repo tags\nRequired: true",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "SharedSize": {
+                    "description": "shared size\nRequired: true",
+                    "type": "integer"
+                },
+                "Size": {
+                    "description": "size\nRequired: true",
+                    "type": "integer"
+                },
+                "VirtualSize": {
+                    "description": "virtual size\nRequired: true",
+                    "type": "integer"
+                }
+            }
+        },
+        "types.ImageInfo": {
+            "type": "object",
+            "properties": {
+                "image": {
+                    "type": "string"
+                },
+                "ownerToken": {
+                    "type": "string"
+                },
+                "summary": {
+                    "$ref": "#/definitions/types.ImageSummary"
+                }
+            }
+        },
+        "types.ImageListResponse": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.ImageInfo"
+                    }
+                }
+            }
+        },
+        "types.ImageSummary": {
+            "type": "object",
+            "properties": {
+                "Containers": {
+                    "description": "containers\nRequired: true",
+                    "type": "integer"
+                },
+                "Created": {
+                    "description": "created\nRequired: true",
+                    "type": "integer"
+                },
+                "Id": {
+                    "description": "Id\nRequired: true",
+                    "type": "string"
+                },
+                "Labels": {
+                    "description": "labels\nRequired: true",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "ParentId": {
+                    "description": "parent Id\nRequired: true",
+                    "type": "string"
+                },
+                "RepoDigests": {
+                    "description": "repo digests\nRequired: true",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "RepoTags": {
+                    "description": "repo tags\nRequired: true",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "SharedSize": {
+                    "description": "shared size\nRequired: true",
+                    "type": "integer"
+                },
+                "Size": {
+                    "description": "size\nRequired: true",
+                    "type": "integer"
+                },
+                "VirtualSize": {
+                    "description": "virtual size\nRequired: true",
+                    "type": "integer"
                 }
             }
         }
