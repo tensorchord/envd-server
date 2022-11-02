@@ -66,7 +66,19 @@ func (s *Server) environmentCreate(c *gin.Context) {
 		c.JSON(500, errors.Wrap(err, "failed to get ports from label"))
 		return
 	}
-
+	v, ok := cfg.Labels[consts.ImageLabelRepo]
+	repoInfo := &types.EnvironmentRepoInfo{}
+	if ok {
+		repoInfo, err = imageutil.RepoInfoFromLabel(v)
+		if err != nil {
+			c.JSON(500, errors.Wrap(err, "failed to get repo information from label"))
+			return
+		}
+	}
+	projectName, ok := cfg.Labels[consts.ImageLabelEnvironmentName]
+	if !ok {
+		c.JSON(500, errors.New("failed to get the project name(working dir) from label"))
+	}
 	hostKeyPath := "/var/envd/hostkey"
 	authKeyPath := "/var/envd/authkey"
 	var defaultPermMode int32 = 0666
@@ -96,6 +108,10 @@ func (s *Server) environmentCreate(c *gin.Context) {
 						{
 							Name:  "ENVD_AUTHORIZED_KEYS_PATH",
 							Value: authKeyPath,
+						},
+						{
+							Name:  "ENVD_WORKDIR",
+							Value: fmt.Sprintf("/home/envd/%s", projectName),
 						},
 					},
 					VolumeMounts: []v1.VolumeMount{
@@ -127,10 +143,37 @@ func (s *Server) environmentCreate(c *gin.Context) {
 			},
 		},
 	}
+	if len(repoInfo.URL) > 0 {
+		logrus.Debugf("clone code from %s", repoInfo.URL)
+		expectedPod.Spec.InitContainers = append(expectedPod.Spec.InitContainers, v1.Container{
+			Name:  "git-cloner",
+			Image: "alpine/git",
+			Args:  []string{"clone", "--", repoInfo.URL, "/code"},
+			VolumeMounts: []v1.VolumeMount{
+				{
+					Name:      "code-dir",
+					MountPath: "/code",
+				},
+			},
+		})
+		expectedPod.Spec.Containers[0].VolumeMounts = append(expectedPod.Spec.Containers[0].VolumeMounts, v1.VolumeMount{
+			Name:      "code-dir",
+			MountPath: fmt.Sprintf("/home/envd/%s", projectName),
+		})
+		expectedPod.Spec.Volumes = append(expectedPod.Spec.Volumes, v1.Volume{
+			Name: "code-dir",
+			VolumeSource: v1.VolumeSource{
+				HostPath: &v1.HostPathVolumeSource{
+					Path: fmt.Sprintf("/var/envd/code/%s", req.Name),
+				},
+			},
+		})
+	}
 
 	_, err = s.client.CoreV1().Pods(
 		"default").Create(c, &expectedPod, metav1.CreateOptions{})
 	if err != nil {
+		logrus.Infof("failed to create pod: %v", err)
 		c.JSON(500, err)
 		return
 	}
