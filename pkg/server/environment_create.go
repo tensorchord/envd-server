@@ -11,7 +11,6 @@ import (
 	"github.com/containers/image/v5/docker"
 	"github.com/containers/image/v5/image"
 	"github.com/gin-gonic/gin"
-	imagespecv1 "github.com/opencontainers/image-spec/specs-go/v1"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"
@@ -29,7 +28,7 @@ import (
 // @Produce     json
 // @Param       identity_token path     string                         true "identity token" example("a332139d39b89a241400013700e665a3")
 // @Param       request        body     types.EnvironmentCreateRequest true "query params"
-// @Success     200            {object} types.EnvironmentCreateResponse
+// @Success     201            {object} types.EnvironmentCreateResponse
 // @Router      /users/{identity_token}/environments [post]
 func (s *Server) environmentCreate(c *gin.Context) {
 	it := c.GetString("identity_token")
@@ -40,11 +39,15 @@ func (s *Server) environmentCreate(c *gin.Context) {
 		return
 	}
 
-	cfg, err := getImageConfig(c.Request.Context(), req.Spec.Image)
+	meta, err := getImageMeta(c.Request.Context(), req.Spec.Image)
 	if err != nil {
 		c.JSON(500, err)
 		return
 	}
+	s.imageInfo = append(s.imageInfo, types.ImageInfo{
+		OwnerToken: it,
+		ImageMeta:  meta,
+	})
 	// Merge image labels to pod.
 	labels := map[string]string{
 		consts.LabelUID:             it,
@@ -53,20 +56,20 @@ func (s *Server) environmentCreate(c *gin.Context) {
 
 	logrus.WithFields(logrus.Fields{
 		"identity_token": it,
-		"image_labels":   cfg.Labels,
+		"image_labels":   meta.Labels,
 		"environment":    req.Environment,
 	}).Debug("creating the environment")
 	annotations := map[string]string{}
-	for k, v := range cfg.Labels {
+	for k, v := range meta.Labels {
 		annotations[k] = v
 	}
 
-	ports, err := imageutil.PortsFromLabel(cfg.Labels[consts.ImageLabelPorts])
+	ports, err := imageutil.PortsFromLabel(meta.Labels[consts.ImageLabelPorts])
 	if err != nil {
 		c.JSON(500, errors.Wrap(err, "failed to get ports from label"))
 		return
 	}
-	v, ok := cfg.Labels[consts.ImageLabelRepo]
+	v, ok := meta.Labels[consts.ImageLabelRepo]
 	repoInfo := &types.EnvironmentRepoInfo{}
 	if ok {
 		repoInfo, err = imageutil.RepoInfoFromLabel(v)
@@ -75,7 +78,7 @@ func (s *Server) environmentCreate(c *gin.Context) {
 			return
 		}
 	}
-	projectName, ok := cfg.Labels[consts.ImageLabelContainerName]
+	projectName, ok := meta.Labels[consts.ImageLabelContainerName]
 	if !ok {
 		c.JSON(500, errors.New("failed to get the project name(working dir) from label"))
 	}
@@ -208,23 +211,36 @@ func (s *Server) environmentCreate(c *gin.Context) {
 	c.JSON(201, resp)
 }
 
-func getImageConfig(ctx context.Context, imagename string) (
-	*imagespecv1.ImageConfig, error) {
+func getImageMeta(ctx context.Context, imagename string) (
+	meta types.ImageMeta, err error) {
 	ref, err := docker.ParseReference(fmt.Sprintf("//%s", imagename))
 	if err != nil {
-		return nil, err
+		return
 	}
 	src, err := ref.NewImageSource(ctx, nil)
 	if err != nil {
-		return nil, err
+		return
 	}
-	img, err := image.FromUnparsedImage(ctx, nil, image.UnparsedInstance(src, nil))
+	digest, err := docker.GetDigest(ctx, nil, ref)
 	if err != nil {
-		return nil, err
+		return
 	}
-	c, err := img.OCIConfig(ctx)
+	image, err := image.FromUnparsedImage(ctx, nil, image.UnparsedInstance(src, nil))
 	if err != nil {
-		return nil, err
+		return
 	}
-	return &c.Config, nil
+	inspect, err := image.Inspect(ctx)
+	if err != nil {
+		return
+	}
+	size, err := image.Size()
+	if err != nil {
+		return
+	}
+	meta.Digest = digest.String()
+	meta.Created = inspect.Created.Unix()
+	meta.Labels = inspect.Labels
+	meta.Size = size
+	src.Close()
+	return meta, nil
 }

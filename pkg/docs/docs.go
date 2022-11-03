@@ -211,8 +211,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/types.EnvironmentCreateResponse"
                         }
@@ -295,6 +295,88 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/types.EnvironmentRemoveResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{identity_token}/images": {
+            "get": {
+                "description": "List the images.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "image"
+                ],
+                "summary": "List the images.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "\"a332139d39b89a241400013700e665a3\"",
+                        "description": "identity token",
+                        "name": "identity_token",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"pytorch-example\"",
+                        "description": "image name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.ImageListResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{identity_token}/images/{name}": {
+            "get": {
+                "description": "Get the image with the given image name.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "image"
+                ],
+                "summary": "Get the image.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "\"a332139d39b89a241400013700e665a3\"",
+                        "description": "identity token",
+                        "name": "identity_token",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"pytorch-example\"",
+                        "description": "image name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.ImageGetResponse"
                         }
                     }
                 }
@@ -636,6 +718,65 @@ const docTemplate = `{
             "properties": {
                 "phase": {
                     "type": "string"
+                }
+            }
+        },
+        "types.ImageGetResponse": {
+            "type": "object",
+            "properties": {
+                "created": {
+                    "type": "integer"
+                },
+                "digest": {
+                    "type": "string"
+                },
+                "labels": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "type": "string",
+                    "example": "pytorch-cuda:dev"
+                },
+                "size": {
+                    "type": "integer"
+                }
+            }
+        },
+        "types.ImageListResponse": {
+            "type": "object",
+            "properties": {
+                "items": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.ImageMeta"
+                    }
+                }
+            }
+        },
+        "types.ImageMeta": {
+            "type": "object",
+            "properties": {
+                "created": {
+                    "type": "integer"
+                },
+                "digest": {
+                    "type": "string"
+                },
+                "labels": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "type": "string",
+                    "example": "pytorch-cuda:dev"
+                },
+                "size": {
+                    "type": "integer"
                 }
             }
         }

@@ -28,7 +28,7 @@ import (
 func (s *Server) environmentGet(c *gin.Context) {
 	it := c.GetString("identity_token")
 
-	var req types.EnvironmentRemoveRequest
+	var req types.EnvironmentGetRequest
 	if err := c.BindUri(&req); err != nil {
 		c.JSON(500, err)
 		return

@@ -12,17 +12,17 @@ import (
 	"github.com/tensorchord/envd-server/api/types"
 )
 
-// EnvironmentGet gets the environment.
-func (cli *Client) EnvironmentGet(ctx context.Context, owner, name string) (types.EnvironmentGetResponse, error) {
-	url := fmt.Sprintf("/users/%s/environments/%s", owner, name)
+// ImageList lists the images.
+func (cli *Client) ImageList(ctx context.Context, owner string) (types.ImageListResponse, error) {
+	url := fmt.Sprintf("/users/%s/images", owner)
 	resp, err := cli.get(ctx, url, nil, nil)
 	defer ensureReaderClosed(resp)
 
 	if err != nil {
-		return types.EnvironmentGetResponse{}, wrapResponseError(err, resp, "owner", owner)
+		return types.ImageListResponse{}, wrapResponseError(err, resp, "owner", owner)
 	}
 
-	var response types.EnvironmentGetResponse
+	var response types.ImageListResponse
 	err = json.NewDecoder(resp.body).Decode(&response)
 	return response, err
 }
