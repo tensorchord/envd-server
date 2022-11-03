@@ -80,7 +80,7 @@ func (s *Server) environmentCreate(c *gin.Context) {
 			return
 		}
 	}
-	projectName, ok := summary.Labels[consts.ImageLabelEnvironmentName]
+	projectName, ok := summary.Labels[consts.ImageLabelContainerName]
 	if !ok {
 		c.JSON(500, errors.New("failed to get the project name(working dir) from label"))
 	}
