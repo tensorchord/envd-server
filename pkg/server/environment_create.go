@@ -261,6 +261,7 @@ func getImageMeta(ctx context.Context, imageName string) (
 		Labels:  inspect.Labels,
 		Size:    size,
 	}
+	logrus.WithField("image meta", meta).Debug("get image meta before creating env")
 	src.Close()
 	return meta, nil
 }
