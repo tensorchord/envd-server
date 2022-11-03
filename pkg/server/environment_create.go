@@ -10,7 +10,6 @@ import (
 
 	"github.com/containers/image/v5/docker"
 	"github.com/containers/image/v5/image"
-	dockertypes "github.com/docker/docker/api/types"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
@@ -40,15 +39,14 @@ func (s *Server) environmentCreate(c *gin.Context) {
 		return
 	}
 
-	summary, err := getImageSummary(c.Request.Context(), req.Spec.Image)
+	meta, err := getImageMeta(c.Request.Context(), req.Spec.Image)
 	if err != nil {
 		c.JSON(500, err)
 		return
 	}
 	s.imageInfo = append(s.imageInfo, types.ImageInfo{
 		OwnerToken: it,
-		Image:      req.Spec.Image,
-		Summary:    summary,
+		ImageMeta:  meta,
 	})
 	// Merge image labels to pod.
 	labels := map[string]string{
@@ -58,20 +56,20 @@ func (s *Server) environmentCreate(c *gin.Context) {
 
 	logrus.WithFields(logrus.Fields{
 		"identity_token": it,
-		"image_labels":   summary.Labels,
+		"image_labels":   meta.Labels,
 		"environment":    req.Environment,
 	}).Debug("creating the environment")
 	annotations := map[string]string{}
-	for k, v := range summary.Labels {
+	for k, v := range meta.Labels {
 		annotations[k] = v
 	}
 
-	ports, err := imageutil.PortsFromLabel(summary.Labels[consts.ImageLabelPorts])
+	ports, err := imageutil.PortsFromLabel(meta.Labels[consts.ImageLabelPorts])
 	if err != nil {
 		c.JSON(500, errors.Wrap(err, "failed to get ports from label"))
 		return
 	}
-	v, ok := summary.Labels[consts.ImageLabelRepo]
+	v, ok := meta.Labels[consts.ImageLabelRepo]
 	repoInfo := &types.EnvironmentRepoInfo{}
 	if ok {
 		repoInfo, err = imageutil.RepoInfoFromLabel(v)
@@ -80,7 +78,7 @@ func (s *Server) environmentCreate(c *gin.Context) {
 			return
 		}
 	}
-	projectName, ok := summary.Labels[consts.ImageLabelContainerName]
+	projectName, ok := meta.Labels[consts.ImageLabelContainerName]
 	if !ok {
 		c.JSON(500, errors.New("failed to get the project name(working dir) from label"))
 	}
@@ -213,13 +211,17 @@ func (s *Server) environmentCreate(c *gin.Context) {
 	c.JSON(201, resp)
 }
 
-func getImageSummary(ctx context.Context, imagename string) (
-	summary dockertypes.ImageSummary, err error) {
+func getImageMeta(ctx context.Context, imagename string) (
+	meta types.ImageMeta, err error) {
 	ref, err := docker.ParseReference(fmt.Sprintf("//%s", imagename))
 	if err != nil {
 		return
 	}
 	src, err := ref.NewImageSource(ctx, nil)
+	if err != nil {
+		return
+	}
+	digest, err := docker.GetDigest(ctx, nil, ref)
 	if err != nil {
 		return
 	}
@@ -235,9 +237,10 @@ func getImageSummary(ctx context.Context, imagename string) (
 	if err != nil {
 		return
 	}
-	summary.Created = inspect.Created.Unix()
-	summary.Labels = inspect.Labels
-	summary.Size = size
+	meta.Digest = digest.String()
+	meta.Created = inspect.Created.Unix()
+	meta.Labels = inspect.Labels
+	meta.Size = size
 	src.Close()
-	return summary, nil
+	return meta, nil
 }

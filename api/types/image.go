@@ -4,14 +4,17 @@
 
 package types
 
-import (
-	dockertypes "github.com/docker/docker/api/types"
-)
-
 type ImageInfo struct {
 	OwnerToken string
-	Image      string
-	Summary    dockertypes.ImageSummary
+	ImageMeta
+}
+
+type ImageMeta struct {
+	Name    string            `json:"name" example:"pytorch-cuda:dev"`
+	Digest  string            `json:"digest,omitempty"`
+	Created int64             `json:"created,omitempty"`
+	Size    int64             `json:"size,omitempty"`
+	Labels  map[string]string `json:"labels,omitempty"`
 }
 
 type ImageGetRequest struct {
@@ -19,12 +22,12 @@ type ImageGetRequest struct {
 }
 
 type ImageGetResponse struct {
-	dockertypes.ImageSummary `json:",inline"`
+	ImageMeta `json:",inline"`
 }
 
 type ImageListRequest struct {
 }
 
 type ImageListResponse struct {
-	Items []ImageInfo `json:"items,omitempty"`
+	Items []ImageMeta `json:"items,omitempty"`
 }

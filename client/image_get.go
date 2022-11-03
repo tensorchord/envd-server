@@ -13,16 +13,16 @@ import (
 )
 
 // ImageGet gets the image info.
-func (cli *Client) ImageGet(ctx context.Context, owner, name string) (types.EnvironmentGetResponse, error) {
+func (cli *Client) ImageGet(ctx context.Context, owner, name string) (types.ImageGetResponse, error) {
 	url := fmt.Sprintf("/users/%s/images/%s", owner, name)
 	resp, err := cli.get(ctx, url, nil, nil)
 	defer ensureReaderClosed(resp)
 
 	if err != nil {
-		return types.EnvironmentGetResponse{}, wrapResponseError(err, resp, "owner", owner)
+		return types.ImageGetResponse{}, wrapResponseError(err, resp, "owner", owner)
 	}
 
-	var response types.EnvironmentGetResponse
+	var response types.ImageGetResponse
 	err = json.NewDecoder(resp.body).Decode(&response)
 	return response, err
 }

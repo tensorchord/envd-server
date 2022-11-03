@@ -32,10 +32,8 @@ func (s *Server) imageGet(c *gin.Context) {
 	}
 
 	for _, info := range s.imageInfo {
-		if info.OwnerToken == it && info.Image == req.Name {
-			c.JSON(http.StatusOK, types.ImageGetResponse{
-				ImageSummary: info.Summary,
-			})
+		if info.OwnerToken == it && info.Digest == req.Name {
+			c.JSON(http.StatusOK, types.ImageGetResponse{info.ImageMeta})
 			return
 		}
 	}

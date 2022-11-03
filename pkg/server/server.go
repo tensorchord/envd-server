@@ -84,7 +84,6 @@ func New(opt Opt) (*Server, error) {
 
 func (s *Server) bindHandlers() {
 	engine := s.Router
-	engine.UseRawPath = true
 
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 

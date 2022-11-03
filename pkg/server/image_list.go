@@ -27,7 +27,7 @@ func (s *Server) imageList(c *gin.Context) {
 	resp := types.ImageListResponse{}
 	for _, info := range s.imageInfo {
 		if info.OwnerToken == it {
-			resp.Items = append(resp.Items, info)
+			resp.Items = append(resp.Items, info.ImageMeta)
 		}
 	}
 	c.JSON(http.StatusOK, resp)
