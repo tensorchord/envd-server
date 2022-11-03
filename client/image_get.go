@@ -12,9 +12,9 @@ import (
 	"github.com/tensorchord/envd-server/api/types"
 )
 
-// EnvironmentGet gets the environment.
-func (cli *Client) EnvironmentGet(ctx context.Context, owner, name string) (types.EnvironmentGetResponse, error) {
-	url := fmt.Sprintf("/users/%s/environments/%s", owner, name)
+// ImageGet gets the image info.
+func (cli *Client) ImageGet(ctx context.Context, owner, name string) (types.EnvironmentGetResponse, error) {
+	url := fmt.Sprintf("/users/%s/images/%s", owner, name)
 	resp, err := cli.get(ctx, url, nil, nil)
 	defer ensureReaderClosed(resp)
 
