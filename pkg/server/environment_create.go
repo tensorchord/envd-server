@@ -8,10 +8,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/cockroachdb/errors"
 	"github.com/containers/image/v5/docker"
 	"github.com/containers/image/v5/image"
 	"github.com/gin-gonic/gin"
-	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -58,30 +58,47 @@ func (s *Server) environmentCreate(c *gin.Context) {
 		"identity_token": it,
 		"image_labels":   meta.Labels,
 		"environment":    req.Environment,
-	}).Debug("creating the environment")
+	}).Debug("prepare to create the environment")
 	annotations := map[string]string{}
 	for k, v := range meta.Labels {
 		annotations[k] = v
 	}
 
-	ports, err := imageutil.PortsFromLabel(meta.Labels[consts.ImageLabelPorts])
-	if err != nil {
-		c.JSON(500, errors.Wrap(err, "failed to get ports from label"))
+	portLabel, ok := meta.Labels[consts.ImageLabelPorts]
+	if !ok {
+		logrus.Infof("failed to get port label from %w", meta.Labels)
+		c.JSON(500, errors.Wrap(err, "failed to get the port"))
 		return
 	}
-	v, ok := meta.Labels[consts.ImageLabelRepo]
+	ports, err := imageutil.PortsFromLabel(portLabel)
+	if err != nil {
+		logrus.Infof("failed to get ports from: %s", portLabel)
+		c.JSON(500, errors.Wrap(err, "failed to parse ports from label"))
+		return
+	}
+
+	repoLabel, ok := meta.Labels[consts.ImageLabelRepo]
 	repoInfo := &types.EnvironmentRepoInfo{}
 	if ok {
-		repoInfo, err = imageutil.RepoInfoFromLabel(v)
+		repoInfo, err = imageutil.RepoInfoFromLabel(repoLabel)
 		if err != nil {
+			logrus.Info("failed to parse repo from label")
 			c.JSON(500, errors.Wrap(err, "failed to get repo information from label"))
 			return
 		}
 	}
+
 	projectName, ok := meta.Labels[consts.ImageLabelContainerName]
 	if !ok {
+		logrus.Info("failed to get the project name from label")
 		c.JSON(500, errors.New("failed to get the project name(working dir) from label"))
+		return
 	}
+	logrus.WithFields(logrus.Fields{
+		"port":    ports,
+		"repo":    repoInfo,
+		"project": projectName,
+	}).Debug("creating environment")
 	hostKeyPath := "/var/envd/hostkey"
 	authKeyPath := "/var/envd/authkey"
 	var defaultPermMode int32 = 0666
@@ -146,7 +163,7 @@ func (s *Server) environmentCreate(c *gin.Context) {
 			},
 		},
 	}
-	if len(repoInfo.URL) > 0 {
+	if repoInfo != nil && len(repoInfo.URL) > 0 {
 		logrus.Debugf("clone code from %s", repoInfo.URL)
 		expectedPod.Spec.InitContainers = append(expectedPod.Spec.InitContainers, v1.Container{
 			Name:  "git-cloner",
@@ -211,9 +228,9 @@ func (s *Server) environmentCreate(c *gin.Context) {
 	c.JSON(201, resp)
 }
 
-func getImageMeta(ctx context.Context, imagename string) (
+func getImageMeta(ctx context.Context, imageName string) (
 	meta types.ImageMeta, err error) {
-	ref, err := docker.ParseReference(fmt.Sprintf("//%s", imagename))
+	ref, err := docker.ParseReference(fmt.Sprintf("//%s", imageName))
 	if err != nil {
 		return
 	}
@@ -237,10 +254,13 @@ func getImageMeta(ctx context.Context, imagename string) (
 	if err != nil {
 		return
 	}
-	meta.Digest = digest.String()
-	meta.Created = inspect.Created.Unix()
-	meta.Labels = inspect.Labels
-	meta.Size = size
+	meta = types.ImageMeta{
+		Name:    imageName,
+		Created: inspect.Created.Unix(),
+		Digest:  string(digest),
+		Labels:  inspect.Labels,
+		Size:    size,
+	}
 	src.Close()
 	return meta, nil
 }
