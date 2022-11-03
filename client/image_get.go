@@ -8,13 +8,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/url"
 
+	"github.com/sirupsen/logrus"
 	"github.com/tensorchord/envd-server/api/types"
 )
 
 // ImageGet gets the image info.
 func (cli *Client) ImageGet(ctx context.Context, owner, name string) (types.ImageGetResponse, error) {
-	url := fmt.Sprintf("/users/%s/images/%s", owner, name)
+	url := fmt.Sprintf("/users/%s/images/%s", owner, url.PathEscape(name))
+	logrus.WithField("url", url).Debug("build image get url")
 	resp, err := cli.get(ctx, url, nil, nil)
 	defer ensureReaderClosed(resp)
 
