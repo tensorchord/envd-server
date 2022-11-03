@@ -66,7 +66,7 @@ func (s *Server) environmentCreate(c *gin.Context) {
 
 	portLabel, ok := meta.Labels[consts.ImageLabelPorts]
 	if !ok {
-		logrus.Infof("failed to get port label from %w", meta.Labels)
+		logrus.Info("failed to get port label")
 		c.JSON(500, errors.Wrap(err, "failed to get the port"))
 		return
 	}
