@@ -724,68 +724,24 @@ const docTemplate = `{
         "types.ImageGetResponse": {
             "type": "object",
             "properties": {
-                "Containers": {
-                    "description": "containers\nRequired: true",
+                "created": {
                     "type": "integer"
                 },
-                "Created": {
-                    "description": "created\nRequired: true",
-                    "type": "integer"
-                },
-                "Id": {
-                    "description": "Id\nRequired: true",
+                "digest": {
                     "type": "string"
                 },
-                "Labels": {
-                    "description": "labels\nRequired: true",
+                "labels": {
                     "type": "object",
                     "additionalProperties": {
                         "type": "string"
                     }
                 },
-                "ParentId": {
-                    "description": "parent Id\nRequired: true",
-                    "type": "string"
+                "name": {
+                    "type": "string",
+                    "example": "pytorch-cuda:dev"
                 },
-                "RepoDigests": {
-                    "description": "repo digests\nRequired: true",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "RepoTags": {
-                    "description": "repo tags\nRequired: true",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "SharedSize": {
-                    "description": "shared size\nRequired: true",
+                "size": {
                     "type": "integer"
-                },
-                "Size": {
-                    "description": "size\nRequired: true",
-                    "type": "integer"
-                },
-                "VirtualSize": {
-                    "description": "virtual size\nRequired: true",
-                    "type": "integer"
-                }
-            }
-        },
-        "types.ImageInfo": {
-            "type": "object",
-            "properties": {
-                "image": {
-                    "type": "string"
-                },
-                "ownerToken": {
-                    "type": "string"
-                },
-                "summary": {
-                    "$ref": "#/definitions/types.ImageSummary"
                 }
             }
         },
@@ -795,61 +751,31 @@ const docTemplate = `{
                 "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/types.ImageInfo"
+                        "$ref": "#/definitions/types.ImageMeta"
                     }
                 }
             }
         },
-        "types.ImageSummary": {
+        "types.ImageMeta": {
             "type": "object",
             "properties": {
-                "Containers": {
-                    "description": "containers\nRequired: true",
+                "created": {
                     "type": "integer"
                 },
-                "Created": {
-                    "description": "created\nRequired: true",
-                    "type": "integer"
-                },
-                "Id": {
-                    "description": "Id\nRequired: true",
+                "digest": {
                     "type": "string"
                 },
-                "Labels": {
-                    "description": "labels\nRequired: true",
+                "labels": {
                     "type": "object",
                     "additionalProperties": {
                         "type": "string"
                     }
                 },
-                "ParentId": {
-                    "description": "parent Id\nRequired: true",
-                    "type": "string"
+                "name": {
+                    "type": "string",
+                    "example": "pytorch-cuda:dev"
                 },
-                "RepoDigests": {
-                    "description": "repo digests\nRequired: true",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "RepoTags": {
-                    "description": "repo tags\nRequired: true",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "SharedSize": {
-                    "description": "shared size\nRequired: true",
-                    "type": "integer"
-                },
-                "Size": {
-                    "description": "size\nRequired: true",
-                    "type": "integer"
-                },
-                "VirtualSize": {
-                    "description": "virtual size\nRequired: true",
+                "size": {
                     "type": "integer"
                 }
             }
