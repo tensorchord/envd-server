@@ -6,9 +6,11 @@ package server
 
 import (
 	"net/http"
+	"net/url"
 
 	"github.com/cockroachdb/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 
 	"github.com/tensorchord/envd-server/api/types"
 )
@@ -31,8 +33,13 @@ func (s *Server) imageGet(c *gin.Context) {
 		return
 	}
 
+	name, err := url.PathUnescape(req.Name)
+	if err != nil {
+		logrus.Infof("cannot unescape the requested image name: %s", req.Name)
+		c.JSON(http.StatusBadRequest, err)
+	}
 	for _, info := range s.imageInfo {
-		if info.OwnerToken == it && info.Digest == req.Name {
+		if info.OwnerToken == it && info.Name == name {
 			c.JSON(http.StatusOK, types.ImageGetResponse{
 				ImageMeta: info.ImageMeta,
 			})
