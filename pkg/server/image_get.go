@@ -35,7 +35,7 @@ func (s *Server) imageGet(c *gin.Context) {
 
 	name, err := url.PathUnescape(req.Name)
 	if err != nil {
-		logrus.Info("cannot unescape the requested image name: %s", req.Name)
+		logrus.Infof("cannot unescape the requested image name: %s", req.Name)
 		c.JSON(http.StatusBadRequest, err)
 	}
 	for _, info := range s.imageInfo {
