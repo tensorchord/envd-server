@@ -5,8 +5,10 @@
 package consts
 
 const (
-	LabelUID             = "envd.tensorchord.ai/uid"
-	LabelEnvironmentName = "envd.tensorchord.ai/environment-name"
+	EnvdLabelPrefix = "envd.tensorchord.ai/"
+
+	LabelUID             = EnvdLabelPrefix + "uid"
+	LabelEnvironmentName = EnvdLabelPrefix + "environment-name"
 
 	ImageLabelContainerName = "ai.tensorchord.envd.container.name"
 	ImageLabelPorts         = "ai.tensorchord.envd.ports"

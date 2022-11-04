@@ -14,6 +14,7 @@ import (
 
 	"github.com/tensorchord/envd-server/api/types"
 	"github.com/tensorchord/envd-server/pkg/consts"
+	"github.com/tensorchord/envd-server/pkg/util"
 	"github.com/tensorchord/envd-server/pkg/util/imageutil"
 )
 
@@ -65,7 +66,6 @@ func (s *Server) environmentList(c *gin.Context) {
 // nolint:unparam
 func generateEnvironmentFromPod(p v1.Pod) (types.Environment, error) {
 	e := types.Environment{
-		// TODO(gaocegege): Filter non `envd.tensorchord.ai/` labels
 		ObjectMeta: types.ObjectMeta{
 			Labels: p.Annotations,
 			Name:   p.Name,
@@ -81,7 +81,8 @@ func generateEnvironmentFromPod(p v1.Pod) (types.Environment, error) {
 		return e, err
 	}
 	e.Spec.Ports = ports
-
+	// only reserve labels with prefix `envd.tensorchord.ai/`
+	e.Labels = util.Filter(e.Labels, util.IsEnvdLabel)
 	e.Status.Phase = string(p.Status.Phase)
 	return e, nil
 }
