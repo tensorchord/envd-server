@@ -11,6 +11,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/containers/image/v5/docker"
 	"github.com/containers/image/v5/image"
+	containertypes "github.com/containers/image/v5/types"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"
@@ -234,15 +235,16 @@ func getImageMeta(ctx context.Context, imageName string) (
 	if err != nil {
 		return
 	}
-	src, err := ref.NewImageSource(ctx, nil)
+	sys := &containertypes.SystemContext{}
+	src, err := ref.NewImageSource(ctx, sys)
 	if err != nil {
 		return
 	}
-	digest, err := docker.GetDigest(ctx, nil, ref)
+	digest, err := docker.GetDigest(ctx, sys, ref)
 	if err != nil {
 		return
 	}
-	image, err := image.FromUnparsedImage(ctx, nil, image.UnparsedInstance(src, nil))
+	image, err := image.FromUnparsedImage(ctx, sys, image.UnparsedInstance(src, &digest))
 	if err != nil {
 		return
 	}
@@ -253,6 +255,13 @@ func getImageMeta(ctx context.Context, imageName string) (
 	size, err := image.Size()
 	if err != nil {
 		return
+	}
+	if size < 0 {
+		// correct the image size
+		size = 0
+		for _, layer := range inspect.LayersData {
+			size += layer.Size
+		}
 	}
 	meta = types.ImageMeta{
 		Name:    imageName,
