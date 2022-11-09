@@ -33,7 +33,7 @@ func handleErr(err error) {
 }
 
 // @title       envd server API
-// @version     v0.0.3
+// @version     v0.0.8
 // @description envd backend server
 
 // @contact.name  envd maintainers
