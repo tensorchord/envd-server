@@ -716,7 +716,13 @@ const docTemplate = `{
         "types.EnvironmentStatus": {
             "type": "object",
             "properties": {
+                "jupyter_addr": {
+                    "type": "string"
+                },
                 "phase": {
+                    "type": "string"
+                },
+                "rstudio_server_addr": {
                     "type": "string"
                 }
             }
