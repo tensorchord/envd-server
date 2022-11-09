@@ -10,9 +10,9 @@ const (
 	LabelUID             = EnvdLabelPrefix + "uid"
 	LabelEnvironmentName = EnvdLabelPrefix + "environment-name"
 
-	ImageLabelContainerName = "ai.tensorchord.envd.container.name"
-	ImageLabelPorts         = "ai.tensorchord.envd.ports"
-	ImageLabelRepo          = "ai.tensorchord.envd.repo"
+	ImageLabelContainerName     = "ai.tensorchord.envd.container.name"
+	ImageLabelPorts             = "ai.tensorchord.envd.ports"
+	ImageLabelRepo              = "ai.tensorchord.envd.repo"
 	ImageLabelJupyterAddr       = "ai.tensorchord.envd.jupyter.address"
 	ImageLabelRStudioServerAddr = "ai.tensorchord.envd.rstudio.server.address"
 )
