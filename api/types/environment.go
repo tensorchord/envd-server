@@ -8,12 +8,6 @@ type Environment struct {
 	ObjectMeta `json:",inline"`
 	Spec       EnvironmentSpec    `json:"spec,omitempty"`
 	Status     EnvironmentStatus  `json:"status,omitempty"`
-	Service    EnvironmentService `json:"service,omitempty"`
-}
-
-type EnvironmentService struct {
-	JupyterAddr       *string `json:"jupyter_addr,omitempty"`
-	RStudioServerAddr *string `json:"rstudio_server_addr,omitempty"`
 }
 
 type ObjectMeta struct {
@@ -33,6 +27,8 @@ type EnvironmentSpec struct {
 
 type EnvironmentStatus struct {
 	Phase string `json:"phase,omitempty"`
+	JupyterAddr       *string `json:"jupyter_addr,omitempty"`
+	RStudioServerAddr *string `json:"rstudio_server_addr,omitempty"`
 }
 
 type EnvironmentPort struct {
