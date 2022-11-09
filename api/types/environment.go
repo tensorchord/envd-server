@@ -6,8 +6,14 @@ package types
 
 type Environment struct {
 	ObjectMeta `json:",inline"`
-	Spec       EnvironmentSpec   `json:"spec,omitempty"`
-	Status     EnvironmentStatus `json:"status,omitempty"`
+	Spec       EnvironmentSpec    `json:"spec,omitempty"`
+	Status     EnvironmentStatus  `json:"status,omitempty"`
+	Service    EnvironmentService `json:"service,omitempty"`
+}
+
+type EnvironmentService struct {
+	JupyterAddr       *string `json:"jupyter_addr,omitempty"`
+	RStudioServerAddr *string `json:"rstudio_server_addr,omitempty"`
 }
 
 type ObjectMeta struct {

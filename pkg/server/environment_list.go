@@ -76,6 +76,13 @@ func generateEnvironmentFromPod(p v1.Pod) (types.Environment, error) {
 		e.Spec.Image = p.Spec.Containers[0].Image
 	}
 
+	if jupyterAddr, ok := p.Annotations[consts.ImageLabelJupyterAddr]; ok {
+		e.Service.JupyterAddr = &jupyterAddr
+	}
+	if rstudioServerAddr, ok := p.Annotations[consts.ImageLabelRStudioServerAddr]; ok {
+		e.Service.RStudioServerAddr = &rstudioServerAddr
+	}
+
 	ports, err := imageutil.PortsFromLabel(p.Annotations[consts.ImageLabelPorts])
 	if err != nil {
 		return e, err
