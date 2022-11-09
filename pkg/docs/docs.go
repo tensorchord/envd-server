@@ -596,9 +596,6 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "service": {
-                    "$ref": "#/definitions/types.EnvironmentService"
-                },
                 "spec": {
                     "$ref": "#/definitions/types.EnvironmentSpec"
                 },
@@ -618,9 +615,6 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
-                },
-                "service": {
-                    "$ref": "#/definitions/types.EnvironmentService"
                 },
                 "spec": {
                     "$ref": "#/definitions/types.EnvironmentSpec"
@@ -657,9 +651,6 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "service": {
-                    "$ref": "#/definitions/types.EnvironmentService"
-                },
                 "spec": {
                     "$ref": "#/definitions/types.EnvironmentSpec"
                 },
@@ -693,17 +684,6 @@ const docTemplate = `{
         "types.EnvironmentRemoveResponse": {
             "type": "object"
         },
-        "types.EnvironmentService": {
-            "type": "object",
-            "properties": {
-                "jupyter_addr": {
-                    "type": "string"
-                },
-                "rstudio_server_addr": {
-                    "type": "string"
-                }
-            }
-        },
         "types.EnvironmentSpec": {
             "type": "object",
             "properties": {
@@ -736,7 +716,13 @@ const docTemplate = `{
         "types.EnvironmentStatus": {
             "type": "object",
             "properties": {
+                "jupyter_addr": {
+                    "type": "string"
+                },
                 "phase": {
+                    "type": "string"
+                },
+                "rstudio_server_addr": {
                     "type": "string"
                 }
             }
