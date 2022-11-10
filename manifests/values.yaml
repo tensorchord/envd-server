@@ -10,6 +10,10 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: "0.0.8"
 
+# Will generate from postgres info below if thie field is empty
+# example: postgres://username:password@localhost:5432/database_name
+dbUrl: ""
+
 containersshimage:
   repository: tensorchord/containerssh
   pullPolicy: IfNotPresent
@@ -19,6 +23,13 @@ containersshimage:
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
+
+postgres:
+  createdb: true
+  tag: "11.7"
+  dbname: postgresdb
+  username: postgresadmin
+  password: admin12345
 
 serviceAccount:
   # Specifies whether a service account should be created

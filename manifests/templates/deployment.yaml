@@ -42,6 +42,13 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: DATABASE_URL            
+              {{- if .Values.dbUrl }}
+              value: {{ .Values.dbUrl }}
+              {{- else }}
+              value: "postgres://{{ .Values.postgres.username }}:{{ .Values.postgres.password }}@postgres-service:5432/{{ .Values.postgres.dbname }}"
+              {{- end }}
           command:
             - /envd-server
             - --hostkey

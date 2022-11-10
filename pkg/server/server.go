@@ -29,6 +29,7 @@ type Server struct {
 	Router      *gin.Engine
 	AdminRouter *gin.Engine
 	Queries     *query.Queries
+	Conn        *pgx.Conn
 
 	client *kubernetes.Clientset
 	// authInfo           []AuthInfo
@@ -54,12 +55,12 @@ func New(opt Opt) (*Server, error) {
 		return nil, err
 	}
 
+	// Connect to database
 	conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
 	}
-	defer conn.Close(context.Background())
 	queries := query.New(conn)
 
 	router := gin.New()
@@ -73,6 +74,7 @@ func New(opt Opt) (*Server, error) {
 		Router:      router,
 		AdminRouter: admin,
 		client:      cli,
+		Conn:        conn,
 		Queries:     queries,
 		// authInfo:           make([]AuthInfo, 0),
 		serverFingerPrints: make([]string, 0),
