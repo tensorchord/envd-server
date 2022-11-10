@@ -5,10 +5,13 @@
 package server
 
 import (
+	"context"
 	"crypto/subtle"
 	"encoding/json"
 
+	"github.com/cockroachdb/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v4"
 	"github.com/sirupsen/logrus"
 	"go.containerssh.io/libcontainerssh/auth"
 	"go.containerssh.io/libcontainerssh/config"
@@ -76,22 +79,30 @@ func (s *Server) OnPubKey(c *gin.Context) {
 		return
 	}
 
-	for _, k := range s.authInfo {
-		key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(req.PublicKey.PublicKey))
-		if err != nil {
-			logrus.WithError(err).Error("failed to parse key")
-			c.JSON(500, err)
+	user, err := s.Queries.GetUser(context.Background(), owner)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			logrus.WithError(err).Error("user not found")
+			c.JSON(500, "user not found")
+			return
+		} else {
+			logrus.WithError(err).Errorf("db query failed: %v", err)
+			c.JSON(500, "Internal error")
 			return
 		}
-		// https://github.com/golang/go/issues/21704#issuecomment-342760478
-		if owner == k.IdentityToken &&
-			subtle.ConstantTimeCompare(key.Marshal(), k.PublicKey.Marshal()) == 1 {
-			res := auth.ResponseBody{
-				Success: true,
-			}
-			c.JSON(200, res)
-			return
+	}
+	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(req.PublicKey.PublicKey))
+	if err != nil {
+		logrus.WithError(err).Error("failed to parse key")
+		c.JSON(500, err)
+		return
+	}
+	if subtle.ConstantTimeCompare(key.Marshal(), user.PublicKey) == 1 {
+		res := auth.ResponseBody{
+			Success: true,
 		}
+		c.JSON(200, res)
+		return
 	}
 	res := auth.ResponseBody{
 		Success: false,

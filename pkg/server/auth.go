@@ -5,10 +5,13 @@
 package server
 
 import (
+	"context"
+
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/ssh"
 
 	"github.com/tensorchord/envd-server/api/types"
+	"github.com/tensorchord/envd-server/pkg/query"
 )
 
 type AuthInfo struct {
@@ -36,10 +39,11 @@ func (s *Server) auth(c *gin.Context) {
 		c.JSON(500, err)
 		return
 	}
-	s.authInfo = append(s.authInfo, AuthInfo{
-		PublicKey:     key,
-		IdentityToken: req.IdentityToken,
-	})
+	_, err = s.Queries.CreateUser(context.Background(), query.CreateUserParams{IdentityToken: req.IdentityToken, PublicKey: key.Marshal()})
+	if err != nil {
+		c.JSON(500, err)
+		return
+	}
 	res := types.AuthResponse{
 		IdentityToken: req.IdentityToken,
 		Status:        "login succeeded",

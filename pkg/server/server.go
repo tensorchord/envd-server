@@ -5,10 +5,13 @@
 package server
 
 import (
+	"context"
+	"fmt"
 	"os"
 
 	"github.com/cockroachdb/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v4"
 	"github.com/sirupsen/logrus"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -19,14 +22,16 @@ import (
 
 	"github.com/tensorchord/envd-server/api/types"
 	_ "github.com/tensorchord/envd-server/pkg/docs"
+	"github.com/tensorchord/envd-server/pkg/query"
 )
 
 type Server struct {
 	Router      *gin.Engine
 	AdminRouter *gin.Engine
+	Queries     *query.Queries
 
-	client             *kubernetes.Clientset
-	authInfo           []AuthInfo
+	client *kubernetes.Clientset
+	// authInfo           []AuthInfo
 	serverFingerPrints []string
 	imageInfo          []types.ImageInfo
 }
@@ -49,6 +54,14 @@ func New(opt Opt) (*Server, error) {
 		return nil, err
 	}
 
+	conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
+	}
+	defer conn.Close(context.Background())
+	queries := query.New(conn)
+
 	router := gin.New()
 	router.Use(ginlogrus.Logger(logrus.StandardLogger()))
 	router.Use(gin.Recovery())
@@ -57,10 +70,11 @@ func New(opt Opt) (*Server, error) {
 	}
 	admin := gin.New()
 	s := &Server{
-		Router:             router,
-		AdminRouter:        admin,
-		client:             cli,
-		authInfo:           make([]AuthInfo, 0),
+		Router:      router,
+		AdminRouter: admin,
+		client:      cli,
+		Queries:     queries,
+		// authInfo:           make([]AuthInfo, 0),
 		serverFingerPrints: make([]string, 0),
 	}
 	if opt.HostKeyPath != "" {
