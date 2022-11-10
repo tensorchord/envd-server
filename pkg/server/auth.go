@@ -15,11 +15,6 @@ import (
 	"github.com/tensorchord/envd-server/pkg/query"
 )
 
-type AuthInfo struct {
-	IdentityToken string
-	PublicKey     ssh.PublicKey
-}
-
 // @Summary     authenticate the user.
 // @Description authenticate the user for the given public key.
 // @Tags        user

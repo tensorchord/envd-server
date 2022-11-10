@@ -31,8 +31,7 @@ type Server struct {
 	Queries     *query.Queries
 	Conn        *pgx.Conn
 
-	client *kubernetes.Clientset
-	// authInfo           []AuthInfo
+	client             *kubernetes.Clientset
 	serverFingerPrints []string
 	imageInfo          []types.ImageInfo
 }
@@ -71,12 +70,11 @@ func New(opt Opt) (*Server, error) {
 	}
 	admin := gin.New()
 	s := &Server{
-		Router:      router,
-		AdminRouter: admin,
-		client:      cli,
-		Conn:        conn,
-		Queries:     queries,
-		// authInfo:           make([]AuthInfo, 0),
+		Router:             router,
+		AdminRouter:        admin,
+		client:             cli,
+		Conn:               conn,
+		Queries:            queries,
 		serverFingerPrints: make([]string, 0),
 	}
 	if opt.HostKeyPath != "" {
