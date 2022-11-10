@@ -14,7 +14,7 @@ require (
 	github.com/swaggo/gin-swagger v1.5.3
 	github.com/swaggo/swag v1.8.7
 	github.com/toorop/gin-logrus v0.0.0-20210225092905-2c785434f26f
-	github.com/urfave/cli/v2 v2.23.0
+	github.com/urfave/cli/v2 v2.23.4
 	go.containerssh.io/libcontainerssh v0.0.0-20220919135854-4f8e76dc0aed
 	golang.org/x/crypto v0.0.0-20221010152910-d6f0a8c073c2
 	k8s.io/api v0.25.3
