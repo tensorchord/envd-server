@@ -5,14 +5,14 @@
 package consts
 
 const (
-	EnvdLabelPrefix = "envd.tensorchord.ai/"
+	EnvdLabelPrefix = "ai.tensorchord.envd."
 
-	LabelUID             = EnvdLabelPrefix + "uid"
-	LabelEnvironmentName = EnvdLabelPrefix + "environment-name"
+	PodLabelUID               = EnvdLabelPrefix + "uid"
+	PodLabelEnvironmentName   = EnvdLabelPrefix + "environment-name"
+	PodLabelJupyterAddr       = EnvdLabelPrefix + "jupyter.address"
+	PodLabelRStudioServerAddr = EnvdLabelPrefix + "rstudio.server.address"
 
-	ImageLabelContainerName     = "ai.tensorchord.envd.container.name"
-	ImageLabelPorts             = "ai.tensorchord.envd.ports"
-	ImageLabelRepo              = "ai.tensorchord.envd.repo"
-	ImageLabelJupyterAddr       = "ai.tensorchord.envd.jupyter.address"
-	ImageLabelRStudioServerAddr = "ai.tensorchord.envd.rstudio.server.address"
+	ImageLabelContainerName = EnvdLabelPrefix + "container.name"
+	ImageLabelPorts         = EnvdLabelPrefix + "ports"
+	ImageLabelRepo          = EnvdLabelPrefix + "repo"
 )

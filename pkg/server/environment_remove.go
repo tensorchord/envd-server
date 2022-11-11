@@ -45,9 +45,9 @@ func (s *Server) environmentRemove(c *gin.Context) {
 			c.JSON(500, err)
 			return
 		}
-		if pod.Labels[consts.LabelUID] != it {
+		if pod.Labels[consts.PodLabelUID] != it {
 			logger.WithFields(logrus.Fields{
-				"identity_token_in_pod":     pod.Labels[consts.LabelUID],
+				"identity_token_in_pod":     pod.Labels[consts.PodLabelUID],
 				"identity_token_in_request": it,
 			}).Debug("mismatch identity_token")
 			respondWithError(c, http.StatusUnauthorized, "unauthorized")
@@ -70,9 +70,9 @@ func (s *Server) environmentRemove(c *gin.Context) {
 			c.JSON(500, err)
 			return
 		}
-		if service.Labels[consts.LabelUID] != it {
+		if service.Labels[consts.PodLabelUID] != it {
 			logger.WithFields(logrus.Fields{
-				"identity_token_in_pod":     pod.Labels[consts.LabelUID],
+				"identity_token_in_pod":     pod.Labels[consts.PodLabelUID],
 				"identity_token_in_request": it,
 			}).Debug("mismatch identity_token")
 			respondWithError(c, http.StatusUnauthorized, "unauthorized")
