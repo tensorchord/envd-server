@@ -43,7 +43,7 @@ func (s *Server) imageGet(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, err)
 	}
 
-	imageInfo, err := s.Queries.GetImageInfo(context.Background(), query.GetImageInfoParams{it, name})
+	imageInfo, err := s.Queries.GetImageInfo(context.Background(), query.GetImageInfoParams{OwnerToken: it, Name: name})
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			c.JSON(http.StatusBadRequest, errors.Newf("cannot find the image(%s)", req.Name))

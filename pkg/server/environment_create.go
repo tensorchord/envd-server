@@ -7,6 +7,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"net/http"
 
 	"github.com/cockroachdb/errors"
 	"github.com/containers/image/v5/docker"
@@ -48,10 +49,14 @@ func (s *Server) environmentCreate(c *gin.Context) {
 		return
 	}
 	var pglabel pgtype.JSONB
-	pglabel.Set(meta.Labels)
+	err = pglabel.Set(meta.Labels)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
 	_, err = s.Queries.CreateImageInfo(context.Background(),
-		query.CreateImageInfoParams{it,
-			meta.Name, meta.Digest, meta.Created, meta.Size, pglabel})
+		query.CreateImageInfoParams{OwnerToken: it,
+			Name: meta.Name, Digest: meta.Digest, Created: meta.Created, Size: meta.Size, Labels: pglabel})
 	if err != nil {
 		c.JSON(500, err)
 	}
