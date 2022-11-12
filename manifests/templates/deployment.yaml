@@ -43,7 +43,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: DATABASE_URL            
+            - name: ENVD_DB_URL            
               {{- if .Values.dbUrl }}
               value: {{ .Values.dbUrl }}
               {{- else }}

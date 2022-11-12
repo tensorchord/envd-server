@@ -20,7 +20,6 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 
-	"github.com/tensorchord/envd-server/api/types"
 	_ "github.com/tensorchord/envd-server/pkg/docs"
 	"github.com/tensorchord/envd-server/pkg/query"
 )
@@ -33,7 +32,7 @@ type Server struct {
 
 	client             *kubernetes.Clientset
 	serverFingerPrints []string
-	imageInfo          []types.ImageInfo
+	// imageInfo          []types.ImageInfo
 }
 
 type Opt struct {
@@ -55,7 +54,7 @@ func New(opt Opt) (*Server, error) {
 	}
 
 	// Connect to database
-	conn, err := pgx.Connect(context.Background(), os.Getenv("DATABASE_URL"))
+	conn, err := pgx.Connect(context.Background(), os.Getenv("ENVD_DB_URL"))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)

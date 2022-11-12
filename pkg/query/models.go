@@ -4,7 +4,19 @@
 
 package query
 
-import ()
+import (
+	"github.com/jackc/pgtype"
+)
+
+type ImageInfo struct {
+	ID         int64        `json:"id"`
+	OwnerToken string       `json:"owner_token"`
+	Name       string       `json:"name"`
+	Digest     string       `json:"digest"`
+	Created    int64        `json:"created"`
+	Size       int64        `json:"size"`
+	Labels     pgtype.JSONB `json:"labels"`
+}
 
 type User struct {
 	ID            int64  `json:"id"`

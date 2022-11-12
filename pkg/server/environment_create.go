@@ -13,12 +13,14 @@ import (
 	"github.com/containers/image/v5/image"
 	containertypes "github.com/containers/image/v5/types"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgtype"
 	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/tensorchord/envd-server/api/types"
 	"github.com/tensorchord/envd-server/pkg/consts"
+	"github.com/tensorchord/envd-server/pkg/query"
 	"github.com/tensorchord/envd-server/pkg/util/imageutil"
 )
 
@@ -45,11 +47,14 @@ func (s *Server) environmentCreate(c *gin.Context) {
 		c.JSON(500, err)
 		return
 	}
-	s.imageInfo = append(s.imageInfo, types.ImageInfo{
-		OwnerToken: it,
-		ImageMeta:  meta,
-	})
-	// Merge image labels to pod.
+	var pglabel pgtype.JSONB
+	pglabel.Set(meta.Labels)
+	_, err = s.Queries.CreateImageInfo(context.Background(),
+		query.CreateImageInfoParams{it,
+			meta.Name, meta.Digest, meta.Created, meta.Size, pglabel})
+	if err != nil {
+		c.JSON(500, err)
+	}
 	labels := map[string]string{
 		consts.LabelUID:             it,
 		consts.LabelEnvironmentName: req.Name,
@@ -184,9 +189,10 @@ func (s *Server) environmentCreate(c *gin.Context) {
 		expectedPod.Spec.Volumes = append(expectedPod.Spec.Volumes, v1.Volume{
 			Name: "code-dir",
 			VolumeSource: v1.VolumeSource{
-				HostPath: &v1.HostPathVolumeSource{
-					Path: fmt.Sprintf("/var/envd/code/%s", req.Name),
-				},
+				EmptyDir: &v1.EmptyDirVolumeSource{},
+				// HostPath: &v1.HostPathVolumeSource{
+				// 	Path: fmt.Sprintf("/var/envd/code/%s", req.Name),
+				// },
 			},
 		})
 	}

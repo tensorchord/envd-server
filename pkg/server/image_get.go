@@ -5,14 +5,18 @@
 package server
 
 import (
+	"context"
 	"net/http"
 	"net/url"
 
 	"github.com/cockroachdb/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v4"
 	"github.com/sirupsen/logrus"
 
 	"github.com/tensorchord/envd-server/api/types"
+	"github.com/tensorchord/envd-server/pkg/query"
+	"github.com/tensorchord/envd-server/pkg/util"
 )
 
 // @Summary     Get the image.
@@ -38,14 +42,26 @@ func (s *Server) imageGet(c *gin.Context) {
 		logrus.Infof("cannot unescape the requested image name: %s", req.Name)
 		c.JSON(http.StatusBadRequest, err)
 	}
-	for _, info := range s.imageInfo {
-		if info.OwnerToken == it && info.Name == name {
-			c.JSON(http.StatusOK, types.ImageGetResponse{
-				ImageMeta: info.ImageMeta,
-			})
+
+	imageInfo, err := s.Queries.GetImageInfo(context.Background(), query.GetImageInfoParams{it, name})
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			c.JSON(http.StatusBadRequest, errors.Newf("cannot find the image(%s)", req.Name))
+			return
+		} else {
+			logrus.Warnf("cannot get the image info: %+v", err)
+			c.JSON(http.StatusInternalServerError, "internal error")
 			return
 		}
 	}
+	meta, err := util.DaoToImageMeta(imageInfo)
+	if err != nil {
+		logrus.Warnf("cannot get label info: %+v", err)
+		c.JSON(http.StatusInternalServerError, "internal error")
+		return
+	}
+	c.JSON(http.StatusOK, types.ImageGetResponse{
+		ImageMeta: *meta,
+	})
 
-	c.JSON(http.StatusBadRequest, errors.Newf("cannot find the image(%s)", req.Name))
 }
