@@ -51,8 +51,8 @@ func (s *Server) environmentCreate(c *gin.Context) {
 	})
 	// Merge image labels to pod.
 	labels := map[string]string{
-		consts.LabelUID:             it,
-		consts.LabelEnvironmentName: req.Name,
+		consts.PodLabelUID:             it,
+		consts.PodLabelEnvironmentName: req.Name,
 	}
 
 	logrus.WithFields(logrus.Fields{

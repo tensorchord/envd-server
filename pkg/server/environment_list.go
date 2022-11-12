@@ -30,7 +30,7 @@ func (s *Server) environmentList(c *gin.Context) {
 	it := c.GetString("identity_token")
 
 	ls := labels.Set{
-		consts.LabelUID: it,
+		consts.PodLabelUID: it,
 	}
 
 	pods, err := s.client.CoreV1().Pods(
@@ -76,10 +76,10 @@ func generateEnvironmentFromPod(p v1.Pod) (types.Environment, error) {
 		e.Spec.Image = p.Spec.Containers[0].Image
 	}
 
-	if jupyterAddr, ok := p.Annotations[consts.ImageLabelJupyterAddr]; ok {
+	if jupyterAddr, ok := p.Annotations[consts.PodLabelJupyterAddr]; ok {
 		e.Status.JupyterAddr = &jupyterAddr
 	}
-	if rstudioServerAddr, ok := p.Annotations[consts.ImageLabelRStudioServerAddr]; ok {
+	if rstudioServerAddr, ok := p.Annotations[consts.PodLabelRStudioServerAddr]; ok {
 		e.Status.RStudioServerAddr = &rstudioServerAddr
 	}
 
@@ -88,7 +88,7 @@ func generateEnvironmentFromPod(p v1.Pod) (types.Environment, error) {
 		return e, err
 	}
 	e.Spec.Ports = ports
-	// only reserve labels with prefix `envd.tensorchord.ai/`
+	// only reserve labels with prefix `ai.tensorchord.envd.`
 	e.Labels = util.Filter(e.Labels, util.IsEnvdLabel)
 	e.Status.Phase = string(p.Status.Phase)
 	return e, nil

@@ -43,9 +43,9 @@ func (s *Server) environmentGet(c *gin.Context) {
 		c.JSON(500, err)
 		return
 	}
-	if pod.Labels[consts.LabelUID] != it {
+	if pod.Labels[consts.PodLabelUID] != it {
 		logrus.WithFields(logrus.Fields{
-			"identity_token_in_pod":     pod.Labels[consts.LabelUID],
+			"identity_token_in_pod":     pod.Labels[consts.PodLabelUID],
 			"identity_token_in_request": it,
 		}).Debug("mismatch identity_token")
 		respondWithError(c, http.StatusUnauthorized, "unauthorized")
