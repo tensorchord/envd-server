@@ -30,17 +30,17 @@ func (s *Server) AuthMiddleware() gin.HandlerFunc {
 			if errors.Is(err, pgx.ErrNoRows) {
 				respondWithError(c, http.StatusUnauthorized,
 					"failed to auth the identity_token")
+				return
 			} else {
 				respondWithError(c, http.StatusInternalServerError,
 					fmt.Sprintf("failed to query the identity_token: %v", err))
+				return
 			}
 		} else {
 			c.Set("identity_token", amr.IdentityToken)
 			c.Next()
 			return
 		}
-		respondWithError(c, http.StatusUnauthorized,
-			"failed to auth the identity_token")
 	}
 }
 
