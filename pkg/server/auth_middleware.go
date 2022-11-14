@@ -5,10 +5,13 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
+	"github.com/cockroachdb/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v4"
 
 	"github.com/tensorchord/envd-server/api/types"
 )
@@ -22,15 +25,22 @@ func (s *Server) AuthMiddleware() gin.HandlerFunc {
 			c.Next()
 			return
 		}
-		for _, k := range s.authInfo {
-			if k.IdentityToken == amr.IdentityToken {
-				c.Set("identity_token", amr.IdentityToken)
-				c.Next()
+		_, err := s.Queries.GetUser(context.Background(), amr.IdentityToken)
+		if err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				respondWithError(c, http.StatusUnauthorized,
+					"failed to auth the identity_token")
+				return
+			} else {
+				respondWithError(c, http.StatusInternalServerError,
+					fmt.Sprintf("failed to query the identity_token: %v", err))
 				return
 			}
+		} else {
+			c.Set("identity_token", amr.IdentityToken)
+			c.Next()
+			return
 		}
-		respondWithError(c, http.StatusUnauthorized,
-			"failed to auth the identity_token")
 	}
 }
 

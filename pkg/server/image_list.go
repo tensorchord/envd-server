@@ -5,11 +5,16 @@
 package server
 
 import (
+	"context"
 	"net/http"
 
+	"github.com/cockroachdb/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v4"
+	"github.com/sirupsen/logrus"
 
 	"github.com/tensorchord/envd-server/api/types"
+	"github.com/tensorchord/envd-server/pkg/util"
 )
 
 // @Summary     List the images.
@@ -25,10 +30,26 @@ func (s *Server) imageList(c *gin.Context) {
 	it := c.GetString("identity_token")
 
 	resp := types.ImageListResponse{}
-	for _, info := range s.imageInfo {
-		if info.OwnerToken == it {
-			resp.Items = append(resp.Items, info.ImageMeta)
+	images, err := s.Queries.ListImageByOwner(context.Background(), it)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			// No image found
+			c.JSON(http.StatusOK, resp)
+			return
+		} else {
+			logrus.Warnf("cannot get the image info: %+v", err)
+			c.JSON(http.StatusInternalServerError, "internal error")
+			return
 		}
+	}
+	for _, info := range images {
+		item, err := util.DaoToImageMeta(info)
+		if err != nil {
+			logrus.Warnf("cannot convert dao to image info: %+v", err)
+			c.JSON(http.StatusInternalServerError, "internal error")
+			return
+		}
+		resp.Items = append(resp.Items, *item)
 	}
 	c.JSON(http.StatusOK, resp)
 }

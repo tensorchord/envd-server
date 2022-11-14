@@ -39,6 +39,11 @@ func New() EnvdServerApp {
 			Usage:   "hostkey in the backend pod, used to generate fingerprint here",
 			EnvVars: []string{"ENVD_SERVER_HOST_KEY"},
 		},
+		&cli.StringFlag{
+			Name:    "dburl",
+			Usage:   "url for database. e.g. postgres://user:password@localhost:5432/dbname",
+			EnvVars: []string{"ENVD_DB_URL"},
+		},
 	}
 	internalApp.Action = runServer
 
@@ -65,6 +70,7 @@ func runServer(clicontext *cli.Context) error {
 		Debug:       clicontext.Bool("debug"),
 		KubeConfig:  clicontext.Path("kubeconfig"),
 		HostKeyPath: clicontext.Path("hostkey"),
+		DbUrl:       clicontext.String("dburl"),
 	})
 	if err != nil {
 		return err

@@ -5,10 +5,13 @@
 package server
 
 import (
+	"context"
+	"fmt"
 	"os"
 
 	"github.com/cockroachdb/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v4"
 	"github.com/sirupsen/logrus"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -17,24 +20,26 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 
-	"github.com/tensorchord/envd-server/api/types"
 	_ "github.com/tensorchord/envd-server/pkg/docs"
+	"github.com/tensorchord/envd-server/pkg/query"
 )
 
 type Server struct {
 	Router      *gin.Engine
 	AdminRouter *gin.Engine
+	Queries     *query.Queries
+	Conn        *pgx.Conn
 
 	client             *kubernetes.Clientset
-	authInfo           []AuthInfo
 	serverFingerPrints []string
-	imageInfo          []types.ImageInfo
+	// imageInfo          []types.ImageInfo
 }
 
 type Opt struct {
 	Debug       bool
 	KubeConfig  string
 	HostKeyPath string
+	DbUrl       string
 }
 
 func New(opt Opt) (*Server, error) {
@@ -49,6 +54,14 @@ func New(opt Opt) (*Server, error) {
 		return nil, err
 	}
 
+	// Connect to database
+	conn, err := pgx.Connect(context.Background(), opt.DbUrl)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
+	}
+	queries := query.New(conn)
+
 	router := gin.New()
 	router.Use(ginlogrus.Logger(logrus.StandardLogger()))
 	router.Use(gin.Recovery())
@@ -60,7 +73,8 @@ func New(opt Opt) (*Server, error) {
 		Router:             router,
 		AdminRouter:        admin,
 		client:             cli,
-		authInfo:           make([]AuthInfo, 0),
+		Conn:               conn,
+		Queries:            queries,
 		serverFingerPrints: make([]string, 0),
 	}
 	if opt.HostKeyPath != "" {
