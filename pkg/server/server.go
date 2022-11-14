@@ -39,6 +39,7 @@ type Opt struct {
 	Debug       bool
 	KubeConfig  string
 	HostKeyPath string
+	DbUrl       string
 }
 
 func New(opt Opt) (*Server, error) {
@@ -54,7 +55,7 @@ func New(opt Opt) (*Server, error) {
 	}
 
 	// Connect to database
-	conn, err := pgx.Connect(context.Background(), os.Getenv("ENVD_DB_URL"))
+	conn, err := pgx.Connect(context.Background(), opt.DbUrl)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
