@@ -15,6 +15,10 @@ data:
       url: http://127.0.0.1:8080/v1
     configserver:
       url: "http://127.0.0.1:8080/v1/config"
+    metrics:
+      enable: true
+      listen: 0.0.0.0:9100
+      path: /metrics
     log:
       level: debug
     backend: sshproxy
