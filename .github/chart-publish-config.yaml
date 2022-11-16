@@ -1,0 +1,6 @@
+owner: tensorchord
+git-repo: envd-server
+package-path: .deploy
+token: ENVIRONMENT_VARIABLE
+git-base-url: https://api.github.com/
+git-upload-url: https://uploads.github.com/

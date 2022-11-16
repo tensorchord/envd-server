@@ -92,6 +92,9 @@ spec:
             - name: ssh
               containerPort: 2222
               protocol: TCP
+            - name: metrics
+              containerPort: 9100
+              protocol: TCP
           volumeMounts:
           - mountPath: /etc/containerssh/config.yaml
             name: config

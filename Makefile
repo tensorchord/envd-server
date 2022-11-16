@@ -43,6 +43,7 @@ REGISTRY ?= ghcr.io/tensorchord
 
 # Container registry for base images.
 BASE_REGISTRY ?= docker.io
+BASE_REGISTRY_USER ?= tensorchord
 
 # Disable CGO by default.
 CGO_ENABLED ?= 0
@@ -98,7 +99,7 @@ export GOFLAGS ?= -count=1
 #
 
 # All targets.
-.PHONY: help lint test build container push addlicense debug debug-local build-local generate clean test-local addlicense-install release
+.PHONY: help lint test build container push addlicense debug debug-local build-local generate clean test-local addlicense-install release build-image
 
 .DEFAULT_GOAL:=build
 
@@ -166,6 +167,10 @@ vet: ## Run go vet against code.
 
 swag: swag-install
 	swag init -g ./cmd/envd-server/main.go --parseDependency --output ./pkg/docs 
+
+build-image: build-local
+	docker build -t ${BASE_REGISTRY}/${BASE_REGISTRY_USER}/envd-server:dev -f Dockerfile ./bin
+	docker push ${BASE_REGISTRY}/${BASE_REGISTRY_USER}/envd-server:dev
 
 release:
 	@if [ ! -f ".release-env" ]; then \
