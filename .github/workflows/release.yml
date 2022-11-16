@@ -42,6 +42,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   chart-publisher:
     if: github.repository == 'tensorchord/envd-server'
+    needs: goreleaser
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
