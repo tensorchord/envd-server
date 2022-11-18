@@ -188,3 +188,7 @@ release:
 		-w /go/src/$(PACKAGE_NAME) \
 		goreleaser/goreleaser-cross:${GOLANG_CROSS_VERSION} \
 		release --rm-dist
+
+test: ## Run the tests
+	@go test -race -coverpkg=./test/... -coverprofile=coverage.out $(shell go list ./...)
+	@go tool cover -func coverage.out | tail -n 1 | awk '{ print "Total coverage: " $$3 }'
