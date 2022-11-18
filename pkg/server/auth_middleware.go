@@ -44,6 +44,21 @@ func (s *Server) AuthMiddleware() gin.HandlerFunc {
 	}
 }
 
+func (s *Server) NoAuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		amr := types.AuthMiddlewareRequest{}
+		if err := c.BindUri(&amr); err != nil {
+			respondWithError(c, http.StatusUnauthorized,
+				fmt.Sprintf("auth failed: %v", err))
+			c.Next()
+			return
+		}
+
+		c.Set("identity_token", amr.IdentityToken)
+		c.Next()
+	}
+}
+
 // nolint:unparam
 func respondWithError(c *gin.Context, code int, message interface{}) {
 	c.AbortWithStatusJSON(code, gin.H{"error": message})

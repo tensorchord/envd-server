@@ -202,7 +202,7 @@ func (s *Server) environmentCreate(c *gin.Context) {
 		})
 	}
 
-	_, err = s.client.CoreV1().Pods(
+	_, err = s.Client.CoreV1().Pods(
 		"default").Create(c, &expectedPod, metav1.CreateOptions{})
 	if err != nil {
 		logrus.Infof("failed to create pod: %v", err)
@@ -227,7 +227,7 @@ func (s *Server) environmentCreate(c *gin.Context) {
 			},
 		},
 	}
-	_, err = s.client.CoreV1().Services("default").Create(c, &expectedService, metav1.CreateOptions{})
+	_, err = s.Client.CoreV1().Services("default").Create(c, &expectedService, metav1.CreateOptions{})
 	if err != nil {
 		c.JSON(500, err)
 		return
