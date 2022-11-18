@@ -30,8 +30,11 @@ var _ = Describe("environments", Ordered, func() {
 		Expect(err).Should(BeNil())
 		cli, err := client.NewClientWithOpts()
 		Expect(err).Should(BeNil())
-		// no-lint:errcheck
-		go srv.Run()
+
+		go func() {
+			err := srv.Run()
+			Expect(err).Should(BeNil())
+		}()
 		It("should get the newly created environments", func() {
 			l, err := srv.Client.CoreV1().Pods("default").List(context.TODO(), v1.ListOptions{})
 			Expect(err).Should(BeNil())
