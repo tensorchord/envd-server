@@ -1,3 +1,7 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 package environments
 
 import (
@@ -26,6 +30,7 @@ var _ = Describe("environments", Ordered, func() {
 		Expect(err).Should(BeNil())
 		cli, err := client.NewClientWithOpts()
 		Expect(err).Should(BeNil())
+		// no-lint:errcheck
 		go srv.Run()
 		It("should get the newly created environments", func() {
 			l, err := srv.Client.CoreV1().Pods("default").List(context.TODO(), v1.ListOptions{})

@@ -1,12 +1,17 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 package util
 
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-	"github.com/tensorchord/envd-server/pkg/server"
 	ginlogrus "github.com/toorop/gin-logrus"
 	"k8s.io/apimachinery/pkg/runtime"
 	kubernetes "k8s.io/client-go/kubernetes/fake"
+
+	"github.com/tensorchord/envd-server/pkg/server"
 )
 
 func NewServer(objects ...runtime.Object) (*server.Server, error) {
