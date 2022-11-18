@@ -28,9 +28,8 @@ type Server struct {
 	Router      *gin.Engine
 	AdminRouter *gin.Engine
 	Queries     *query.Queries
-	Conn        *pgx.Conn
+	Client      kubernetes.Interface
 
-	client             *kubernetes.Clientset
 	serverFingerPrints []string
 	// imageInfo          []types.ImageInfo
 }
@@ -72,8 +71,7 @@ func New(opt Opt) (*Server, error) {
 	s := &Server{
 		Router:             router,
 		AdminRouter:        admin,
-		client:             cli,
-		Conn:               conn,
+		Client:             cli,
 		Queries:            queries,
 		serverFingerPrints: make([]string, 0),
 	}
@@ -92,33 +90,37 @@ func New(opt Opt) (*Server, error) {
 			s.serverFingerPrints = append(s.serverFingerPrints, fingerPrint)
 		}
 	}
-	s.bindHandlers()
+	s.BindHandlers(true)
 	return s, nil
 }
 
-func (s *Server) bindHandlers() {
+func (s *Server) BindHandlers(auth bool) {
 	engine := s.Router
 
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	v1 := engine.Group("/v1")
-	authorized := engine.Group("/v1/users")
-	authorized.Use(s.AuthMiddleware())
-	{
-		// env
-		authorized.POST("/:identity_token/environments", s.environmentCreate)
-		authorized.GET("/:identity_token/environments", s.environmentList)
-		authorized.GET("/:identity_token/environments/:name", s.environmentGet)
-		authorized.DELETE("/:identity_token/environments/:name", s.environmentRemove)
-		// image
-		authorized.GET("/:identity_token/images/:name", s.imageGet)
-		authorized.GET("/:identity_token/images", s.imageList)
-	}
 
 	v1.GET("/", s.handlePing)
 	v1.POST("/auth", s.auth)
 	v1.POST("/config", s.OnConfig)
 	v1.POST("/pubkey", s.OnPubKey)
+
+	authorized := engine.Group("/v1/users")
+	if auth {
+		authorized.Use(s.AuthMiddleware())
+	} else {
+		authorized.Use(s.NoAuthMiddleware())
+	}
+
+	// env
+	authorized.POST("/:identity_token/environments", s.environmentCreate)
+	authorized.GET("/:identity_token/environments", s.environmentList)
+	authorized.GET("/:identity_token/environments/:name", s.environmentGet)
+	authorized.DELETE("/:identity_token/environments/:name", s.environmentRemove)
+	// image
+	authorized.GET("/:identity_token/images/:name", s.imageGet)
+	authorized.GET("/:identity_token/images", s.imageList)
 }
 
 func (s *Server) Run() error {

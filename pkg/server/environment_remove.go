@@ -38,7 +38,7 @@ func (s *Server) environmentRemove(c *gin.Context) {
 		"name":           req.Name,
 		"identity_token": it,
 	})
-	pod, err := s.client.CoreV1().Pods("default").Get(c, req.Name, metav1.GetOptions{})
+	pod, err := s.Client.CoreV1().Pods("default").Get(c, req.Name, metav1.GetOptions{})
 	if !k8serrors.IsNotFound(err) {
 		if err != nil {
 			logger.Error(err)
@@ -53,7 +53,7 @@ func (s *Server) environmentRemove(c *gin.Context) {
 			respondWithError(c, http.StatusUnauthorized, "unauthorized")
 			return
 		}
-		err = s.client.CoreV1().Pods(
+		err = s.Client.CoreV1().Pods(
 			"default").Delete(c, req.Name, metav1.DeleteOptions{})
 		if err != nil && !k8serrors.IsNotFound(err) {
 			logger.Error(err)
@@ -63,7 +63,7 @@ func (s *Server) environmentRemove(c *gin.Context) {
 		logger.Debugf("pod %s is deleted", req.Name)
 	}
 
-	service, err := s.client.CoreV1().Services("default").Get(c, req.Name, metav1.GetOptions{})
+	service, err := s.Client.CoreV1().Services("default").Get(c, req.Name, metav1.GetOptions{})
 	if !k8serrors.IsNotFound(err) {
 		if err != nil {
 			logger.Error(err)
@@ -78,7 +78,7 @@ func (s *Server) environmentRemove(c *gin.Context) {
 			respondWithError(c, http.StatusUnauthorized, "unauthorized")
 			return
 		}
-		err = s.client.CoreV1().Services("default").Delete(c, req.Name, metav1.DeleteOptions{})
+		err = s.Client.CoreV1().Services("default").Delete(c, req.Name, metav1.DeleteOptions{})
 		if err != nil && !k8serrors.IsNotFound(err) {
 			logger.Error(err)
 			c.JSON(500, err)

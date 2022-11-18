@@ -34,7 +34,7 @@ func (s *Server) environmentGet(c *gin.Context) {
 		return
 	}
 
-	pod, err := s.client.CoreV1().Pods("default").Get(c, req.Name, metav1.GetOptions{})
+	pod, err := s.Client.CoreV1().Pods("default").Get(c, req.Name, metav1.GetOptions{})
 	if err != nil {
 		if k8serrors.IsNotFound(err) {
 			c.JSON(http.StatusNotFound, types.EnvironmentGetResponse{})

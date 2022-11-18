@@ -28,17 +28,18 @@ import (
 // @Router      /users/{identity_token}/environments [get]
 func (s *Server) environmentList(c *gin.Context) {
 	it := c.GetString("identity_token")
+	logger := logrus.WithField("identity_token", it)
 
 	ls := labels.Set{
 		consts.PodLabelUID: it,
 	}
 
-	pods, err := s.client.CoreV1().Pods(
+	pods, err := s.Client.CoreV1().Pods(
 		"default").List(c, metav1.ListOptions{
 		LabelSelector: ls.String(),
 	})
 	if err != nil {
-		logrus.WithField("identity_token", it).Error(err)
+		logger.Error("failed to get pods: ", err)
 		if k8serrors.IsNotFound(err) {
 			c.JSON(404, types.EnvironmentListResponse{})
 			return
@@ -54,12 +55,14 @@ func (s *Server) environmentList(c *gin.Context) {
 	for _, p := range pods.Items {
 		e, err := generateEnvironmentFromPod(p)
 		if err != nil {
-			logrus.WithField("identity_token", it).Error(err)
+			logger.Error("failed to generate environment from pod: ", err)
 			c.JSON(500, err)
 			return
 		}
 		res.Items = append(res.Items, e)
 	}
+	logger.WithField("count", len(res.Items)).
+		Debug("list the environments successfully")
 	c.JSON(200, res)
 }
 
