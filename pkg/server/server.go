@@ -22,6 +22,7 @@ import (
 
 	_ "github.com/tensorchord/envd-server/pkg/docs"
 	"github.com/tensorchord/envd-server/pkg/query"
+	"github.com/tensorchord/envd-server/pkg/util"
 )
 
 type Server struct {
@@ -60,6 +61,12 @@ func New(opt Opt) (*Server, error) {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
 	}
+	err = util.ApplySchema(conn)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to apply schema: %v\n", err)
+		os.Exit(1)
+	}
+
 	queries := query.New(conn)
 
 	router := gin.New()
