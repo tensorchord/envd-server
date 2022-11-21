@@ -10,9 +10,6 @@ import (
 	"net/http"
 
 	"github.com/cockroachdb/errors"
-	"github.com/containers/image/v5/docker"
-	"github.com/containers/image/v5/image"
-	containertypes "github.com/containers/image/v5/types"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgtype"
 	"github.com/sirupsen/logrus"
@@ -21,6 +18,7 @@ import (
 
 	"github.com/tensorchord/envd-server/api/types"
 	"github.com/tensorchord/envd-server/pkg/consts"
+	"github.com/tensorchord/envd-server/pkg/image"
 	"github.com/tensorchord/envd-server/pkg/query"
 	"github.com/tensorchord/envd-server/pkg/util/imageutil"
 )
@@ -43,7 +41,7 @@ func (s *Server) environmentCreate(c *gin.Context) {
 		return
 	}
 
-	meta, err := getImageMeta(c.Request.Context(), req.Spec.Image)
+	meta, err := image.FetchMetadata(c.Request.Context(), req.Spec.Image)
 	if err != nil {
 		c.JSON(500, err)
 		return
@@ -238,50 +236,4 @@ func (s *Server) environmentCreate(c *gin.Context) {
 	}
 	resp.Created.Spec.Ports = ports
 	c.JSON(201, resp)
-}
-
-func getImageMeta(ctx context.Context, imageName string) (
-	meta types.ImageMeta, err error) {
-	ref, err := docker.ParseReference(fmt.Sprintf("//%s", imageName))
-	if err != nil {
-		return
-	}
-	sys := &containertypes.SystemContext{}
-	src, err := ref.NewImageSource(ctx, sys)
-	if err != nil {
-		return
-	}
-	digest, err := docker.GetDigest(ctx, sys, ref)
-	if err != nil {
-		return
-	}
-	image, err := image.FromUnparsedImage(ctx, sys, image.UnparsedInstance(src, &digest))
-	if err != nil {
-		return
-	}
-	inspect, err := image.Inspect(ctx)
-	if err != nil {
-		return
-	}
-	size, err := image.Size()
-	if err != nil {
-		return
-	}
-	if size < 0 {
-		// correct the image size
-		size = 0
-		for _, layer := range inspect.LayersData {
-			size += layer.Size
-		}
-	}
-	meta = types.ImageMeta{
-		Name:    imageName,
-		Created: inspect.Created.Unix(),
-		Digest:  string(digest),
-		Labels:  inspect.Labels,
-		Size:    size,
-	}
-	logrus.WithField("image meta", meta).Debug("get image meta before creating env")
-	src.Close()
-	return meta, nil
 }
