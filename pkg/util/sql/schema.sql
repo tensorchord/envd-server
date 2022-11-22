@@ -1,5 +1,5 @@
 -- Users
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
   id BIGSERIAL PRIMARY KEY,
   identity_token text NOT NULL,
   public_key bytea NOT NULL
@@ -7,7 +7,7 @@ CREATE TABLE users (
 
 
 -- Image info
-CREATE TABLE image_info (
+CREATE TABLE IF NOT EXISTS image_info (
   id BIGSERIAL PRIMARY KEY,
   owner_token text NOT NULL,
   name text NOT NULL,
