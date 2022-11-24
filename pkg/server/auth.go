@@ -5,14 +5,12 @@
 package server
 
 import (
-	"context"
-
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/ssh"
 
 	"github.com/tensorchord/envd-server/api/types"
-	"github.com/tensorchord/envd-server/pkg/query"
+	"github.com/tensorchord/envd-server/pkg/service"
 )
 
 // @Summary     authenticate the user.
@@ -35,7 +33,8 @@ func (s *Server) auth(c *gin.Context) {
 		c.JSON(500, err)
 		return
 	}
-	_, err = s.Queries.CreateUser(context.Background(), query.CreateUserParams{IdentityToken: req.IdentityToken, PublicKey: key.Marshal()})
+	userService := service.NewUserService(s.Queries)
+	err = userService.Register(req.IdentityToken, key.Marshal())
 	if err != nil {
 		logrus.Warnf("Create error: %+v", err)
 		c.JSON(500, err)

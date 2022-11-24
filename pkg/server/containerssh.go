@@ -5,18 +5,16 @@
 package server
 
 import (
-	"context"
 	"crypto/subtle"
 	"encoding/json"
 
-	"github.com/cockroachdb/errors"
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v4"
 	"github.com/sirupsen/logrus"
 	"go.containerssh.io/libcontainerssh/auth"
 	"go.containerssh.io/libcontainerssh/config"
 	"golang.org/x/crypto/ssh"
 
+	"github.com/tensorchord/envd-server/pkg/service"
 	"github.com/tensorchord/envd-server/sshname"
 )
 
@@ -79,17 +77,17 @@ func (s *Server) OnPubKey(c *gin.Context) {
 		return
 	}
 
-	user, err := s.Queries.GetUser(context.Background(), owner)
+	userService := service.NewUserService(s.Queries)
+	skey, err := userService.GetPubKey(owner)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			logrus.WithError(err).Error("user not found")
-			c.JSON(500, "user not found")
-			return
-		} else {
-			logrus.WithError(err).Errorf("db query failed: %v", err)
-			c.JSON(500, "Internal error")
-			return
-		}
+		logrus.WithError(err).Errorf("db query failed: %v", err)
+		c.JSON(500, "Internal error")
+		return
+	}
+	if skey == nil {
+		logrus.WithError(err).Error("user not found")
+		c.JSON(500, "user not found")
+		return
 	}
 	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(req.PublicKey.PublicKey))
 	if err != nil {
@@ -97,7 +95,7 @@ func (s *Server) OnPubKey(c *gin.Context) {
 		c.JSON(500, err)
 		return
 	}
-	if subtle.ConstantTimeCompare(key.Marshal(), user.PublicKey) == 1 {
+	if subtle.ConstantTimeCompare(key.Marshal(), skey) == 1 {
 		res := auth.ResponseBody{
 			Success: true,
 		}
