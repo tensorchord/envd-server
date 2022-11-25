@@ -88,6 +88,9 @@ GOROOT ?= $(shell go env GOROOT)
 BIN_DIR := $(GOPATH)/bin
 GOLANGCI_LINT := $(BIN_DIR)/golangci-lint
 
+# check if we need embed the dashboard
+DASHBOARD_BUILD ?= debug
+
 # Default golang flags used in build and test
 # -mod=vendor: force go to use the vendor files instead of using the `$GOPATH/pkg/mod`
 # -p: the number of programs that can be run in parallel
@@ -129,7 +132,7 @@ swag-install:
 
 build-local:
 	@for target in $(TARGETS); do                                                      \
-	  CGO_ENABLED=$(CGO_ENABLED) go build -tags debug -trimpath -v -o $(OUTPUT_DIR)/$${target}     \
+	  CGO_ENABLED=$(CGO_ENABLED) go build -tags $(DASHBOARD_BUILD)  -trimpath -v -o $(OUTPUT_DIR)/$${target}     \
 	    -ldflags "-s -w -X $(ROOT)/pkg/version.version=$(VERSION) -X $(ROOT)/pkg/version.buildDate=$(BUILD_DATE) -X $(ROOT)/pkg/version.gitCommit=$(GIT_COMMIT) -X $(ROOT)/pkg/version.gitTreeState=$(GIT_TREE_STATE)"                     \
 	    $(CMD_DIR)/$${target};                                                         \
 	done
@@ -137,7 +140,7 @@ build-local:
 # It is used by vscode to attach into the process.
 debug-local:
 	@for target in $(TARGETS); do                                                      \
-	  CGO_ENABLED=$(CGO_ENABLED) go build -tags debug -trimpath                                    \
+	  CGO_ENABLED=$(CGO_ENABLED) go build -tags $(DASHBOARD_BUILD) -trimpath                                    \
 	  	-v -o $(DEBUG_DIR)/$${target}                                                  \
 	  	-gcflags='all=-N -l'                                                           \
 	    $(CMD_DIR)/$${target};                                                         \
@@ -147,10 +150,10 @@ addlicense: addlicense-install  ## Add license to GO code files
 	addlicense -l mpl -c "TensorChord Inc." $$(find . -type f -name '*.go' | grep -v pkg/docs/docs.go)
 
 test-local:
-	@go test -v -race -coverprofile=coverage.out ./...
+	@go test -tags=$(DASHBOARD_BUILD) -v -race -coverprofile=coverage.out ./...
 
 test:  ## Run the tests
-	@go test -race -coverpkg=./pkg/... -coverprofile=coverage.out ./...
+	@go test -tags=$(DASHBOARD_BUILD) -race -coverpkg=./pkg/... -coverprofile=coverage.out ./...
 	@go tool cover -func coverage.out | tail -n 1 | awk '{ print "Total coverage: " $$3 }'
 
 clean:  ## Clean the outputs and artifacts
