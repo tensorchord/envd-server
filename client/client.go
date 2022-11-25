@@ -77,7 +77,7 @@ func NewClientWithOpts(ops ...Opt) (*Client, error) {
 		client:   client,
 		proto:    defaultProto,
 		addr:     defaultAddr,
-		basePath: "/api",
+		basePath: apiBasePath,
 	}
 
 	for _, op := range ops {
