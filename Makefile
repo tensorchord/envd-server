@@ -129,7 +129,7 @@ swag-install:
 
 build-local:
 	@for target in $(TARGETS); do                                                      \
-	  CGO_ENABLED=$(CGO_ENABLED) go build -trimpath -v -o $(OUTPUT_DIR)/$${target}     \
+	  CGO_ENABLED=$(CGO_ENABLED) go build -tags debug -trimpath -v -o $(OUTPUT_DIR)/$${target}     \
 	    -ldflags "-s -w -X $(ROOT)/pkg/version.version=$(VERSION) -X $(ROOT)/pkg/version.buildDate=$(BUILD_DATE) -X $(ROOT)/pkg/version.gitCommit=$(GIT_COMMIT) -X $(ROOT)/pkg/version.gitTreeState=$(GIT_TREE_STATE)"                     \
 	    $(CMD_DIR)/$${target};                                                         \
 	done
@@ -137,7 +137,7 @@ build-local:
 # It is used by vscode to attach into the process.
 debug-local:
 	@for target in $(TARGETS); do                                                      \
-	  CGO_ENABLED=$(CGO_ENABLED) go build -trimpath                                    \
+	  CGO_ENABLED=$(CGO_ENABLED) go build -tags debug -trimpath                                    \
 	  	-v -o $(DEBUG_DIR)/$${target}                                                  \
 	  	-gcflags='all=-N -l'                                                           \
 	    $(CMD_DIR)/$${target};                                                         \
