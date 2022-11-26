@@ -12,9 +12,9 @@ data:
         reverseForwardingMode: enable
         forwardingMode: enable
     auth:
-      url: http://127.0.0.1:8080/v1
+      url: http://127.0.0.1:8080/api/v1
     configserver:
-      url: "http://127.0.0.1:8080/v1/config"
+      url: "http://127.0.0.1:8080/api/v1/config"
     metrics:
       enable: true
       listen: 0.0.0.0:9100

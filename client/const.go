@@ -9,6 +9,9 @@ const DefaultEnvdServerHost = "http://0.0.0.0:8080"
 const defaultProto = "http"
 const defaultAddr = "0.0.0.0:8080"
 
+// Base path for api, distinguish from frontend pages
+const apiBasePath = "/api"
+
 const (
 	// EnvOverrideHost is the name of the environment variable that can be used
 	// to override the default host to connect to (DefaultEnvdServerHost).

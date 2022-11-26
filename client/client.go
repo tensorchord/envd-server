@@ -72,11 +72,12 @@ func NewClientWithOpts(ops ...Opt) (*Client, error) {
 		return nil, err
 	}
 	c := &Client{
-		host:    DefaultEnvdServerHost,
-		version: "v1",
-		client:  client,
-		proto:   defaultProto,
-		addr:    defaultAddr,
+		host:     DefaultEnvdServerHost,
+		version:  "v1",
+		client:   client,
+		proto:    defaultProto,
+		addr:     defaultAddr,
+		basePath: apiBasePath,
 	}
 
 	for _, op := range ops {
