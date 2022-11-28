@@ -191,3 +191,6 @@ release:
 		-w /go/src/$(PACKAGE_NAME) \
 		goreleaser/goreleaser-cross:${GOLANG_CROSS_VERSION} \
 		release --rm-dist
+
+generate: mockgen-install  ## Generate mocks
+	@mockgen -source pkg/query/querier.go -destination pkg/query/mock/mock.go -package mock

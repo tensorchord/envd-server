@@ -108,14 +108,14 @@ func (s *Server) BindHandlers(auth bool) {
 
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
-	v1 := engine.Group("/v1")
+	v1 := engine.Group("/api/v1")
 
 	v1.GET("/", s.handlePing)
 	v1.POST("/auth", s.auth)
 	v1.POST("/config", s.OnConfig)
 	v1.POST("/pubkey", s.OnPubKey)
 
-	authorized := engine.Group("/v1/users")
+	authorized := engine.Group("/api/v1/users")
 	if auth {
 		authorized.Use(s.AuthMiddleware())
 	} else {
