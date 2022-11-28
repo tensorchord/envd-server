@@ -25,6 +25,7 @@ run:
   skip-dirs-use-default: true
   allow-parallel-runners: false
   skip-dirs:
+    - dashboard
     - client
     - errdefs
     - pkg/docs

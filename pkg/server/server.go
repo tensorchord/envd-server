@@ -23,6 +23,7 @@ import (
 	_ "github.com/tensorchord/envd-server/pkg/docs"
 	"github.com/tensorchord/envd-server/pkg/query"
 	"github.com/tensorchord/envd-server/pkg/util"
+	"github.com/tensorchord/envd-server/pkg/web"
 )
 
 type Server struct {
@@ -103,6 +104,7 @@ func New(opt Opt) (*Server, error) {
 
 func (s *Server) BindHandlers(auth bool) {
 	engine := s.Router
+	web.RegisterRoute(engine)
 
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 

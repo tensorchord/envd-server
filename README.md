@@ -25,3 +25,19 @@ envd context create --name server --runner envd-server --runner-address http://l
 envd login
 envd create --image gaocegege/test-envd
 ```
+
+# Development Guide of Dashboard
+
+Enter into dashboard directory to develop just like normal vue application.
+
+If you want to build envd-server with dashboard
+
+```bash
+pushd dashboard
+npm install
+npm run build
+popd
+ DASHBOARD_BUILD=release make build-local
+```
+
+When envd-server is running, you can visit https:/localhost:8080/dashboard to see it 
