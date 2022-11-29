@@ -259,6 +259,45 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "delete": {
+                "description": "Remove the environment.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "environment"
+                ],
+                "summary": "Remove the environment.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "\"a332139d39b89a241400013700e665a3\"",
+                        "description": "identity token",
+                        "name": "identity_token",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "example": "\"pytorch-example\"",
+                        "description": "environment name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.EnvironmentRemoveResponse"
+                        }
+                    }
+                }
             }
         },
         "/users/{identity_token}/images": {
@@ -641,6 +680,9 @@ const docTemplate = `{
                     "type": "integer"
                 }
             }
+        },
+        "types.EnvironmentRemoveResponse": {
+            "type": "object"
         },
         "types.EnvironmentSpec": {
             "type": "object",
