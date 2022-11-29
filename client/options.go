@@ -70,7 +70,7 @@ func WithHost(host string) Opt {
 		c.host = host
 		c.proto = hostURL.Scheme
 		c.addr = hostURL.Host
-		c.basePath = hostURL.Path
+		c.basePath = hostURL.Path + "/api"
 		if transport, ok := c.client.Transport.(*http.Transport); ok {
 			return sockets.ConfigureTransport(transport, c.proto, c.addr)
 		}

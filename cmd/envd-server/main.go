@@ -44,7 +44,7 @@ func handleErr(err error) {
 // @license.url  https://mozilla.org/MPL/2.0/
 
 // @host     localhost:8080
-// @BasePath /v1
+// @BasePath /api/v1
 // @schemes  http
 func main() {
 	err := run(os.Args)
