@@ -37,7 +37,7 @@ func RegisterRoute(route *gin.Engine) {
 	route.GET("/dashboard")
 	route.NoRoute(func(c *gin.Context) {
 		if strings.HasPrefix(c.Request.URL.Path, "/dashboard") {
-			c.FileFromFS("/index.html", http.FS(webRoot))
+			c.FileFromFS("/", http.FS(webRoot))
 		} else {
 			c.String(404, "404 not found")
 		}
