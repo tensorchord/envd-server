@@ -48,6 +48,10 @@ spec:
               value: {{ .Values.dbUrl }}
               {{- else }}
               value: "postgres://{{ .Values.postgres.username }}:{{ .Values.postgres.password }}@postgres-service:5432/{{ .Values.postgres.dbname }}"
+              {{- end }}  
+              {{- if .Values.envdServer.debug }}
+            - name: GIN_MODE          
+              value: debug
               {{- end }}
           command:
             - /envd-server

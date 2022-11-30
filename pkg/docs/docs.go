@@ -793,7 +793,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "v0.0.8",
 	Host:             "localhost:8080",
-	BasePath:         "/v1",
+	BasePath:         "/api/v1",
 	Schemes:          []string{"http"},
 	Title:            "envd server API",
 	Description:      "envd backend server",

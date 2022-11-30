@@ -10,6 +10,7 @@ import (
 	"os"
 
 	"github.com/cockroachdb/errors"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v4"
 	"github.com/sirupsen/logrus"
@@ -74,6 +75,11 @@ func New(opt Opt) (*Server, error) {
 	router.Use(gin.Recovery())
 	if gin.Mode() == gin.DebugMode {
 		logrus.SetLevel(logrus.DebugLevel)
+		router.Use(cors.New(cors.Config{
+			AllowOrigins: []string{"*"},
+			AllowMethods: []string{"POST", "PUT", "PATCH", "DELETE"},
+			AllowHeaders: []string{"Content-Type,access-control-allow-origin, access-control-allow-headers"},
+		}))
 	}
 	admin := gin.New()
 	s := &Server{
