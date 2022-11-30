@@ -34,7 +34,6 @@ func RegisterRoute(route *gin.Engine) {
 	webRoot, _ := fs.Sub(dashboard.DistFS, "dist")
 	route.StaticFS("/dashboard", http.FS(webRoot))
 	route.StaticFileFS("/favicon.ico", "favicon.ico", http.FS(webRoot))
-	route.GET("/dashboard")
 	route.NoRoute(func(c *gin.Context) {
 		if strings.HasPrefix(c.Request.URL.Path, "/dashboard") {
 			c.FileFromFS("/", http.FS(webRoot))
