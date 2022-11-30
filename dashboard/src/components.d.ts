@@ -10,6 +10,7 @@ declare module '@vue/runtime-core' {
     EnvDataTable: typeof import('./components/EnvDataTable.vue')['default']
     IMaterialSymbolsCalendarMonth: typeof import('~icons/material-symbols/calendar-month')['default']
     IMaterialSymbolsInsertChartRounded: typeof import('~icons/material-symbols/insert-chart-rounded')['default']
+    IMdiAccountCircleOutline: typeof import('~icons/mdi/account-circle-outline')['default']
     IMdiBin: typeof import('~icons/mdi/bin')['default']
     IMdiDriveDocument: typeof import('~icons/mdi/drive-document')['default']
     IMdiGear: typeof import('~icons/mdi/gear')['default']

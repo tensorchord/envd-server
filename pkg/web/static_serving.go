@@ -23,6 +23,7 @@ package web
 import (
 	"io/fs"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -35,6 +36,10 @@ func RegisterRoute(route *gin.Engine) {
 	route.StaticFileFS("/favicon.ico", "favicon.ico", http.FS(webRoot))
 	route.GET("/dashboard")
 	route.NoRoute(func(c *gin.Context) {
-		c.FileFromFS("/index.html", http.FS(webRoot))
+		if strings.HasPrefix(c.Request.URL.Path, "/dashboard") {
+			c.FileFromFS("/index.html", http.FS(webRoot))
+		} else {
+			c.String(404, "404 not found")
+		}
 	})
 }
