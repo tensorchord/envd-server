@@ -65,6 +65,5 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
-.editorconfig
 .demo/
 pkg/docs/swagger.*
