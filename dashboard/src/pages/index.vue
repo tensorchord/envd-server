@@ -5,5 +5,5 @@
 </template>
 
 <route lang="yaml">
-# redirect: "/login"
+redirect: "/login"
 </route>
