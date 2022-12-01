@@ -1,5 +1,5 @@
-import { createFetch } from "@vueuse/core"
+import { createFetch } from '@vueuse/core'
 
 export const useEnvdFetch = createFetch({
-  baseUrl: `${import.meta.env.VITE_BASE_HOST ? import.meta.env.VITE_BASE_HOST : "" }/api/v1`,
+  baseUrl: `${import.meta.env.VITE_BASE_HOST ? import.meta.env.VITE_BASE_HOST : ''}/api/v1`,
 })

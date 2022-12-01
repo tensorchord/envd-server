@@ -1,0 +1,11 @@
+{
+  "extends": "@antfu",
+  "overrides": [
+    {
+      "files": ["src/composables/types/scheme.ts", "*.spec.js"],
+      "rules": {
+        "eslint-comments/no-unlimited-disable": "off"
+      }
+    }
+  ]
+}
