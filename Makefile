@@ -196,4 +196,4 @@ generate: mockgen-install  ## Generate mocks
 	@mockgen -source pkg/query/querier.go -destination pkg/query/mock/mock.go -package mock
 
 dashboard-build:
-	@cd dashboard; pnpm build
+	@cd dashboard; pnpm tbuild
