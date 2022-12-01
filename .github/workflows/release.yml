@@ -36,6 +36,8 @@ jobs:
         run: cd dashboard
       - name: Setup pnpm
         uses: pnpm/action-setup@v2.2.4
+        with:
+          run_install: false
       - name: Use Node.js 18
         uses: actions/setup-node@v3.5.1
         with:
