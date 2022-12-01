@@ -35,9 +35,11 @@ jobs:
       - name: Patch for pnpm setup
         run: cd dashboard
       - name: Setup pnpm
-        uses: pnpm/action-setup@v2.2.4
+        uses: pnpm/action-setup@v2.2.4              
         with:
-          run_install: false
+          version: 7.17.1
+          run_install: |
+            - cwd: "./dashboard"
       - name: Use Node.js 18
         uses: actions/setup-node@v3.5.1
         with:
@@ -45,9 +47,8 @@ jobs:
           registry-url: https://registry.npmjs.org/
           cache: pnpm 
       - name: Build frontend pages
-        run: pnpm tbuild        
-      - name: Revert patch for pnpm setup
-        run: cd ..
+        run: pnpm tbuild
+        working-directory: ./dashboard
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v3
         with:
