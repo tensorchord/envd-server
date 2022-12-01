@@ -1,14 +1,22 @@
-import { createApp } from "vue";
-import { createPinia } from "pinia";
+import './styles/tailwind.css'
 
-import App from "./App.vue";
-import router from "./router";
+import { ViteSSG } from 'vite-ssg'
+import { setupLayouts } from 'virtual:generated-layouts'
+import Previewer from 'virtual:vue-component-preview'
+import App from './App.vue'
+import type { UserModule } from './types'
+import generatedRoutes from '~pages'
 
-import "./assets/main.css";
+const routes = setupLayouts(generatedRoutes)
 
-const app = createApp(App);
-
-app.use(createPinia());
-app.use(router);
-
-app.mount("#app");
+// https://github.com/antfu/vite-ssg
+export const createApp = ViteSSG(
+  App,
+  { routes, base: import.meta.env.BASE_URL },
+  (ctx) => {
+    // install all modules under `modules/`
+    Object.values(import.meta.glob<{ install: UserModule }>('./modules/*.ts', { eager: true }))
+      .forEach(i => i.install?.(ctx))
+    ctx.app.use(Previewer)
+  },
+)
