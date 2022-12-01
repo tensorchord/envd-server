@@ -27,11 +27,11 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version: 1.18
-      # - name: Docker Login
-      #   uses: docker/login-action@v2
-      #   with:
-      #     username: ${{ secrets.DOCKERIO_USERNAME }}
-      #     password: ${{ secrets.DOCKERIO_TOKEN }}     
+      - name: Docker Login
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERIO_USERNAME }}
+          password: ${{ secrets.DOCKERIO_TOKEN }}     
       - name: Patch for pnpm setup
         run: cd dashboard
       - name: Setup pnpm
