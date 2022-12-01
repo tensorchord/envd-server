@@ -32,16 +32,16 @@ jobs:
       #   with:
       #     username: ${{ secrets.DOCKERIO_USERNAME }}
       #     password: ${{ secrets.DOCKERIO_TOKEN }}
-      - uses: pnpm/action-setup@v2.2.4
       - name: Use Node.js 18
         uses: actions/setup-node@v3.5.1
         with:
           node-version: 18
           registry-url: https://registry.npmjs.org/
-          cache: pnpm
-      - name: Install frontend packages
-        run: pnpm install
-        working-directory: ./dashboard      
+          cache: pnpm      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.2.4              
+        with:
+          dest: ./dashboard
       - name: Build frontend pages
         run: pnpm tbuild
         working-directory: ./dashboard
