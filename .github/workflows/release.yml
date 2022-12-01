@@ -31,18 +31,18 @@ jobs:
       #   uses: docker/login-action@v2
       #   with:
       #     username: ${{ secrets.DOCKERIO_USERNAME }}
-      #     password: ${{ secrets.DOCKERIO_TOKEN }}
-      - name: Use Node.js 18
-        uses: actions/setup-node@v3.5.1
-        with:
-          node-version: 18
-          registry-url: https://registry.npmjs.org/
-          cache: pnpm      
+      #     password: ${{ secrets.DOCKERIO_TOKEN }}     
       - name: Setup pnpm
         uses: pnpm/action-setup@v2.2.4              
         with:
           run_install: |
             - cwd: "./dashboard"
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3.5.1
+        with:
+          node-version: 18
+          registry-url: https://registry.npmjs.org/
+          cache: pnpm 
       - name: Build frontend pages
         run: pnpm tbuild
         working-directory: ./dashboard
