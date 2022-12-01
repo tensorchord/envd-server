@@ -3,6 +3,7 @@
 before:
   hooks:
     - go mod tidy
+    - make dashboard-build
 builds:
   - env:
       - CGO_ENABLED=0
