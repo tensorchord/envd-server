@@ -46,6 +46,7 @@ jobs:
           node-version: 18
           registry-url: https://registry.npmjs.org/
           cache: pnpm 
+          cache-dependency-path: dashboard/pnpm-lock.yaml
       - name: Build frontend pages
         run: pnpm tbuild
         working-directory: ./dashboard
