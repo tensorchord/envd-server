@@ -41,7 +41,8 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v2.2.4              
         with:
-          dest: ./dashboard
+          run_install: |
+            - cwd: "./dashboard"
       - name: Build frontend pages
         run: pnpm tbuild
         working-directory: ./dashboard
