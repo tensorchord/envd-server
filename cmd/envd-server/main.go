@@ -45,6 +45,9 @@ func handleErr(err error) {
 
 // @host     localhost:8080
 // @BasePath /api/v1
+// @securityDefinitions.basic BasicAuth
+// @in       header
+// @name     Authorization
 // @schemes  http
 func main() {
 	err := run(os.Args)

@@ -9,17 +9,24 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/cockroachdb/errors"
 	"github.com/tensorchord/envd-server/api/types"
 )
 
 // ImageList lists the images.
-func (cli *Client) ImageList(ctx context.Context, owner string) (types.ImageListResponse, error) {
-	url := fmt.Sprintf("/users/%s/images", owner)
-	resp, err := cli.get(ctx, url, nil, nil)
+func (cli *Client) ImageList(ctx context.Context) (types.ImageListResponse, error) {
+	username, headers, err := cli.getUserAndHeaders()
+	if err != nil {
+		return types.ImageListResponse{},
+			errors.Wrap(err, "failed to get user and headers")
+	}
+
+	url := fmt.Sprintf("/users/%s/images", username)
+	resp, err := cli.get(ctx, url, nil, headers)
 	defer ensureReaderClosed(resp)
 
 	if err != nil {
-		return types.ImageListResponse{}, wrapResponseError(err, resp, "owner", owner)
+		return types.ImageListResponse{}, wrapResponseError(err, resp, "username", username)
 	}
 
 	var response types.ImageListResponse

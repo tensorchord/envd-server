@@ -5,43 +5,86 @@
 package server
 
 import (
+	"fmt"
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/ssh"
 
 	"github.com/tensorchord/envd-server/api/types"
-	"github.com/tensorchord/envd-server/pkg/service"
+	"github.com/tensorchord/envd-server/pkg/service/user"
 )
 
-// @Summary     authenticate the user.
-// @Description authenticate the user for the given public key.
+// @Summary     register the user.
+// @Description register the user for the given public key.
 // @Tags        user
 // @Accept      json
 // @Produce     json
 // @Param       request body     types.AuthRequest true "query params"
 // @Success     200     {object} types.AuthResponse
-// @Router      /auth [post]
-func (s *Server) auth(c *gin.Context) {
+// @Router      /register [post]
+func (s *Server) register(c *gin.Context) {
 	var req types.AuthRequest
 	if err := c.BindJSON(&req); err != nil {
+		logrus.Debug("failed to bind json", err)
 		c.JSON(500, err)
 		return
 	}
 
 	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(req.PublicKey))
 	if err != nil {
+		logrus.Debug("failed to parse auth key", err)
 		c.JSON(500, err)
 		return
 	}
-	userService := service.NewUserService(s.Queries)
-	err = userService.Register(req.IdentityToken, key.Marshal())
+	userService := user.NewService(s.Queries)
+	token, err := userService.Register(req.LoginName, req.Password, key.Marshal())
 	if err != nil {
-		logrus.Warnf("Create error: %+v", err)
+		logrus.Warnf("register error: %+v", err)
 		c.JSON(500, err)
 		return
 	}
 	res := types.AuthResponse{
-		IdentityToken: req.IdentityToken,
+		LoginName:     req.LoginName,
+		IdentityToken: token,
+		Status:        "login succeeded",
+	}
+	c.JSON(200, res)
+}
+
+// @Summary     login the user.
+// @Description login to the server.
+// @Tags        user
+// @Accept      json
+// @Produce     json
+// @Param       request body     types.AuthRequest true "query params"
+// @Success     200     {object} types.AuthResponse
+// @Router      /login [post]
+func (s *Server) login(c *gin.Context) {
+	var req types.AuthRequest
+	if err := c.BindJSON(&req); err != nil {
+		logrus.Debug("failed to bind json", err)
+		c.JSON(500, err)
+		return
+	}
+
+	userService := user.NewService(s.Queries)
+	succeeded, token, err := userService.Login(req.LoginName, req.Password)
+	if err != nil {
+		logrus.Debug("login error: ", err)
+		respondWithError(c, http.StatusUnauthorized,
+			fmt.Sprintf("auth failed: %+v", err))
+		return
+	}
+	if !succeeded {
+		respondWithError(c, http.StatusUnauthorized,
+			fmt.Sprintf("auth failed: %+v", err))
+		return
+	}
+	res := types.AuthResponse{
+		LoginName:     req.LoginName,
+		IdentityToken: token,
 		Status:        "login succeeded",
 	}
 	c.JSON(200, res)

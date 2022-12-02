@@ -19,7 +19,8 @@ type ImageInfo struct {
 }
 
 type User struct {
-	ID            int64  `json:"id"`
-	IdentityToken string `json:"identity_token"`
-	PublicKey     []byte `json:"public_key"`
+	ID           int64  `json:"id"`
+	LoginName    string `json:"login_name"`
+	PasswordHash string `json:"password_hash"`
+	PublicKey    []byte `json:"public_key"`
 }

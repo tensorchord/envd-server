@@ -13,7 +13,7 @@ import (
 
 	"github.com/tensorchord/envd-server/pkg/query"
 	"github.com/tensorchord/envd-server/pkg/query/mock"
-	"github.com/tensorchord/envd-server/pkg/service"
+	"github.com/tensorchord/envd-server/pkg/service/user"
 )
 
 var _ = Describe("Mock test for db", func() {
@@ -23,7 +23,7 @@ var _ = Describe("Mock test for db", func() {
 			m := mock.NewMockQuerier(ctrl)
 			m.EXPECT().CreateUser(context.Background(), query.CreateUserParams{IdentityToken: "test", PublicKey: []byte("whoami")}).Return(query.User{}, nil)
 			m.EXPECT().GetUser(context.Background(), "test").Return(query.User{IdentityToken: "test", PublicKey: []byte("whoami")}, nil)
-			userService := service.NewUserService(m)
+			userService := user.NewService(m)
 			err := userService.Register("test", []byte("whoami"))
 			Expect(err).NotTo(HaveOccurred())
 			exists, err := userService.Auth("test")

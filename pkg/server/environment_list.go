@@ -23,12 +23,12 @@ import (
 // @Tags        environment
 // @Accept      json
 // @Produce     json
-// @Param       identity_token path     string true "identity token" example("a332139d39b89a241400013700e665a3")
+// @Param       login_name     path     string true "login name" example("alice")
 // @Success     200            {object} types.EnvironmentListResponse
-// @Router      /users/{identity_token}/environments [get]
+// @Router      /users/{login_name}/environments [get]
 func (s *Server) environmentList(c *gin.Context) {
-	it := c.GetString("identity_token")
-	logger := logrus.WithField("identity_token", it)
+	it := c.GetString(ContextLoginName)
+	logger := logrus.WithField(ContextLoginName, it)
 
 	ls := labels.Set{
 		consts.PodLabelUID: it,

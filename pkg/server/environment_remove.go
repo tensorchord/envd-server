@@ -21,12 +21,12 @@ import (
 // @Tags        environment
 // @Accept      json
 // @Produce     json
-// @Param       identity_token path     string true "identity token" example("a332139d39b89a241400013700e665a3")
+// @Param       login_name     path     string true "login name" example("alice")
 // @Param       name           path     string true "environment name" example("pytorch-example")
 // @Success     200            {object} types.EnvironmentRemoveResponse
-// @Router      /users/{identity_token}/environments/{name} [delete]
+// @Router      /users/{login_name}/environments/{name} [delete]
 func (s *Server) environmentRemove(c *gin.Context) {
-	it := c.GetString("identity_token")
+	it := c.GetString(ContextLoginName)
 
 	var req types.EnvironmentRemoveRequest
 	if err := c.BindUri(&req); err != nil {
@@ -36,7 +36,7 @@ func (s *Server) environmentRemove(c *gin.Context) {
 
 	logger := logrus.WithFields(logrus.Fields{
 		"name":           req.Name,
-		"identity_token": it,
+		ContextLoginName: it,
 	})
 	pod, err := s.Client.CoreV1().Pods("default").Get(c, req.Name, metav1.GetOptions{})
 	if !k8serrors.IsNotFound(err) {
@@ -47,9 +47,9 @@ func (s *Server) environmentRemove(c *gin.Context) {
 		}
 		if pod.Labels[consts.PodLabelUID] != it {
 			logger.WithFields(logrus.Fields{
-				"identity_token_in_pod":     pod.Labels[consts.PodLabelUID],
-				"identity_token_in_request": it,
-			}).Debug("mismatch identity_token")
+				"loginname_in_pod":     pod.Labels[consts.PodLabelUID],
+				"loginname_in_request": it,
+			}).Debug("mismatch loginname")
 			respondWithError(c, http.StatusUnauthorized, "unauthorized")
 			return
 		}
@@ -72,9 +72,9 @@ func (s *Server) environmentRemove(c *gin.Context) {
 		}
 		if service.Labels[consts.PodLabelUID] != it {
 			logger.WithFields(logrus.Fields{
-				"identity_token_in_pod":     pod.Labels[consts.PodLabelUID],
-				"identity_token_in_request": it,
-			}).Debug("mismatch identity_token")
+				"loginname_in_pod":     pod.Labels[consts.PodLabelUID],
+				"loginname_in_request": it,
+			}).Debug("mismatch loginname")
 			respondWithError(c, http.StatusUnauthorized, "unauthorized")
 			return
 		}

@@ -78,6 +78,27 @@ func WithHost(host string) Opt {
 	}
 }
 
+// WithJWTToken applies a jwt token and the user to the client transport.
+// Cannot be used with `WithUserNoAuth`
+func WithJWTToken(user, token string) Opt {
+	return func(c *Client) error {
+		c.auth = true
+		c.jwtToken = token
+		c.user = user
+		return nil
+	}
+}
+
+// WithUserNoAuth applies a user to the client transport.
+// Cannot be used with `WithJWTToken`
+func WithUserNoAuth(user string) Opt {
+	return func(c *Client) error {
+		c.auth = false
+		c.user = user
+		return nil
+	}
+}
+
 // WithHostFromEnv overrides the client host with the host specified in the
 // DOCKER_HOST (EnvOverrideHost) environment variable. If DOCKER_HOST is not set,
 // or set to an empty value, the host is not modified.

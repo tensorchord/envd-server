@@ -14,7 +14,7 @@ import (
 	"go.containerssh.io/libcontainerssh/config"
 	"golang.org/x/crypto/ssh"
 
-	"github.com/tensorchord/envd-server/pkg/service"
+	"github.com/tensorchord/envd-server/pkg/service/user"
 	"github.com/tensorchord/envd-server/sshname"
 )
 
@@ -77,7 +77,7 @@ func (s *Server) OnPubKey(c *gin.Context) {
 		return
 	}
 
-	userService := service.NewUserService(s.Queries)
+	userService := user.NewService(s.Queries)
 	skey, err := userService.GetPubKey(owner)
 	if err != nil {
 		logrus.WithError(err).Errorf("db query failed: %v", err)

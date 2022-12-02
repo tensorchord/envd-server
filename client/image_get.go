@@ -10,19 +10,28 @@ import (
 	"fmt"
 	"net/url"
 
+	"github.com/cockroachdb/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/tensorchord/envd-server/api/types"
 )
 
 // ImageGet gets the image info.
-func (cli *Client) ImageGet(ctx context.Context, owner, name string) (types.ImageGetResponse, error) {
-	url := fmt.Sprintf("/users/%s/images/%s", owner, url.PathEscape(name))
+func (cli *Client) ImageGet(
+	ctx context.Context, name string) (types.ImageGetResponse, error) {
+	username, headers, err := cli.getUserAndHeaders()
+	if err != nil {
+		return types.ImageGetResponse{},
+			errors.Wrap(err, "failed to get user and headers")
+	}
+
+	url := fmt.Sprintf("/users/%s/images/%s", username, url.PathEscape(name))
 	logrus.WithField("url", url).Debug("build image get url")
-	resp, err := cli.get(ctx, url, nil, nil)
+	resp, err := cli.get(ctx, url, nil, headers)
 	defer ensureReaderClosed(resp)
 
 	if err != nil {
-		return types.ImageGetResponse{}, wrapResponseError(err, resp, "owner", owner)
+		return types.ImageGetResponse{},
+			wrapResponseError(err, resp, "username", username)
 	}
 
 	var response types.ImageGetResponse

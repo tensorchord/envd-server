@@ -53,22 +53,28 @@ func (q *Queries) CreateImageInfo(ctx context.Context, arg CreateImageInfoParams
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (
-  identity_token, public_key
+  login_name, password_hash, public_key
 ) VALUES (
-  $1, $2
+  $1, $2, $3
 )
-RETURNING id, identity_token, public_key
+RETURNING login_name, public_key
 `
 
 type CreateUserParams struct {
-	IdentityToken string `json:"identity_token"`
-	PublicKey     []byte `json:"public_key"`
+	LoginName    string `json:"login_name"`
+	PasswordHash string `json:"password_hash"`
+	PublicKey    []byte `json:"public_key"`
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRow(ctx, createUser, arg.IdentityToken, arg.PublicKey)
-	var i User
-	err := row.Scan(&i.ID, &i.IdentityToken, &i.PublicKey)
+type CreateUserRow struct {
+	LoginName string `json:"login_name"`
+	PublicKey []byte `json:"public_key"`
+}
+
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error) {
+	row := q.db.QueryRow(ctx, createUser, arg.LoginName, arg.PasswordHash, arg.PublicKey)
+	var i CreateUserRow
+	err := row.Scan(&i.LoginName, &i.PublicKey)
 	return i, err
 }
 
@@ -108,14 +114,19 @@ func (q *Queries) GetImageInfo(ctx context.Context, arg GetImageInfoParams) (Ima
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, identity_token, public_key FROM users
-WHERE identity_token = $1 LIMIT 1
+SELECT id, login_name, password_hash, public_key FROM users
+WHERE login_name = $1 LIMIT 1
 `
 
-func (q *Queries) GetUser(ctx context.Context, identityToken string) (User, error) {
-	row := q.db.QueryRow(ctx, getUser, identityToken)
+func (q *Queries) GetUser(ctx context.Context, loginName string) (User, error) {
+	row := q.db.QueryRow(ctx, getUser, loginName)
 	var i User
-	err := row.Scan(&i.ID, &i.IdentityToken, &i.PublicKey)
+	err := row.Scan(
+		&i.ID,
+		&i.LoginName,
+		&i.PasswordHash,
+		&i.PublicKey,
+	)
 	return i, err
 }
 
@@ -153,7 +164,7 @@ func (q *Queries) ListImageByOwner(ctx context.Context, ownerToken string) ([]Im
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT id, identity_token, public_key FROM users
+SELECT id, login_name, password_hash, public_key FROM users
 ORDER BY id
 `
 
@@ -166,7 +177,12 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 	var items []User
 	for rows.Next() {
 		var i User
-		if err := rows.Scan(&i.ID, &i.IdentityToken, &i.PublicKey); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.LoginName,
+			&i.PasswordHash,
+			&i.PublicKey,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

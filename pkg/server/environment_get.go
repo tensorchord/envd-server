@@ -21,12 +21,12 @@ import (
 // @Tags        environment
 // @Accept      json
 // @Produce     json
-// @Param       identity_token path     string true "identity token" example("a332139d39b89a241400013700e665a3")
+// @Param       login_name     path     string true "login name" example("alice")
 // @Param       name           path     string true "environment name" example("pytorch-example")
 // @Success     200            {object} types.EnvironmentGetResponse
-// @Router      /users/{identity_token}/environments/{name} [get]
+// @Router      /users/{login_name}/environments/{name} [get]
 func (s *Server) environmentGet(c *gin.Context) {
-	it := c.GetString("identity_token")
+	it := c.GetString(ContextLoginName)
 
 	var req types.EnvironmentGetRequest
 	if err := c.BindUri(&req); err != nil {
@@ -45,9 +45,9 @@ func (s *Server) environmentGet(c *gin.Context) {
 	}
 	if pod.Labels[consts.PodLabelUID] != it {
 		logrus.WithFields(logrus.Fields{
-			"identity_token_in_pod":     pod.Labels[consts.PodLabelUID],
-			"identity_token_in_request": it,
-		}).Debug("mismatch identity_token")
+			"loginname_in_pod":     pod.Labels[consts.PodLabelUID],
+			"loginname_in_request": it,
+		}).Debug("mismatch loginname")
 		respondWithError(c, http.StatusUnauthorized, "unauthorized")
 		return
 	}

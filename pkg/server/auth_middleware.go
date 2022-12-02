@@ -9,50 +9,67 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 
-	"github.com/tensorchord/envd-server/api/types"
-	"github.com/tensorchord/envd-server/pkg/service"
+	"github.com/tensorchord/envd-server/pkg/service/user"
 )
 
 func (s *Server) AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		amr := types.AuthMiddlewareRequest{}
-		if err := c.BindUri(&amr); err != nil {
+		amURI := AuthMiddlewareURIRequest{}
+		if err := c.BindUri(&amURI); err != nil {
 			respondWithError(c, http.StatusUnauthorized,
 				fmt.Sprintf("auth failed: %v", err))
 			c.Next()
 			return
 		}
-		userService := service.NewUserService(s.Queries)
-		exists, err := userService.Auth(amr.IdentityToken)
-		if err != nil {
-			respondWithError(c, http.StatusInternalServerError,
-				fmt.Sprintf("failed to query the identity_token: %v", err))
-			return
-		}
-		if exists {
-			c.Set("identity_token", amr.IdentityToken)
+
+		logrus.WithFields(logrus.Fields{
+			"login-name-in-uri": amURI.LoginName,
+		}).Debug("debug")
+
+		amr := AuthMiddlewareHeaderRequest{}
+		if err := c.BindHeader(&amr); err != nil {
+			respondWithError(c, http.StatusUnauthorized,
+				fmt.Sprintf("auth failed: %v", err))
 			c.Next()
 			return
-		} else {
+		}
+
+		userService := user.NewService(s.Queries)
+		loginName, err := userService.ValidateJWT(amr.JWTToken)
+		if err != nil {
 			respondWithError(c, http.StatusUnauthorized,
-				"failed to auth the identity_token")
+				fmt.Sprintf("failed to validate the JWT: %v", err))
+			c.Next()
 			return
 		}
+		if loginName != amURI.LoginName {
+			logrus.WithFields(logrus.Fields{
+				"login-name":        loginName,
+				"login-name-in-uri": amURI.LoginName,
+			}).Debug("login name in JWT does not match the login name in URI")
+			respondWithError(c, http.StatusUnauthorized,
+				"loginname mismatch")
+			c.Next()
+			return
+		}
+		c.Set(ContextLoginName, loginName)
+		c.Next()
 	}
 }
 
 func (s *Server) NoAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		amr := types.AuthMiddlewareRequest{}
-		if err := c.BindUri(&amr); err != nil {
+		amURI := AuthMiddlewareURIRequest{}
+		if err := c.BindUri(&amURI); err != nil {
 			respondWithError(c, http.StatusUnauthorized,
 				fmt.Sprintf("auth failed: %v", err))
 			c.Next()
 			return
 		}
 
-		c.Set("identity_token", amr.IdentityToken)
+		c.Set(ContextLoginName, amURI.LoginName)
 		c.Next()
 	}
 }

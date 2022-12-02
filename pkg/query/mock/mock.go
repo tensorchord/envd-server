@@ -51,10 +51,10 @@ func (mr *MockQuerierMockRecorder) CreateImageInfo(ctx, arg interface{}) *gomock
 }
 
 // CreateUser mocks base method.
-func (m *MockQuerier) CreateUser(ctx context.Context, arg query.CreateUserParams) (query.User, error) {
+func (m *MockQuerier) CreateUser(ctx context.Context, arg query.CreateUserParams) (query.CreateUserRow, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateUser", ctx, arg)
-	ret0, _ := ret[0].(query.User)
+	ret0, _ := ret[0].(query.CreateUserRow)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -95,18 +95,18 @@ func (mr *MockQuerierMockRecorder) GetImageInfo(ctx, arg interface{}) *gomock.Ca
 }
 
 // GetUser mocks base method.
-func (m *MockQuerier) GetUser(ctx context.Context, identityToken string) (query.User, error) {
+func (m *MockQuerier) GetUser(ctx context.Context, loginName string) (query.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetUser", ctx, identityToken)
+	ret := m.ctrl.Call(m, "GetUser", ctx, loginName)
 	ret0, _ := ret[0].(query.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetUser indicates an expected call of GetUser.
-func (mr *MockQuerierMockRecorder) GetUser(ctx, identityToken interface{}) *gomock.Call {
+func (mr *MockQuerierMockRecorder) GetUser(ctx, loginName interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockQuerier)(nil).GetUser), ctx, identityToken)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockQuerier)(nil).GetUser), ctx, loginName)
 }
 
 // ListImageByOwner mocks base method.

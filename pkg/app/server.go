@@ -44,6 +44,12 @@ func New() EnvdServerApp {
 			Usage:   "url for database. e.g. postgres://user:password@localhost:5432/dbname",
 			EnvVars: []string{"ENVD_DB_URL"},
 		},
+		&cli.BoolFlag{
+			Name:    "no-auth",
+			Usage:   "disable authentication. This is for development only. ",
+			EnvVars: []string{"ENVD_NO_AUTH"},
+			Aliases: []string{"n"},
+		},
 	}
 	internalApp.Action = runServer
 
@@ -70,7 +76,8 @@ func runServer(clicontext *cli.Context) error {
 		Debug:       clicontext.Bool("debug"),
 		KubeConfig:  clicontext.Path("kubeconfig"),
 		HostKeyPath: clicontext.Path("hostkey"),
-		DbUrl:       clicontext.String("dburl"),
+		DBURL:       clicontext.String("dburl"),
+		NoAuth:      clicontext.Bool("no-auth"),
 	})
 	if err != nil {
 		return err

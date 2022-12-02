@@ -9,13 +9,19 @@ import (
 	"encoding/json"
 	"net/url"
 
+	"github.com/cockroachdb/errors"
 	"github.com/tensorchord/envd-server/api/types"
 )
 
-// Auth authenticates the envd server.
+var (
+	ErrNoAuth = errors.New("no authentication provided")
+	ErrNoUser = errors.New("no user provided")
+)
+
+// Register authenticates the envd server.
 // It returns unauthorizedError when the authentication fails.
-func (cli *Client) Auth(ctx context.Context, auth types.AuthRequest) (types.AuthResponse, error) {
-	resp, err := cli.post(ctx, "/auth", url.Values{}, auth, nil)
+func (cli *Client) Register(ctx context.Context, auth types.AuthRequest) (types.AuthResponse, error) {
+	resp, err := cli.post(ctx, "/register", url.Values{}, auth, nil)
 	defer ensureReaderClosed(resp)
 
 	if err != nil {
@@ -25,4 +31,35 @@ func (cli *Client) Auth(ctx context.Context, auth types.AuthRequest) (types.Auth
 	var response types.AuthResponse
 	err = json.NewDecoder(resp.body).Decode(&response)
 	return response, err
+}
+
+// Login logins the envd server.
+// It returns unauthorizedError when the authentication fails.
+func (cli *Client) Login(ctx context.Context, auth types.AuthRequest) (types.AuthResponse, error) {
+	resp, err := cli.post(ctx, "/login", url.Values{}, auth, nil)
+	defer ensureReaderClosed(resp)
+
+	if err != nil {
+		return types.AuthResponse{}, err
+	}
+
+	var response types.AuthResponse
+	err = json.NewDecoder(resp.body).Decode(&response)
+	return response, err
+}
+
+func (cli Client) getUserAndHeaders() (string, map[string][]string, error) {
+	if !cli.auth {
+		if cli.user == "" {
+			return "", nil, ErrNoUser
+		}
+		return cli.user, nil, nil
+	}
+
+	if cli.jwtToken == "" || cli.user == "" {
+		return "", nil, ErrNoAuth
+	}
+	return cli.user, map[string][]string{
+		"Authorization": {cli.jwtToken},
+	}, nil
 }
