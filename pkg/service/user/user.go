@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v4"
-	"golang.org/x/crypto/bcrypt"
 
 	"github.com/tensorchord/envd-server/pkg/query"
 )
@@ -36,14 +35,14 @@ func NewService(querier query.Querier) *Service {
 
 func (u *Service) Register(loginName string,
 	pwd, PublicKey []byte) (string, error) {
-	bcryptedPwd, err := bcrypt.GenerateFromPassword(pwd, bcrypt.DefaultCost)
+	hashed, err := GenerateHashedSaltPassword(pwd)
 	if err != nil {
 		return "", err
 	}
 	_, err = u.querier.CreateUser(
 		context.Background(), query.CreateUserParams{
 			LoginName:    loginName,
-			PasswordHash: string(bcryptedPwd),
+			PasswordHash: string(hashed),
 			PublicKey:    PublicKey,
 		})
 
@@ -80,7 +79,7 @@ func (u *Service) Login(loginName string, pwd []byte) (bool, string, error) {
 		}
 	}
 
-	if err := bcrypt.CompareHashAndPassword(
+	if err := CompareHashAndPassword(
 		[]byte(rawUser.PasswordHash), pwd); err != nil {
 		return false, "", err
 	}

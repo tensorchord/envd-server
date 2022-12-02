@@ -28,8 +28,9 @@ func NewServer(objects ...runtime.Object) (*server.Server, error) {
 		Router:      router,
 		AdminRouter: admin,
 		Client:      cli,
+		Auth:        false,
 	}
 
-	s.BindHandlers(false)
+	s.BindHandlers()
 	return s, nil
 }

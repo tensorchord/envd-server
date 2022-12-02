@@ -36,7 +36,7 @@ type Server struct {
 	serverFingerPrints []string
 
 	// Auth shows if the auth is enabled.
-	auth bool
+	Auth bool
 }
 
 type Opt struct {
@@ -107,7 +107,7 @@ func New(opt Opt) (*Server, error) {
 			s.serverFingerPrints = append(s.serverFingerPrints, fingerPrint)
 		}
 	}
-	s.auth = !opt.NoAuth
+	s.Auth = !opt.NoAuth
 	s.BindHandlers()
 	return s, nil
 }
@@ -127,7 +127,7 @@ func (s *Server) BindHandlers() {
 	v1.POST("/pubkey", s.OnPubKey)
 
 	authorized := engine.Group("/api/v1/users")
-	if s.auth {
+	if s.Auth {
 		authorized.Use(s.AuthMiddleware())
 	} else {
 		authorized.Use(s.NoAuthMiddleware())

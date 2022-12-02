@@ -28,7 +28,7 @@ var _ = Describe("environments", Ordered, func() {
 		logger.Debug(identityToken)
 		srv, err := util.NewServer(util.NewPod("test", identityToken))
 		Expect(err).Should(BeNil())
-		cli, err := client.NewClientWithOpts()
+		cli, err := client.NewClientWithOpts(client.WithUserNoAuth(identityToken))
 		Expect(err).Should(BeNil())
 
 		go func() {
@@ -39,7 +39,7 @@ var _ = Describe("environments", Ordered, func() {
 			l, err := srv.Client.CoreV1().Pods("default").List(context.TODO(), v1.ListOptions{})
 			Expect(err).Should(BeNil())
 			logger.Debug(l)
-			resp, err := cli.EnvironmentList(context.TODO(), identityToken)
+			resp, err := cli.EnvironmentList(context.TODO())
 			Expect(err).Should(BeNil())
 			Expect(len(resp.Items)).Should(Equal(1))
 		})

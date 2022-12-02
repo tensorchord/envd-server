@@ -19,14 +19,35 @@ import (
 var _ = Describe("Mock test for db", func() {
 	When("When change user data", func() {
 		It("should work", func() {
+			username := "test"
+			key := []byte("key")
+			pwd := []byte("pwd")
+
+			hashed, err := user.GenerateHashedSaltPassword(pwd)
+			Expect(err).Should(BeNil())
 			ctrl := gomock.NewController(GinkgoT())
 			m := mock.NewMockQuerier(ctrl)
-			m.EXPECT().CreateUser(context.Background(), query.CreateUserParams{IdentityToken: "test", PublicKey: []byte("whoami")}).Return(query.User{}, nil)
-			m.EXPECT().GetUser(context.Background(), "test").Return(query.User{IdentityToken: "test", PublicKey: []byte("whoami")}, nil)
+			m.EXPECT().CreateUser(
+				context.Background(),
+				gomock.All(),
+			).Return(
+				query.CreateUserRow{
+					LoginName: username,
+					PublicKey: key,
+				}, nil,
+			)
+			m.EXPECT().GetUser(
+				context.Background(), username).Return(
+				query.User{
+					LoginName:    username,
+					PasswordHash: string(hashed),
+					PublicKey:    key,
+				}, nil,
+			)
 			userService := user.NewService(m)
-			err := userService.Register("test", []byte("whoami"))
+			_, err = userService.Register(username, pwd, key)
 			Expect(err).NotTo(HaveOccurred())
-			exists, err := userService.Auth("test")
+			exists, _, err := userService.Login(username, pwd)
 			Expect(exists).To(BeTrue())
 			Expect(err).NotTo(HaveOccurred())
 		})
