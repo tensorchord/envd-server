@@ -18,6 +18,7 @@ import (
 
 // @Summary     Remove the environment.
 // @Description Remove the environment.
+// @Security    Authentication
 // @Tags        environment
 // @Accept      json
 // @Produce     json

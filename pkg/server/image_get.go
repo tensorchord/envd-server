@@ -21,6 +21,7 @@ import (
 
 // @Summary     Get the image.
 // @Description Get the image with the given image name.
+// @Security    Authentication
 // @Tags        image
 // @Accept      json
 // @Produce     json

@@ -25,7 +25,7 @@ import (
 
 // @Summary     Create the environment.
 // @Description Create the environment.
-// @Security    ApiKeyAuth
+// @Security    Authentication
 // @Tags        environment
 // @Accept      json
 // @Produce     json

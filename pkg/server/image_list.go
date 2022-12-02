@@ -19,6 +19,7 @@ import (
 
 // @Summary     List the images.
 // @Description List the images.
+// @Security    Authentication
 // @Tags        image
 // @Accept      json
 // @Produce     json

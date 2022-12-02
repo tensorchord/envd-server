@@ -20,6 +20,7 @@ import (
 
 // @Summary     List the environment.
 // @Description List the environment.
+// @Security    Authentication
 // @Tags        environment
 // @Accept      json
 // @Produce     json

@@ -183,6 +183,11 @@ const docTemplate = `{
         },
         "/users/{login_name}/environments": {
             "get": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "List the environment.",
                 "consumes": [
                     "application/json"
@@ -216,7 +221,7 @@ const docTemplate = `{
             "post": {
                 "security": [
                     {
-                        "ApiKeyAuth": []
+                        "Authentication": []
                     }
                 ],
                 "description": "Create the environment.",
@@ -261,6 +266,11 @@ const docTemplate = `{
         },
         "/users/{login_name}/environments/{name}": {
             "get": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "Get the environment with the given environment name.",
                 "consumes": [
                     "application/json"
@@ -300,6 +310,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "Remove the environment.",
                 "consumes": [
                     "application/json"
@@ -341,6 +356,11 @@ const docTemplate = `{
         },
         "/users/{login_name}/images": {
             "get": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "List the images.",
                 "consumes": [
                     "application/json"
@@ -382,6 +402,11 @@ const docTemplate = `{
         },
         "/users/{login_name}/images/{name}": {
             "get": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "Get the image with the given image name.",
                 "consumes": [
                     "application/json"
@@ -838,15 +863,17 @@ const docTemplate = `{
         }
     },
     "securityDefinitions": {
-        "BasicAuth": {
-            "type": "basic"
+        "Authentication": {
+            "type": "apiKey",
+            "name": "JWT",
+            "in": "header"
         }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "v0.0.8",
+	Version:          "v0.0.12",
 	Host:             "localhost:8080",
 	BasePath:         "/api/v1",
 	Schemes:          []string{"http"},

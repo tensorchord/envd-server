@@ -18,6 +18,7 @@ import (
 
 // @Summary     Get the environment.
 // @Description Get the environment with the given environment name.
+// @Security    Authentication
 // @Tags        environment
 // @Accept      json
 // @Produce     json
