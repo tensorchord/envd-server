@@ -1,16 +1,15 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import { useFetch } from '@vueuse/core'
+// import { useFetch } from '@vueuse/core'
 
 export const useUserStore = defineStore('user', () => {
-
-  const userInfo = ref(useLocalStorage("userInfo", {
+  const userInfo = ref(useLocalStorage('userInfo', {
     username: '',
     jwtToken: '',
   }))
 
   function logIn() {
     // TODO
-    let { } = useFetch('/api/login', {})
+    // let { } = useFetch('/api/login', {})
   }
 
   function setUser(username: string) {

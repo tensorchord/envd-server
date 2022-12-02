@@ -5,16 +5,16 @@ on:
     branches:
       - main
     paths:
-      - '.github/workflows/**'
-      - '**.go'
-      - 'Makefile'
-      - 'go.**'
+      - ".github/workflows/**"
+      - "**.go"
+      - "Makefile"
+      - "go.**"
   pull_request:
     paths:
-      - '.github/workflows/**'
-      - '**.go'
-      - 'Makefile'
-      - 'go.**'
+      - ".github/workflows/**"
+      - "**.go"
+      - "Makefile"
+      - "go.**"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -110,4 +110,3 @@ jobs:
         run: make swag
       - name: test
         run: make test
-  

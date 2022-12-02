@@ -1,0 +1,40 @@
+name: frontend lint
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/**"
+      - "dashboard/**"
+  pull_request:
+    paths:
+      - ".github/workflows/**"
+      - "dashboard/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend-lint:
+    name: frontend-lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.2.4
+        with:
+          version: 7.17.1
+          run_install: |
+            - cwd: "./dashboard"
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3.5.1
+        with:
+          node-version: 18
+          registry-url: https://registry.npmjs.org/
+          cache: pnpm
+          cache-dependency-path: dashboard/pnpm-lock.yaml
+      - name: ESLint
+        run: npx eslint .
+        working-directory: ./dashboard
