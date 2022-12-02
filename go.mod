@@ -28,7 +28,7 @@ require (
 	k8s.io/client-go v0.25.4
 )
 
-require github.com/gin-contrib/cors v1.4.0 // indirect
+require github.com/gin-contrib/cors v1.4.0
 
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
