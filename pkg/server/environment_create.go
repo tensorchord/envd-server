@@ -14,6 +14,7 @@ import (
 	"github.com/jackc/pgtype"
 	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/tensorchord/envd-server/api/types"
@@ -39,6 +40,33 @@ func (s *Server) environmentCreate(c *gin.Context) {
 	if err := c.BindJSON(&req); err != nil {
 		c.JSON(500, err)
 		return
+	}
+
+	res := req.Environment.Resources
+	resRequest := v1.ResourceList{}
+	if res.Cpu != "" {
+		cpu, err := resource.ParseQuantity(res.Cpu)
+		if err != nil {
+			c.JSON(500, err)
+			return
+		}
+		resRequest[v1.ResourceCPU] = cpu
+	}
+	if res.Memory != "" {
+		mem, err := resource.ParseQuantity(res.Memory)
+		if err != nil {
+			c.JSON(500, err)
+			return
+		}
+		resRequest[v1.ResourceMemory] = mem
+	}
+	if res.Gpu != "" {
+		gpu, err := resource.ParseQuantity(res.Gpu)
+		if err != nil {
+			c.JSON(500, err)
+			return
+		}
+		resRequest["nvidia/gpu"] = gpu
 	}
 
 	meta, err := image.FetchMetadata(c.Request.Context(), req.Spec.Image)
@@ -156,6 +184,9 @@ func (s *Server) environmentCreate(c *gin.Context) {
 							MountPath: authKeyPath,
 							SubPath:   "publickey",
 						},
+					},
+					Resources: v1.ResourceRequirements{
+						Requests: resRequest,
 					},
 				},
 			},
