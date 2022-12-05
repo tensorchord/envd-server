@@ -20,30 +20,30 @@ var (
 
 // Register authenticates the envd server.
 // It returns unauthorizedError when the authentication fails.
-func (cli *Client) Register(ctx context.Context, auth types.AuthRequest) (types.AuthResponse, error) {
+func (cli *Client) Register(ctx context.Context, auth types.AuthNRequest) (types.AuthNResponse, error) {
 	resp, err := cli.post(ctx, "/register", url.Values{}, auth, nil)
 	defer ensureReaderClosed(resp)
 
 	if err != nil {
-		return types.AuthResponse{}, err
+		return types.AuthNResponse{}, err
 	}
 
-	var response types.AuthResponse
+	var response types.AuthNResponse
 	err = json.NewDecoder(resp.body).Decode(&response)
 	return response, err
 }
 
 // Login logins the envd server.
 // It returns unauthorizedError when the authentication fails.
-func (cli *Client) Login(ctx context.Context, auth types.AuthRequest) (types.AuthResponse, error) {
+func (cli *Client) Login(ctx context.Context, auth types.AuthNRequest) (types.AuthNResponse, error) {
 	resp, err := cli.post(ctx, "/login", url.Values{}, auth, nil)
 	defer ensureReaderClosed(resp)
 
 	if err != nil {
-		return types.AuthResponse{}, err
+		return types.AuthNResponse{}, err
 	}
 
-	var response types.AuthResponse
+	var response types.AuthNResponse
 	err = json.NewDecoder(resp.body).Decode(&response)
 	return response, err
 }

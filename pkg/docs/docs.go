@@ -99,7 +99,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/types.AuthRequest"
+                            "$ref": "#/definitions/types.AuthNRequest"
                         }
                     }
                 ],
@@ -107,7 +107,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/types.AuthResponse"
+                            "$ref": "#/definitions/types.AuthNResponse"
                         }
                     }
                 }
@@ -167,7 +167,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/types.AuthRequest"
+                            "$ref": "#/definitions/types.AuthNRequest"
                         }
                     }
                 ],
@@ -175,7 +175,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/types.AuthResponse"
+                            "$ref": "#/definitions/types.AuthNResponse"
                         }
                     }
                 }
@@ -619,7 +619,7 @@ const docTemplate = `{
                 }
             }
         },
-        "types.AuthRequest": {
+        "types.AuthNRequest": {
             "type": "object",
             "properties": {
                 "login_name": {
@@ -639,7 +639,7 @@ const docTemplate = `{
                 }
             }
         },
-        "types.AuthResponse": {
+        "types.AuthNResponse": {
             "type": "object",
             "properties": {
                 "identity_token": {

@@ -21,11 +21,11 @@ import (
 // @Tags        user
 // @Accept      json
 // @Produce     json
-// @Param       request body     types.AuthRequest true "query params"
-// @Success     200     {object} types.AuthResponse
+// @Param       request body     types.AuthNRequest true "query params"
+// @Success     200     {object} types.AuthNResponse
 // @Router      /register [post]
 func (s *Server) register(c *gin.Context) {
-	var req types.AuthRequest
+	var req types.AuthNRequest
 	if err := c.BindJSON(&req); err != nil {
 		logrus.Debug("failed to bind json", err)
 		c.JSON(500, err)
@@ -45,7 +45,7 @@ func (s *Server) register(c *gin.Context) {
 		c.JSON(500, err)
 		return
 	}
-	res := types.AuthResponse{
+	res := types.AuthNResponse{
 		LoginName:     req.LoginName,
 		IdentityToken: token,
 		Status:        "login succeeded",
@@ -58,11 +58,11 @@ func (s *Server) register(c *gin.Context) {
 // @Tags        user
 // @Accept      json
 // @Produce     json
-// @Param       request body     types.AuthRequest true "query params"
-// @Success     200     {object} types.AuthResponse
+// @Param       request body     types.AuthNRequest true "query params"
+// @Success     200     {object} types.AuthNResponse
 // @Router      /login [post]
 func (s *Server) login(c *gin.Context) {
-	var req types.AuthRequest
+	var req types.AuthNRequest
 	if err := c.BindJSON(&req); err != nil {
 		logrus.Debug("failed to bind json", err)
 		c.JSON(500, err)
@@ -82,7 +82,7 @@ func (s *Server) login(c *gin.Context) {
 			fmt.Sprintf("auth failed: %+v", err))
 		return
 	}
-	res := types.AuthResponse{
+	res := types.AuthNResponse{
 		LoginName:     req.LoginName,
 		IdentityToken: token,
 		Status:        "login succeeded",

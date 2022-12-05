@@ -4,8 +4,8 @@
 
 package types
 
-// AuthRequest contains authorization information for connecting to a envd server.
-type AuthRequest struct {
+// AuthNRequest contains authorization information for connecting to a envd server.
+type AuthNRequest struct {
 	PublicKey string `json:"public_key,omitempty"`
 
 	// LoginName is used to authenticate the user and get
@@ -16,7 +16,7 @@ type AuthRequest struct {
 	Password []byte `json:"password,omitempty"`
 }
 
-type AuthResponse struct {
+type AuthNResponse struct {
 	// LoginName is used to authenticate the user and get
 	// an access token for the registry.
 	LoginName string `json:"login_name,omitempty" example:"alice"`
