@@ -44,7 +44,7 @@ var _ = Describe("Mock test for db", func() {
 					PublicKey:    key,
 				}, nil,
 			)
-			userService := user.NewService(m)
+			userService := user.NewService(m, "secret", 0)
 			_, err = userService.Register(username, pwd, key)
 			Expect(err).NotTo(HaveOccurred())
 			exists, _, err := userService.Login(username, pwd)
