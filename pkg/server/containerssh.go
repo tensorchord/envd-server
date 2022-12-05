@@ -77,7 +77,8 @@ func (s *Server) OnPubKey(c *gin.Context) {
 		return
 	}
 
-	userService := user.NewService(s.Queries)
+	userService := user.NewService(s.Queries,
+		s.JWTSecret, s.JWTExpirationTimeout)
 	skey, err := userService.GetPubKey(owner)
 	if err != nil {
 		logrus.WithError(err).Errorf("db query failed: %v", err)

@@ -36,7 +36,7 @@ func (s *Server) AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		userService := user.NewService(s.Queries)
+		userService := user.NewService(s.Queries, s.JWTSecret, s.JWTExpirationTimeout)
 		loginName, err := userService.ValidateJWT(amr.JWTToken)
 		if err != nil {
 			respondWithError(c, http.StatusUnauthorized,

@@ -14,22 +14,16 @@ import (
 	"github.com/tensorchord/envd-server/pkg/query"
 )
 
-var (
-	// ExpirationTimeDefault is the default expiration time of the token.
-	expirationTimeDefault = time.Hour * 24 * 365
-	// jwtSecretDefault is the secret used to sign the token.
-	jwtSecretDefault = "envd-secret"
-)
-
 type Service struct {
 	querier   query.Querier
 	jwtIssuer *JWTIssuer
 }
 
-func NewService(querier query.Querier) *Service {
+func NewService(querier query.Querier,
+	secret string, expirationTimeDefault time.Duration) *Service {
 	return &Service{
 		querier:   querier,
-		jwtIssuer: newJWTIssuer(expirationTimeDefault, jwtSecretDefault),
+		jwtIssuer: newJWTIssuer(expirationTimeDefault, secret),
 	}
 }
 

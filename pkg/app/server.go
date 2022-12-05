@@ -5,6 +5,8 @@
 package app
 
 import (
+	"time"
+
 	"github.com/sirupsen/logrus"
 	cli "github.com/urfave/cli/v2"
 
@@ -50,6 +52,20 @@ func New() EnvdServerApp {
 			EnvVars: []string{"ENVD_NO_AUTH"},
 			Aliases: []string{"n"},
 		},
+		&cli.StringFlag{
+			Name:    "jwt-secret",
+			Usage:   "secret for jwt token",
+			Value:   "envd-server",
+			EnvVars: []string{"ENVD_JWT_SECRET"},
+			Aliases: []string{"js"},
+		},
+		&cli.DurationFlag{
+			Name:    "jwt-expiration-timeout",
+			Usage:   "expiration timeout for the issued jwt token",
+			Value:   time.Hour * 24 * 365,
+			EnvVars: []string{"ENVD_JWT_EXPIRATION_TIMEOUT"},
+			Aliases: []string{"jet"},
+		},
 	}
 	internalApp.Action = runServer
 
@@ -78,6 +94,7 @@ func runServer(clicontext *cli.Context) error {
 		HostKeyPath: clicontext.Path("hostkey"),
 		DBURL:       clicontext.String("dburl"),
 		NoAuth:      clicontext.Bool("no-auth"),
+		JWTSecret:   clicontext.String("jwt-secret"),
 	})
 	if err != nil {
 		return err

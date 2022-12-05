@@ -38,7 +38,8 @@ func (s *Server) register(c *gin.Context) {
 		c.JSON(500, err)
 		return
 	}
-	userService := user.NewService(s.Queries)
+	userService := user.NewService(s.Queries,
+		s.JWTSecret, s.JWTExpirationTimeout)
 	token, err := userService.Register(req.LoginName, req.Password, key.Marshal())
 	if err != nil {
 		logrus.Warnf("register error: %+v", err)
@@ -69,7 +70,8 @@ func (s *Server) login(c *gin.Context) {
 		return
 	}
 
-	userService := user.NewService(s.Queries)
+	userService := user.NewService(s.Queries,
+		s.JWTSecret, s.JWTExpirationTimeout)
 	succeeded, token, err := userService.Login(req.LoginName, req.Password)
 	if err != nil {
 		logrus.Debug("login error: ", err)

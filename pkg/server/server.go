@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/cockroachdb/errors"
 	"github.com/gin-contrib/cors"
@@ -37,6 +38,10 @@ type Server struct {
 
 	// Auth shows if the auth is enabled.
 	Auth bool
+	// JWTSecret is the secret used to sign the JWT token.
+	JWTSecret string
+	// JWTExpirationTimeout is the expiration time of the JWT token.
+	JWTExpirationTimeout time.Duration
 }
 
 type Opt struct {
@@ -44,7 +49,10 @@ type Opt struct {
 	KubeConfig  string
 	HostKeyPath string
 	DBURL       string
-	NoAuth      bool
+
+	NoAuth               bool
+	JWTSecret            string
+	JWTExpirationTimeout time.Duration
 }
 
 func New(opt Opt) (*Server, error) {
@@ -92,6 +100,8 @@ func New(opt Opt) (*Server, error) {
 		Queries:            queries,
 		serverFingerPrints: make([]string, 0),
 	}
+
+	// Load host key.
 	if opt.HostKeyPath != "" {
 		// read private key file
 		pemBytes, err := os.ReadFile(opt.HostKeyPath)
@@ -107,7 +117,13 @@ func New(opt Opt) (*Server, error) {
 			s.serverFingerPrints = append(s.serverFingerPrints, fingerPrint)
 		}
 	}
+
+	// Set the auth information.
 	s.Auth = !opt.NoAuth
+	s.JWTSecret = opt.JWTSecret
+	s.JWTExpirationTimeout = opt.JWTExpirationTimeout
+
+	// Bind the HTTP handlers.
 	s.BindHandlers()
 	return s, nil
 }
