@@ -4,28 +4,26 @@
 
 package types
 
-// AuthRequest contains authorization information for connecting to a envd server.
-type AuthRequest struct {
-	// Username  string `json:"username,omitempty"`
-	// Password  string `json:"password,omitempty"`
-	PublicKey string `json:"public_key"`
+// AuthNRequest contains authorization information for connecting to a envd server.
+type AuthNRequest struct {
+	PublicKey string `json:"public_key,omitempty"`
 
-	// IdentityToken is used to authenticate the user and get
+	// LoginName is used to authenticate the user and get
 	// an access token for the registry.
-	// Required: true
-	IdentityToken string `json:"identity_token" example:"a332139d39b89a241400013700e665a3"`
+	LoginName string `json:"login_name,omitempty" example:"alice"`
+
+	// Password stores the hashed password.
+	Password []byte `json:"password,omitempty"`
 }
 
-type AuthResponse struct {
+type AuthNResponse struct {
+	// LoginName is used to authenticate the user and get
+	// an access token for the registry.
+	LoginName string `json:"login_name,omitempty" example:"alice"`
 	// An opaque token used to authenticate a user after a successful login
 	// Required: true
 	IdentityToken string `json:"identity_token" example:"a332139d39b89a241400013700e665a3"`
 	// The status of the authentication
 	// Required: true
 	Status string `json:"status" example:"Login successfully"`
-}
-
-type AuthMiddlewareRequest struct {
-	// Use auth instead of in the request body.
-	IdentityToken string `uri:"identity_token" example:"a332139d39b89a241400013700e665a3"`
 }

@@ -10,10 +10,10 @@ import (
 
 type Querier interface {
 	CreateImageInfo(ctx context.Context, arg CreateImageInfoParams) (ImageInfo, error)
-	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error)
 	DeleteUser(ctx context.Context, id int64) error
 	GetImageInfo(ctx context.Context, arg GetImageInfoParams) (ImageInfo, error)
-	GetUser(ctx context.Context, identityToken string) (User, error)
+	GetUser(ctx context.Context, loginName string) (User, error)
 	ListImageByOwner(ctx context.Context, ownerToken string) ([]ImageInfo, error)
 	ListUsers(ctx context.Context) ([]User, error)
 }

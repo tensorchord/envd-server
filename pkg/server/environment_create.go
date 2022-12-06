@@ -26,15 +26,16 @@ import (
 
 // @Summary     Create the environment.
 // @Description Create the environment.
+// @Security    Authentication
 // @Tags        environment
 // @Accept      json
 // @Produce     json
-// @Param       identity_token path     string                         true "identity token" example("a332139d39b89a241400013700e665a3")
+// @Param       login_name     path     string true "login name" example("alice")
 // @Param       request        body     types.EnvironmentCreateRequest true "query params"
 // @Success     201            {object} types.EnvironmentCreateResponse
-// @Router      /users/{identity_token}/environments [post]
+// @Router      /users/{login_name}/environments [post]
 func (s *Server) environmentCreate(c *gin.Context) {
-	it := c.GetString("identity_token")
+	it := c.GetString(ContextLoginName)
 
 	var req types.EnvironmentCreateRequest
 	if err := c.BindJSON(&req); err != nil {
@@ -71,9 +72,9 @@ func (s *Server) environmentCreate(c *gin.Context) {
 	}
 
 	logrus.WithFields(logrus.Fields{
-		"identity_token": it,
-		"image_labels":   meta.Labels,
-		"environment":    req.Environment,
+		"login-name":   it,
+		"image_labels": meta.Labels,
+		"environment":  req.Environment,
 	}).Debug("prepare to create the environment")
 	annotations := map[string]string{}
 	for k, v := range meta.Labels {

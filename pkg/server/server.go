@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/cockroachdb/errors"
 	"github.com/gin-contrib/cors"
@@ -34,14 +35,24 @@ type Server struct {
 	Client      kubernetes.Interface
 
 	serverFingerPrints []string
-	// imageInfo          []types.ImageInfo
+
+	// Auth shows if the auth is enabled.
+	Auth bool
+	// JWTSecret is the secret used to sign the JWT token.
+	JWTSecret string
+	// JWTExpirationTimeout is the expiration time of the JWT token.
+	JWTExpirationTimeout time.Duration
 }
 
 type Opt struct {
 	Debug       bool
 	KubeConfig  string
 	HostKeyPath string
-	DbUrl       string
+	DBURL       string
+
+	NoAuth               bool
+	JWTSecret            string
+	JWTExpirationTimeout time.Duration
 }
 
 func New(opt Opt) (*Server, error) {
@@ -57,7 +68,7 @@ func New(opt Opt) (*Server, error) {
 	}
 
 	// Connect to database
-	conn, err := pgx.Connect(context.Background(), opt.DbUrl)
+	conn, err := pgx.Connect(context.Background(), opt.DBURL)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
@@ -89,6 +100,8 @@ func New(opt Opt) (*Server, error) {
 		Queries:            queries,
 		serverFingerPrints: make([]string, 0),
 	}
+
+	// Load host key.
 	if opt.HostKeyPath != "" {
 		// read private key file
 		pemBytes, err := os.ReadFile(opt.HostKeyPath)
@@ -104,11 +117,18 @@ func New(opt Opt) (*Server, error) {
 			s.serverFingerPrints = append(s.serverFingerPrints, fingerPrint)
 		}
 	}
-	s.BindHandlers(true)
+
+	// Set the auth information.
+	s.Auth = !opt.NoAuth
+	s.JWTSecret = opt.JWTSecret
+	s.JWTExpirationTimeout = opt.JWTExpirationTimeout
+
+	// Bind the HTTP handlers.
+	s.BindHandlers()
 	return s, nil
 }
 
-func (s *Server) BindHandlers(auth bool) {
+func (s *Server) BindHandlers() {
 	engine := s.Router
 	web.RegisterRoute(engine)
 
@@ -117,25 +137,26 @@ func (s *Server) BindHandlers(auth bool) {
 	v1 := engine.Group("/api/v1")
 
 	v1.GET("/", s.handlePing)
-	v1.POST("/auth", s.auth)
+	v1.POST("/register", s.register)
+	v1.POST("/login", s.login)
 	v1.POST("/config", s.OnConfig)
 	v1.POST("/pubkey", s.OnPubKey)
 
 	authorized := engine.Group("/api/v1/users")
-	if auth {
+	if s.Auth {
 		authorized.Use(s.AuthMiddleware())
 	} else {
 		authorized.Use(s.NoAuthMiddleware())
 	}
 
 	// env
-	authorized.POST("/:identity_token/environments", s.environmentCreate)
-	authorized.GET("/:identity_token/environments", s.environmentList)
-	authorized.GET("/:identity_token/environments/:name", s.environmentGet)
-	authorized.DELETE("/:identity_token/environments/:name", s.environmentRemove)
+	authorized.POST("/:login_name/environments", s.environmentCreate)
+	authorized.GET("/:login_name/environments", s.environmentList)
+	authorized.GET("/:login_name/environments/:name", s.environmentGet)
+	authorized.DELETE("/:login_name/environments/:name", s.environmentRemove)
 	// image
-	authorized.GET("/:identity_token/images/:name", s.imageGet)
-	authorized.GET("/:identity_token/images", s.imageList)
+	authorized.GET("/:login_name/images/:name", s.imageGet)
+	authorized.GET("/:login_name/images", s.imageList)
 }
 
 func (s *Server) Run() error {
