@@ -82,18 +82,7 @@ func WithHost(host string) Opt {
 // Cannot be used with `WithUserNoAuth`
 func WithJWTToken(user, token string) Opt {
 	return func(c *Client) error {
-		c.auth = true
 		c.jwtToken = token
-		c.user = user
-		return nil
-	}
-}
-
-// WithUserNoAuth applies a user to the client transport.
-// Cannot be used with `WithJWTToken`
-func WithUserNoAuth(user string) Opt {
-	return func(c *Client) error {
-		c.auth = false
 		c.user = user
 		return nil
 	}

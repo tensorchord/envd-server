@@ -14,7 +14,6 @@ import (
 )
 
 var (
-	ErrNoAuth = errors.New("no authentication provided")
 	ErrNoUser = errors.New("no user provided")
 )
 
@@ -49,15 +48,8 @@ func (cli *Client) Login(ctx context.Context, auth types.AuthNRequest) (types.Au
 }
 
 func (cli Client) getUserAndHeaders() (string, map[string][]string, error) {
-	if !cli.auth {
-		if cli.user == "" {
-			return "", nil, ErrNoUser
-		}
-		return cli.user, nil, nil
-	}
-
-	if cli.jwtToken == "" || cli.user == "" {
-		return "", nil, ErrNoAuth
+	if cli.user == "" {
+		return "", nil, ErrNoUser
 	}
 	return cli.user, map[string][]string{
 		"Authorization": {cli.jwtToken},

@@ -59,6 +59,7 @@ func (s *Server) AuthMiddleware() gin.HandlerFunc {
 	}
 }
 
+// NoAuthMiddleware is a middleware that does not auth the user.
 func (s *Server) NoAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		amURI := AuthMiddlewareURIRequest{}
