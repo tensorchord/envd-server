@@ -21,15 +21,16 @@ import (
 
 // @Summary     Get the image.
 // @Description Get the image with the given image name.
+// @Security    Authentication
 // @Tags        image
 // @Accept      json
 // @Produce     json
-// @Param       identity_token path     string true "identity token" example("a332139d39b89a241400013700e665a3")
+// @Param       login_name     path     string true "login name" example("alice")
 // @Param       name           path     string true "image name" example("pytorch-example")
 // @Success     200            {object} types.ImageGetResponse
-// @Router      /users/{identity_token}/images/{name} [get]
+// @Router      /users/{login_name}/images/{name} [get]
 func (s *Server) imageGet(c *gin.Context) {
-	it := c.GetString("identity_token")
+	it := c.GetString(ContextLoginName)
 
 	var req types.ImageGetRequest
 	if err := c.BindUri(&req); err != nil {

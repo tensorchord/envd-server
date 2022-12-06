@@ -33,7 +33,7 @@ func handleErr(err error) {
 }
 
 // @title       envd server API
-// @version     v0.0.8
+// @version     v0.0.12
 // @description envd backend server
 
 // @contact.name  envd maintainers
@@ -43,8 +43,14 @@ func handleErr(err error) {
 // @license.name MPL 2.0
 // @license.url  https://mozilla.org/MPL/2.0/
 
+// @securitydefinitions.apikey Authentication
+// @in   header
+// @name JWT
+
 // @host     localhost:8080
 // @BasePath /api/v1
+// @in       header
+// @name     Authorization
 // @schemes  http
 func main() {
 	err := run(os.Args)

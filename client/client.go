@@ -23,6 +23,8 @@ var ErrRedirect = errors.New("unexpected redirect in response")
 // Client is the API client that performs all operations
 // against a docker server.
 type Client struct {
+	user     string
+	jwtToken string
 	// scheme sets the scheme for the client
 	scheme string
 	// host holds the server address to connect to

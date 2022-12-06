@@ -48,40 +48,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth": {
-            "post": {
-                "description": "authenticate the user for the given public key.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user"
-                ],
-                "summary": "authenticate the user.",
-                "parameters": [
-                    {
-                        "description": "query params",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/types.AuthRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/types.AuthResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/config": {
             "post": {
                 "description": "It is called by the containerssh webhook. and is not expected to be used externally.",
@@ -109,6 +75,40 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK"
+                    }
+                }
+            }
+        },
+        "/login": {
+            "post": {
+                "description": "login to the server.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "login the user.",
+                "parameters": [
+                    {
+                        "description": "query params",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.AuthNRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.AuthNResponse"
+                        }
                     }
                 }
             }
@@ -147,8 +147,47 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{identity_token}/environments": {
+        "/register": {
+            "post": {
+                "description": "register the user for the given public key.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "register the user.",
+                "parameters": [
+                    {
+                        "description": "query params",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.AuthNRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/types.AuthNResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{login_name}/environments": {
             "get": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "List the environment.",
                 "consumes": [
                     "application/json"
@@ -163,9 +202,9 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "example": "\"a332139d39b89a241400013700e665a3\"",
-                        "description": "identity token",
-                        "name": "identity_token",
+                        "example": "\"alice\"",
+                        "description": "login name",
+                        "name": "login_name",
                         "in": "path",
                         "required": true
                     }
@@ -180,6 +219,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "Create the environment.",
                 "consumes": [
                     "application/json"
@@ -194,9 +238,9 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "example": "\"a332139d39b89a241400013700e665a3\"",
-                        "description": "identity token",
-                        "name": "identity_token",
+                        "example": "\"alice\"",
+                        "description": "login name",
+                        "name": "login_name",
                         "in": "path",
                         "required": true
                     },
@@ -220,8 +264,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{identity_token}/environments/{name}": {
+        "/users/{login_name}/environments/{name}": {
             "get": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "Get the environment with the given environment name.",
                 "consumes": [
                     "application/json"
@@ -236,9 +285,9 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "example": "\"a332139d39b89a241400013700e665a3\"",
-                        "description": "identity token",
-                        "name": "identity_token",
+                        "example": "\"alice\"",
+                        "description": "login name",
+                        "name": "login_name",
                         "in": "path",
                         "required": true
                     },
@@ -261,6 +310,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "Remove the environment.",
                 "consumes": [
                     "application/json"
@@ -275,9 +329,9 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "example": "\"a332139d39b89a241400013700e665a3\"",
-                        "description": "identity token",
-                        "name": "identity_token",
+                        "example": "\"alice\"",
+                        "description": "login name",
+                        "name": "login_name",
                         "in": "path",
                         "required": true
                     },
@@ -300,8 +354,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{identity_token}/images": {
+        "/users/{login_name}/images": {
             "get": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "List the images.",
                 "consumes": [
                     "application/json"
@@ -316,9 +375,9 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "example": "\"a332139d39b89a241400013700e665a3\"",
-                        "description": "identity token",
-                        "name": "identity_token",
+                        "example": "\"alice\"",
+                        "description": "login name",
+                        "name": "login_name",
                         "in": "path",
                         "required": true
                     },
@@ -341,8 +400,13 @@ const docTemplate = `{
                 }
             }
         },
-        "/users/{identity_token}/images/{name}": {
+        "/users/{login_name}/images/{name}": {
             "get": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
                 "description": "Get the image with the given image name.",
                 "consumes": [
                     "application/json"
@@ -357,9 +421,9 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "example": "\"a332139d39b89a241400013700e665a3\"",
-                        "description": "identity token",
-                        "name": "identity_token",
+                        "example": "\"alice\"",
+                        "description": "login name",
+                        "name": "login_name",
                         "in": "path",
                         "required": true
                     },
@@ -555,27 +619,38 @@ const docTemplate = `{
                 }
             }
         },
-        "types.AuthRequest": {
+        "types.AuthNRequest": {
             "type": "object",
             "properties": {
-                "identity_token": {
-                    "description": "IdentityToken is used to authenticate the user and get\nan access token for the registry.\nRequired: true",
+                "login_name": {
+                    "description": "LoginName is used to authenticate the user and get\nan access token for the registry.",
                     "type": "string",
-                    "example": "a332139d39b89a241400013700e665a3"
+                    "example": "alice"
+                },
+                "password": {
+                    "description": "Password stores the hashed password.",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "public_key": {
-                    "description": "Username  string ` + "`" + `json:\"username,omitempty\"` + "`" + `\nPassword  string ` + "`" + `json:\"password,omitempty\"` + "`" + `",
                     "type": "string"
                 }
             }
         },
-        "types.AuthResponse": {
+        "types.AuthNResponse": {
             "type": "object",
             "properties": {
                 "identity_token": {
                     "description": "An opaque token used to authenticate a user after a successful login\nRequired: true",
                     "type": "string",
                     "example": "a332139d39b89a241400013700e665a3"
+                },
+                "login_name": {
+                    "description": "LoginName is used to authenticate the user and get\nan access token for the registry.",
+                    "type": "string",
+                    "example": "alice"
                 },
                 "status": {
                     "description": "The status of the authentication\nRequired: true",
@@ -786,12 +861,19 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "Authentication": {
+            "type": "apiKey",
+            "name": "JWT",
+            "in": "header"
+        }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "v0.0.8",
+	Version:          "v0.0.12",
 	Host:             "localhost:8080",
 	BasePath:         "/api/v1",
 	Schemes:          []string{"http"},
