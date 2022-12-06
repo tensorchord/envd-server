@@ -671,6 +671,9 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "resource": {
+                    "$ref": "#/definitions/types.ResourceSpec"
+                },
                 "spec": {
                     "$ref": "#/definitions/types.EnvironmentSpec"
                 },
@@ -690,6 +693,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "resource": {
+                    "$ref": "#/definitions/types.ResourceSpec"
                 },
                 "spec": {
                     "$ref": "#/definitions/types.EnvironmentSpec"
@@ -725,6 +731,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "resource": {
+                    "$ref": "#/definitions/types.ResourceSpec"
                 },
                 "spec": {
                     "$ref": "#/definitions/types.EnvironmentSpec"
@@ -858,6 +867,20 @@ const docTemplate = `{
                 },
                 "size": {
                     "type": "integer"
+                }
+            }
+        },
+        "types.ResourceSpec": {
+            "type": "object",
+            "properties": {
+                "cpu": {
+                    "type": "string"
+                },
+                "gpu": {
+                    "type": "string"
+                },
+                "memory": {
+                    "type": "string"
                 }
             }
         }

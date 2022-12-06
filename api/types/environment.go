@@ -8,6 +8,13 @@ type Environment struct {
 	ObjectMeta `json:",inline"`
 	Spec       EnvironmentSpec   `json:"spec,omitempty"`
 	Status     EnvironmentStatus `json:"status,omitempty"`
+	Resources  ResourceSpec      `json:"resource,omitempty"`
+}
+
+type ResourceSpec struct {
+	CPU    string `json:"cpu,omitempty"`
+	Memory string `json:"memory,omitempty"`
+	GPU    string `json:"gpu,omitempty"`
 }
 
 type ObjectMeta struct {

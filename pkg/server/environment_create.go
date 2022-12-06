@@ -14,6 +14,7 @@ import (
 	"github.com/jackc/pgtype"
 	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/tensorchord/envd-server/api/types"
@@ -38,6 +39,12 @@ func (s *Server) environmentCreate(c *gin.Context) {
 
 	var req types.EnvironmentCreateRequest
 	if err := c.BindJSON(&req); err != nil {
+		c.JSON(500, err)
+		return
+	}
+
+	resRequest, err := extractResourceRequest(req)
+	if err != nil {
 		c.JSON(500, err)
 		return
 	}
@@ -158,6 +165,9 @@ func (s *Server) environmentCreate(c *gin.Context) {
 							SubPath:   "publickey",
 						},
 					},
+					Resources: v1.ResourceRequirements{
+						Requests: resRequest,
+					},
 				},
 			},
 			Volumes: []v1.Volume{
@@ -237,4 +247,31 @@ func (s *Server) environmentCreate(c *gin.Context) {
 	}
 	resp.Created.Spec.Ports = ports
 	c.JSON(201, resp)
+}
+
+func extractResourceRequest(req types.EnvironmentCreateRequest) (v1.ResourceList, error) {
+	res := req.Environment.Resources
+	resRequest := v1.ResourceList{}
+	if res.CPU != "" {
+		cpu, err := resource.ParseQuantity(res.CPU)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to parse cpu resource")
+		}
+		resRequest[v1.ResourceCPU] = cpu
+	}
+	if res.Memory != "" {
+		mem, err := resource.ParseQuantity(res.Memory)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to parse memory resource")
+		}
+		resRequest[v1.ResourceMemory] = mem
+	}
+	if res.GPU != "" {
+		gpu, err := resource.ParseQuantity(res.GPU)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to parse gpu resource")
+		}
+		resRequest["nvidia/gpu"] = gpu
+	}
+	return resRequest, nil
 }
