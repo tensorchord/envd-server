@@ -28,7 +28,7 @@ var _ = Describe("environments", Ordered, func() {
 		logger.Debug(identityToken)
 		srv, err := util.NewServer(util.NewPod("test", identityToken))
 		Expect(err).Should(BeNil())
-		cli, err := client.NewClientWithOpts(client.WithUserNoAuth(identityToken))
+		cli, err := client.NewClientWithOpts(client.WithJWTToken(identityToken, ""))
 		Expect(err).Should(BeNil())
 
 		go func() {
