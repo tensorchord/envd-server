@@ -43,7 +43,7 @@ func (s *Server) environmentCreate(c *gin.Context) {
 		return
 	}
 
-	resRequest, err := toContainerResourceList(req)
+	resRequest, err := extractResourceRequest(req)
 	if err != nil {
 		c.JSON(500, err)
 		return
@@ -249,27 +249,27 @@ func (s *Server) environmentCreate(c *gin.Context) {
 	c.JSON(201, resp)
 }
 
-func toContainerResourceList(req types.EnvironmentCreateRequest) (v1.ResourceList, error) {
+func extractResourceRequest(req types.EnvironmentCreateRequest) (v1.ResourceList, error) {
 	res := req.Environment.Resources
 	resRequest := v1.ResourceList{}
 	if res.CPU != "" {
 		cpu, err := resource.ParseQuantity(res.CPU)
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "failed to parse cpu resource")
 		}
 		resRequest[v1.ResourceCPU] = cpu
 	}
 	if res.Memory != "" {
 		mem, err := resource.ParseQuantity(res.Memory)
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "failed to parse memory resource")
 		}
 		resRequest[v1.ResourceMemory] = mem
 	}
 	if res.GPU != "" {
 		gpu, err := resource.ParseQuantity(res.GPU)
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "failed to parse gpu resource")
 		}
 		resRequest["nvidia/gpu"] = gpu
 	}
