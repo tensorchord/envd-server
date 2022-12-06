@@ -12,9 +12,9 @@ type Environment struct {
 }
 
 type ResourceSpec struct {
-	Cpu    string `json:"cpu,omitempty"`
+	CPU    string `json:"cpu,omitempty"`
 	Memory string `json:"memory,omitempty"`
-	Gpu    string `json:"gpu,omitempty"`
+	GPU    string `json:"gpu,omitempty"`
 }
 
 type ObjectMeta struct {

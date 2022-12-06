@@ -44,8 +44,8 @@ func (s *Server) environmentCreate(c *gin.Context) {
 
 	res := req.Environment.Resources
 	resRequest := v1.ResourceList{}
-	if res.Cpu != "" {
-		cpu, err := resource.ParseQuantity(res.Cpu)
+	if res.CPU != "" {
+		cpu, err := resource.ParseQuantity(res.CPU)
 		if err != nil {
 			c.JSON(500, err)
 			return
@@ -60,8 +60,8 @@ func (s *Server) environmentCreate(c *gin.Context) {
 		}
 		resRequest[v1.ResourceMemory] = mem
 	}
-	if res.Gpu != "" {
-		gpu, err := resource.ParseQuantity(res.Gpu)
+	if res.GPU != "" {
+		gpu, err := resource.ParseQuantity(res.GPU)
 		if err != nil {
 			c.JSON(500, err)
 			return
