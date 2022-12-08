@@ -45,7 +45,7 @@ spec:
             secretName: {{ include "envd-server.fullname" . }}
             defaultMode: 0666
           name: secret
-      {{- if .Values.envdServer.migration -}}      
+      {{- if .Values.envdServer.migration }}      
       initContainers:
       - name: migrate
         image: {{ $migrationImage }}
