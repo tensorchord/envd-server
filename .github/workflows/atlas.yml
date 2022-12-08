@@ -12,6 +12,7 @@ on:
 jobs:
   lint:  
     permissions:
+      issues: write
       pull-requests: write
     services:
       # Spin up a postgres:14 container to be used as the dev-database for analysis.
