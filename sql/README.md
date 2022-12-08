@@ -22,6 +22,10 @@ Please find the guide at https://atlasgo.io/getting-started/
 
 Run `atlas schema inspect --url "postgres://postgres:atlasdev@localhost:5432/postgres?sslmode=disable" > atlas_schema.hcl`
 
+### Rehash the atlas migration 
+
+Run `atlas migrate hash --dir file://schema`
+
 ### Author a new migration
 
 Option 1: Manually write the migration file
