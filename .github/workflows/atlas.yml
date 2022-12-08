@@ -9,11 +9,10 @@ on:
   pull_request:
     paths:
       - 'sql/schema/*'
+permissions:
+  pull-requests: write
 jobs:
-  lint:  
-    permissions:
-      issues: write
-      pull-requests: write
+  lint:
     services:
       # Spin up a postgres:14 container to be used as the dev-database for analysis.
       postgres14:
