@@ -33,5 +33,6 @@ jobs:
       - uses: ariga/atlas-action@v0
         with:
           dir: sql/schema
+          project-env: .
           dir-format: goose # Or: atlas, goose, dbmate
           dev-url: postgres://postgres:pass@localhost:5430/test?sslmode=disable
