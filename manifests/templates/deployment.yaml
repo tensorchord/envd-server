@@ -1,5 +1,5 @@
 
-{{- $dburl := printf "postgres://%s:%s@postgres-service:5432/%s" .Values.postgres.username .Values.postgres.password .Values.postgres.dbname -}}
+{{- $dburl := printf "postgres://%s:%s@postgres-service:5432/%s?sslmode=disable" .Values.postgres.username .Values.postgres.password .Values.postgres.dbname -}}
 {{- if .Values.dbUrl -}}
 {{- $dburl := .Values.dbUrl -}}
 {{- end -}}
@@ -50,7 +50,7 @@ spec:
       - name: migrate
         image: {{ $migrationImage }}
         imagePullPolicy: Always
-        args: ["migrate", "apply", "--url", "$ENVD_DB_URL"]
+        args: ["migrate", "apply", "--url", "$(ENVD_DB_URL)", "--dir=file://migrations/?format=goose", "--allow-dirty"]
         env:
           - name: ENVD_DB_URL
             value: {{ $dburl }}

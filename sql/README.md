@@ -10,7 +10,7 @@ We use [sqlc](https://github.com/kyleconroy/sqlc) for the SQL related codes. To 
 
 ## Apply migration files
 
-Run `atlas migrate apply --dir=file://schema --url <dburl>`. dburl is the database connection string for the database you want to change, such as `postgres://username:password@localhost:5432/database_name`.
+Run `atlas migrate apply --dir=file://schema?format=goose --url <dburl> --allow-dirty`. dburl is the database connection string for the database you want to change, such as `postgres://username:password@localhost:5432/database_name`.
 
 ## Write new migration tools
 
