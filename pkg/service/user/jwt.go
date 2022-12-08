@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/cockroachdb/errors"
 	jwt "github.com/golang-jwt/jwt/v4"
-	"github.com/pkg/errors"
 )
 
 // Create a struct that will be encoded to a JWT.

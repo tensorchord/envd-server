@@ -659,6 +659,19 @@ const docTemplate = `{
                 }
             }
         },
+        "types.EnvVar": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "Name of the environment variable. Must be a C_IDENTIFIER.",
+                    "type": "string"
+                },
+                "value": {
+                    "description": "Variable references $(VAR_NAME) are expanded\nusing the previously defined environment variables in the container and\nany service environment variables. If a variable cannot be resolved,\nthe reference in the input string will be unchanged. Double $$ are reduced\nto a single $, which allows for escaping the $(VAR_NAME) syntax: i.e.\n\"$$(VAR_NAME)\" will produce the string literal \"$(VAR_NAME)\".\nEscaped references will never be expanded, regardless of whether the variable\nexists or not.\nDefaults to \"\".\n+optional",
+                    "type": "string"
+                }
+            }
+        },
         "types.Environment": {
             "type": "object",
             "properties": {
@@ -780,7 +793,7 @@ const docTemplate = `{
                 "env": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "$ref": "#/definitions/types.EnvVar"
                     }
                 },
                 "image": {
