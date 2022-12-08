@@ -1,8 +1,8 @@
 version: "2"
 sql:
   - engine: "postgresql"
-    queries: "pkg/util/sql/query.sql"
-    schema: "pkg/util/sql/schema.sql"
+    queries: "sql/query/"
+    schema: "sql/schema/"
     gen:
       go:
         package: "query"
