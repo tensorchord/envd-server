@@ -167,6 +167,7 @@ func (s *Server) environmentCreate(c *gin.Context) {
 					},
 					Resources: v1.ResourceRequirements{
 						Requests: resRequest,
+						Limits:   resRequest,
 					},
 				},
 			},
