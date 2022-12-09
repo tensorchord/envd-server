@@ -38,7 +38,7 @@ func extractResourceRequest(env types.Environment) (v1.ResourceList, error) {
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to parse gpu resource")
 		}
-		resRequest["nvidia/gpu"] = gpu
+		resRequest[ResourceNvidiaGPU] = gpu
 	}
 	return resRequest, nil
 }
@@ -63,7 +63,7 @@ func environmentFromKubernetesPod(pod *v1.Pod) (*types.Environment, error) {
 		env.Spec.Env = envVarsfromKubernetes(pod.Spec.Containers[0].Env)
 		env.Spec.Cmd = pod.Spec.Containers[0].Command
 	}
-	if pod.Labels[consts.PodLabelUID] == "" {
+	if pod.Labels[consts.PodLabelUID] != "" {
 		env.Spec.Owner = pod.Labels[consts.PodLabelUID]
 	}
 	// Get the ports
