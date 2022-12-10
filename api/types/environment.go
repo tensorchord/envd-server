@@ -26,10 +26,29 @@ type ObjectMeta struct {
 type EnvironmentSpec struct {
 	Owner string            `json:"owner,omitempty"`
 	Image string            `json:"image,omitempty"`
-	Env   []string          `json:"env,omitempty"`
+	Env   []EnvVar          `json:"env,omitempty"`
 	Cmd   []string          `json:"cmd,omitempty"`
 	Ports []EnvironmentPort `json:"ports,omitempty"`
 	// TODO(gaocegege): Add volume specific spec.
+}
+
+type EnvVar struct {
+	// Name of the environment variable. Must be a C_IDENTIFIER.
+	Name string `json:"name"`
+
+	// Optional: no more than one of the following may be specified.
+
+	// Variable references $(VAR_NAME) are expanded
+	// using the previously defined environment variables in the container and
+	// any service environment variables. If a variable cannot be resolved,
+	// the reference in the input string will be unchanged. Double $$ are reduced
+	// to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e.
+	// "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)".
+	// Escaped references will never be expanded, regardless of whether the variable
+	// exists or not.
+	// Defaults to "".
+	// +optional
+	Value string `json:"value,omitempty"`
 }
 
 type EnvironmentStatus struct {

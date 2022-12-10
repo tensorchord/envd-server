@@ -10,7 +10,6 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/sirupsen/logrus"
-	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/google/uuid"
 
@@ -36,9 +35,6 @@ var _ = Describe("environments", Ordered, func() {
 			Expect(err).Should(BeNil())
 		}()
 		It("should get the newly created environments", func() {
-			l, err := srv.Client.CoreV1().Pods("default").List(context.TODO(), v1.ListOptions{})
-			Expect(err).Should(BeNil())
-			logger.Debug(l)
 			resp, err := cli.EnvironmentList(context.TODO())
 			Expect(err).Should(BeNil())
 			Expect(len(resp.Items)).Should(Equal(1))
