@@ -11,8 +11,8 @@ import (
 	"path"
 	"strings"
 
+	"github.com/cockroachdb/errors"
 	"github.com/docker/go-connections/sockets"
-	"github.com/pkg/errors"
 )
 
 // Refer to github.com/docker/docker/client

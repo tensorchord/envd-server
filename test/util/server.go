@@ -11,6 +11,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	kubernetes "k8s.io/client-go/kubernetes/fake"
 
+	runtimek8s "github.com/tensorchord/envd-server/pkg/runtime/kubernetes"
 	"github.com/tensorchord/envd-server/pkg/server"
 )
 
@@ -27,7 +28,7 @@ func NewServer(objects ...runtime.Object) (*server.Server, error) {
 	s := &server.Server{
 		Router:      router,
 		AdminRouter: admin,
-		Client:      cli,
+		Runtime:     runtimek8s.NewProvisioner(cli),
 		Auth:        false,
 	}
 

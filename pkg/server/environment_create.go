@@ -6,22 +6,14 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
-	"github.com/cockroachdb/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgtype"
-	"github.com/sirupsen/logrus"
-	v1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/resource"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/tensorchord/envd-server/api/types"
-	"github.com/tensorchord/envd-server/pkg/consts"
 	"github.com/tensorchord/envd-server/pkg/image"
 	"github.com/tensorchord/envd-server/pkg/query"
-	"github.com/tensorchord/envd-server/pkg/util/imageutil"
 )
 
 // @Summary     Create the environment.
@@ -43,12 +35,6 @@ func (s *Server) environmentCreate(c *gin.Context) {
 		return
 	}
 
-	resRequest, err := extractResourceRequest(req)
-	if err != nil {
-		c.JSON(500, err)
-		return
-	}
-
 	meta, err := image.FetchMetadata(c.Request.Context(), req.Spec.Image)
 	if err != nil {
 		c.JSON(500, err)
@@ -65,214 +51,17 @@ func (s *Server) environmentCreate(c *gin.Context) {
 			Name: meta.Name, Digest: meta.Digest, Created: meta.Created, Size: meta.Size, Labels: pglabel})
 	if err != nil {
 		c.JSON(500, err)
-	}
-	labels := map[string]string{
-		consts.PodLabelUID:             it,
-		consts.PodLabelEnvironmentName: req.Name,
-	}
-
-	logrus.WithFields(logrus.Fields{
-		"login-name":   it,
-		"image_labels": meta.Labels,
-		"environment":  req.Environment,
-	}).Debug("prepare to create the environment")
-	annotations := map[string]string{}
-	for k, v := range meta.Labels {
-		annotations[k] = v
-	}
-
-	portLabel, ok := meta.Labels[consts.ImageLabelPorts]
-	if !ok {
-		logrus.Info("failed to get port label")
-		c.JSON(500, errors.Wrap(err, "failed to get the port"))
-		return
-	}
-	ports, err := imageutil.PortsFromLabel(portLabel)
-	if err != nil {
-		logrus.Infof("failed to get ports from: %s", portLabel)
-		c.JSON(500, errors.Wrap(err, "failed to parse ports from label"))
 		return
 	}
 
-	repoLabel, ok := meta.Labels[consts.ImageLabelRepo]
-	repoInfo := &types.EnvironmentRepoInfo{}
-	if ok {
-		repoInfo, err = imageutil.RepoInfoFromLabel(repoLabel)
-		if err != nil {
-			logrus.Info("failed to parse repo from label")
-			c.JSON(500, errors.Wrap(err, "failed to get repo information from label"))
-			return
-		}
-	}
-
-	projectName, ok := meta.Labels[consts.ImageLabelContainerName]
-	if !ok {
-		logrus.Info("failed to get the project name from label")
-		c.JSON(500, errors.New("failed to get the project name(working dir) from label"))
-		return
-	}
-	logrus.WithFields(logrus.Fields{
-		"port":    ports,
-		"repo":    repoInfo,
-		"project": projectName,
-	}).Debug("creating environment")
-	hostKeyPath := "/var/envd/hostkey"
-	authKeyPath := "/var/envd/authkey"
-	var defaultPermMode int32 = 0666
-	expectedPod := v1.Pod{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:        req.Name,
-			Namespace:   "default",
-			Labels:      labels,
-			Annotations: annotations,
-		},
-		Spec: v1.PodSpec{
-			Containers: []v1.Container{
-				{
-					Name:  "envd",
-					Image: req.Spec.Image,
-					Ports: []v1.ContainerPort{
-						{
-							Name:          "ssh",
-							ContainerPort: 2222,
-						},
-					},
-					Env: []v1.EnvVar{
-						{
-							Name:  "ENVD_HOST_KEY",
-							Value: hostKeyPath,
-						},
-						{
-							Name:  "ENVD_AUTHORIZED_KEYS_PATH",
-							Value: authKeyPath,
-						},
-						{
-							Name:  "ENVD_WORKDIR",
-							Value: fmt.Sprintf("/home/envd/%s", projectName),
-						},
-					},
-					VolumeMounts: []v1.VolumeMount{
-						{
-							Name:      "secret",
-							ReadOnly:  true,
-							MountPath: hostKeyPath,
-							SubPath:   "hostkey",
-						},
-						{
-							Name:      "secret",
-							ReadOnly:  true,
-							MountPath: authKeyPath,
-							SubPath:   "publickey",
-						},
-					},
-					Resources: v1.ResourceRequirements{
-						Requests: resRequest,
-						Limits:   resRequest,
-					},
-				},
-			},
-			Volumes: []v1.Volume{
-				{
-					Name: "secret",
-					VolumeSource: v1.VolumeSource{
-						Secret: &v1.SecretVolumeSource{
-							SecretName:  "envd-server",
-							DefaultMode: &defaultPermMode,
-						},
-					},
-				},
-			},
-		},
-	}
-	if repoInfo != nil && len(repoInfo.URL) > 0 {
-		logrus.Debugf("clone code from %s", repoInfo.URL)
-		expectedPod.Spec.InitContainers = append(expectedPod.Spec.InitContainers, v1.Container{
-			Name:  "git-cloner",
-			Image: "alpine/git",
-			Args:  []string{"clone", "--", repoInfo.URL, "/code"},
-			VolumeMounts: []v1.VolumeMount{
-				{
-					Name:      "code-dir",
-					MountPath: "/code",
-				},
-			},
-		})
-		expectedPod.Spec.Containers[0].VolumeMounts = append(expectedPod.Spec.Containers[0].VolumeMounts, v1.VolumeMount{
-			Name:      "code-dir",
-			MountPath: fmt.Sprintf("/home/envd/%s", projectName),
-		})
-		expectedPod.Spec.Volumes = append(expectedPod.Spec.Volumes, v1.Volume{
-			Name: "code-dir",
-			VolumeSource: v1.VolumeSource{
-				EmptyDir: &v1.EmptyDirVolumeSource{},
-				// HostPath: &v1.HostPathVolumeSource{
-				// 	Path: fmt.Sprintf("/var/envd/code/%s", req.Name),
-				// },
-			},
-		})
-	}
-
-	_, err = s.Client.CoreV1().Pods(
-		"default").Create(c, &expectedPod, metav1.CreateOptions{})
-	if err != nil {
-		logrus.Infof("failed to create pod: %v", err)
-		c.JSON(500, err)
-		return
-	}
-
-	expectedService := v1.Service{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      req.Name,
-			Namespace: "default",
-			Labels:    labels,
-		},
-		Spec: v1.ServiceSpec{
-			Selector: labels,
-			Type:     v1.ServiceTypeClusterIP,
-			Ports: []v1.ServicePort{
-				{
-					Name: "ssh",
-					Port: 2222,
-				},
-			},
-		},
-	}
-	_, err = s.Client.CoreV1().Services("default").Create(c, &expectedService, metav1.CreateOptions{})
+	env, err := s.Runtime.EnvironmentCreate(c.Request.Context(), it, req.Environment, meta)
 	if err != nil {
 		c.JSON(500, err)
 		return
 	}
 
 	resp := types.EnvironmentCreateResponse{
-		Created: req.Environment,
+		Created: *env,
 	}
-	resp.Created.Spec.Ports = ports
 	c.JSON(201, resp)
-}
-
-func extractResourceRequest(req types.EnvironmentCreateRequest) (v1.ResourceList, error) {
-	res := req.Environment.Resources
-	resRequest := v1.ResourceList{}
-	if res.CPU != "" {
-		cpu, err := resource.ParseQuantity(res.CPU)
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to parse cpu resource")
-		}
-		resRequest[v1.ResourceCPU] = cpu
-	}
-	if res.Memory != "" {
-		mem, err := resource.ParseQuantity(res.Memory)
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to parse memory resource")
-		}
-		resRequest[v1.ResourceMemory] = mem
-	}
-	if res.GPU != "" {
-		gpu, err := resource.ParseQuantity(res.GPU)
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to parse gpu resource")
-		}
-		resRequest["nvidia/gpu"] = gpu
-	}
-	return resRequest, nil
 }

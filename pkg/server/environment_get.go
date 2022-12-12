@@ -8,12 +8,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
-	k8serrors "k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/tensorchord/envd-server/api/types"
-	"github.com/tensorchord/envd-server/pkg/consts"
+	"github.com/tensorchord/envd-server/errdefs"
 )
 
 // @Summary     Get the environment.
@@ -27,7 +24,7 @@ import (
 // @Success     200            {object} types.EnvironmentGetResponse
 // @Router      /users/{login_name}/environments/{name} [get]
 func (s *Server) environmentGet(c *gin.Context) {
-	it := c.GetString(ContextLoginName)
+	owner := c.GetString(ContextLoginName)
 
 	var req types.EnvironmentGetRequest
 	if err := c.BindUri(&req); err != nil {
@@ -35,36 +32,20 @@ func (s *Server) environmentGet(c *gin.Context) {
 		return
 	}
 
-	pod, err := s.Client.CoreV1().Pods("default").Get(c, req.Name, metav1.GetOptions{})
+	e, err := s.Runtime.EnvironmentGet(c.Request.Context(), owner, req.Name)
 	if err != nil {
-		if k8serrors.IsNotFound(err) {
-			c.JSON(http.StatusNotFound, types.EnvironmentGetResponse{})
+		if errdefs.IsNotFound(err) {
+			c.JSON(http.StatusNotFound, err)
+			return
+		} else if errdefs.IsUnauthorized(err) {
+			c.JSON(http.StatusUnauthorized, err)
 			return
 		}
-		c.JSON(500, err)
-		return
-	}
-	if pod.Labels[consts.PodLabelUID] != it {
-		logrus.WithFields(logrus.Fields{
-			"loginname_in_pod":     pod.Labels[consts.PodLabelUID],
-			"loginname_in_request": it,
-		}).Debug("mismatch loginname")
-		respondWithError(c, http.StatusUnauthorized, "unauthorized")
-		return
-	}
-
-	if pod == nil {
-		c.JSON(http.StatusNotFound, types.EnvironmentGetResponse{})
-		return
-	}
-
-	e, err := generateEnvironmentFromPod(*pod)
-	if err != nil {
-		c.JSON(500, err)
+		c.JSON(http.StatusInternalServerError, err)
 		return
 	}
 
 	c.JSON(http.StatusOK, types.EnvironmentGetResponse{
-		Environment: e,
+		Environment: *e,
 	})
 }

@@ -24,6 +24,8 @@ import (
 
 	_ "github.com/tensorchord/envd-server/pkg/docs"
 	"github.com/tensorchord/envd-server/pkg/query"
+	"github.com/tensorchord/envd-server/pkg/runtime"
+	runtimek8s "github.com/tensorchord/envd-server/pkg/runtime/kubernetes"
 	"github.com/tensorchord/envd-server/pkg/web"
 )
 
@@ -31,7 +33,7 @@ type Server struct {
 	Router      *gin.Engine
 	AdminRouter *gin.Engine
 	Queries     *query.Queries
-	Client      kubernetes.Interface
+	Runtime     runtime.Provisioner
 
 	serverFingerPrints []string
 
@@ -90,9 +92,9 @@ func New(opt Opt) (*Server, error) {
 	s := &Server{
 		Router:             router,
 		AdminRouter:        admin,
-		Client:             cli,
 		Queries:            queries,
 		serverFingerPrints: make([]string, 0),
+		Runtime:            runtimek8s.NewProvisioner(cli),
 	}
 
 	// Load host key.

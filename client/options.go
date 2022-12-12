@@ -12,9 +12,9 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/cockroachdb/errors"
 	"github.com/docker/go-connections/sockets"
 	"github.com/docker/go-connections/tlsconfig"
-	"github.com/pkg/errors"
 )
 
 // Opt is a configuration option to initialize a client
