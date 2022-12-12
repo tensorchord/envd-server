@@ -629,10 +629,7 @@ const docTemplate = `{
                 },
                 "password": {
                     "description": "Password stores the hashed password.",
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
+                    "type": "string"
                 },
                 "public_key": {
                     "type": "string"

@@ -243,22 +243,19 @@ export interface MetadataValue {
   value?: string;
 }
 
-export interface TypesAuthRequest {
+export interface TypesAuthNRequest {
   /**
-   * IdentityToken is used to authenticate the user and get
+   * LoginName is used to authenticate the user and get
    * an access token for the registry.
-   * Required: true
-   * @example "a332139d39b89a241400013700e665a3"
+   * @example "alice"
    */
-  identity_token?: string;
-  /**
-   * Username  string `json:"username,omitempty"`
-   * Password  string `json:"password,omitempty"`
-   */
+  login_name?: string;
+  /** Password stores the hashed password. */
+  password?: string;
   public_key?: string;
 }
 
-export interface TypesAuthResponse {
+export interface TypesAuthNResponse {
   /**
    * An opaque token used to authenticate a user after a successful login
    * Required: true
@@ -266,11 +263,35 @@ export interface TypesAuthResponse {
    */
   identity_token?: string;
   /**
+   * LoginName is used to authenticate the user and get
+   * an access token for the registry.
+   * @example "alice"
+   */
+  login_name?: string;
+  /**
    * The status of the authentication
    * Required: true
    * @example "Login successfully"
    */
   status?: string;
+}
+
+export interface TypesEnvVar {
+  /** Name of the environment variable. Must be a C_IDENTIFIER. */
+  name?: string;
+  /**
+   * Variable references $(VAR_NAME) are expanded
+   * using the previously defined environment variables in the container and
+   * any service environment variables. If a variable cannot be resolved,
+   * the reference in the input string will be unchanged. Double $$ are reduced
+   * to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e.
+   * "$$(VAR_NAME)" will produce the string literal "$(VAR_NAME)".
+   * Escaped references will never be expanded, regardless of whether the variable
+   * exists or not.
+   * Defaults to "".
+   * +optional
+   */
+  value?: string;
 }
 
 export interface TypesEnvironment {
@@ -319,7 +340,7 @@ export type TypesEnvironmentRemoveResponse = object;
 
 export interface TypesEnvironmentSpec {
   cmd?: string[];
-  env?: string[];
+  env?: TypesEnvVar[];
   image?: string;
   owner?: string;
   ports?: TypesEnvironmentPort[];

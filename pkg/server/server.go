@@ -88,10 +88,11 @@ func New(opt Opt) (*Server, error) {
 	router.Use(gin.Recovery())
 	if gin.Mode() == gin.DebugMode {
 		logrus.SetLevel(logrus.DebugLevel)
+		logrus.Debug("Allow CORS")
 		router.Use(cors.New(cors.Config{
 			AllowOrigins: []string{"*"},
-			AllowMethods: []string{"POST", "PUT", "PATCH", "DELETE"},
-			AllowHeaders: []string{"Content-Type,access-control-allow-origin, access-control-allow-headers"},
+			AllowMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
+			AllowHeaders: []string{"*"},
 		}))
 	}
 	admin := gin.New()
