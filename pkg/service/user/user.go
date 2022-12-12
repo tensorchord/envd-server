@@ -27,9 +27,9 @@ func NewService(querier query.Querier,
 	}
 }
 
-func (u *Service) Register(loginName string,
-	pwd, PublicKey []byte) (string, error) {
-	hashed, err := GenerateHashedSaltPassword(pwd)
+func (u *Service) Register(loginName, pwd string,
+	PublicKey []byte) (string, error) {
+	hashed, err := GenerateHashedSaltPassword([]byte(pwd))
 	if err != nil {
 		return "", err
 	}
@@ -63,19 +63,21 @@ func (u *Service) GetPubKey(loginName string) ([]byte, error) {
 	return user.PublicKey, nil
 }
 
-func (u *Service) Login(loginName string, pwd []byte) (bool, string, error) {
-	rawUser, err := u.querier.GetUser(context.Background(), loginName)
-	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return false, "", nil
-		} else {
+func (u *Service) Login(loginName, pwd string, auth bool) (bool, string, error) {
+	if auth {
+		rawUser, err := u.querier.GetUser(context.Background(), loginName)
+		if err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				return false, "", nil
+			} else {
+				return false, "", err
+			}
+		}
+
+		if err := CompareHashAndPassword(
+			[]byte(rawUser.PasswordHash), []byte(pwd)); err != nil {
 			return false, "", err
 		}
-	}
-
-	if err := CompareHashAndPassword(
-		[]byte(rawUser.PasswordHash), pwd); err != nil {
-		return false, "", err
 	}
 
 	token, err := u.jwtIssuer.Issue(loginName)

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { setUser, userInfo } = useUserStore()
+const { userInfo, login } = useUserStore()
 // const props = defineProps<{ name: string }>()
 // const router = useRouter()
 // const user = useUserStore()
@@ -8,11 +8,13 @@ const { setUser, userInfo } = useUserStore()
 //   user.setNewName(props.name)
 // })
 const username = ref(userInfo.username)
+const password = ref('')
 const router = useRouter()
 
-function login() {
-  setUser(username.value)
-  router.push('/envs')
+async function loginAction() {
+  const isLogin = await login(username.value, password.value)
+  if (isLogin)
+    router.push('/envs')
 }
 </script>
 
@@ -30,11 +32,11 @@ function login() {
           <div class="mt-6">
             <form action="#" method="POST" class="space-y-6">
               <div>
-                <label for="email" class="block text-sm font-medium text-gray-700 py-2"> Email address
+                <label for="email" class="block text-sm font-medium text-gray-700 py-2"> Username
                 </label>
                 <div class="mt-1">
                   <input
-                    id="email" v-model="username" name="email" type="email" autocomplete="email"
+                    id="username" v-model="username" name="username" autocomplete="username"
                     required
                     class="appearance-none block w-full px-3 py-2 bg-[#F7F7F8] rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   >
@@ -46,8 +48,7 @@ function login() {
                 </label>
                 <div class="mt-1">
                   <input
-                    id="password" name="password" type="password" autocomplete="current-password"
-                    required
+                    id="password" v-model="password" name="password" type="password" autocomplete="current-password"
                     class="appearance-none block w-full px-3 py-2 bg-[#F7F7F8] rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   >
                 </div>
@@ -71,8 +72,8 @@ function login() {
 
               <div>
                 <button
-                  type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-[#1949C5] bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  @click="login"
+                  type="button" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-[#1949C5] bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  @click="loginAction"
                 >
                   Log
                   in

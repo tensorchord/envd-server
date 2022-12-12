@@ -21,9 +21,9 @@ var _ = Describe("Mock test for db", func() {
 		It("should work", func() {
 			username := "test"
 			key := []byte("key")
-			pwd := []byte("pwd")
+			pwd := "pwd"
 
-			hashed, err := user.GenerateHashedSaltPassword(pwd)
+			hashed, err := user.GenerateHashedSaltPassword([]byte(pwd))
 			Expect(err).Should(BeNil())
 			ctrl := gomock.NewController(GinkgoT())
 			m := mock.NewMockQuerier(ctrl)
@@ -47,7 +47,7 @@ var _ = Describe("Mock test for db", func() {
 			userService := user.NewService(m, "secret", 0)
 			_, err = userService.Register(username, pwd, key)
 			Expect(err).NotTo(HaveOccurred())
-			exists, _, err := userService.Login(username, pwd)
+			exists, _, err := userService.Login(username, pwd, true)
 			Expect(exists).To(BeTrue())
 			Expect(err).NotTo(HaveOccurred())
 		})

@@ -195,7 +195,10 @@ release:
 		goreleaser/goreleaser-cross:${GOLANG_CROSS_VERSION} \
 		release --rm-dist
 
-generate: mockgen-install sqlc-install swag
+tsschema: swag
+	@cd dashboard; pnpm tsschema
+
+generate: mockgen-install sqlc-install swag tsschema
 	@mockgen -source pkg/query/querier.go -destination pkg/query/mock/mock.go -package mock
 	@sqlc generate
 
