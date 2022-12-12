@@ -49,7 +49,7 @@ func (s *Server) register(c *gin.Context) {
 	res := types.AuthNResponse{
 		LoginName:     req.LoginName,
 		IdentityToken: token,
-		Status:        "login succeeded",
+		Status:        types.AuthSuccess,
 	}
 	c.JSON(200, res)
 }
@@ -87,7 +87,7 @@ func (s *Server) login(c *gin.Context) {
 	res := types.AuthNResponse{
 		LoginName:     req.LoginName,
 		IdentityToken: token,
-		Status:        "login succeeded",
+		Status:        types.AuthSuccess,
 	}
 	c.JSON(200, res)
 }
