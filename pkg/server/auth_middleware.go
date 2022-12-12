@@ -77,5 +77,5 @@ func respondWithError(c *gin.Context, err error) {
 		c.AbortWithStatusJSON(serverErr.HTTPStatusCode, serverErr)
 		return
 	}
-	c.AbortWithError(http.StatusInternalServerError, err)
+	c.AbortWithStatusJSON(http.StatusInternalServerError, err)
 }

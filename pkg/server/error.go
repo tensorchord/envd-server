@@ -1,3 +1,7 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 package server
 
 import (
@@ -49,17 +53,4 @@ func NewError(code int, err error, op string) error {
 		Message:        err.Error(),
 		Op:             op,
 	}
-}
-
-// ErrorMessage returns the human-readable message of the error, if available.
-// Otherwise returns a generic error message.
-func ErrorMessage(err error) string {
-	if err == nil {
-		return ""
-	} else if e, ok := err.(*Error); ok && e.Message != "" {
-		return e.Message
-	} else if ok && e.Err != nil {
-		return ErrorMessage(e.Err)
-	}
-	return "An internal error has occurred. Please contact technical support."
 }
