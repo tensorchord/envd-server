@@ -11,7 +11,6 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v4"
-	"github.com/sirupsen/logrus"
 
 	"github.com/tensorchord/envd-server/api/types"
 	"github.com/tensorchord/envd-server/pkg/util"
@@ -27,7 +26,7 @@ import (
 // @Param       name           path     string true "image name" example("pytorch-example")
 // @Success     200            {object} types.ImageListResponse
 // @Router      /users/{login_name}/images [get]
-func (s *Server) imageList(c *gin.Context) {
+func (s *Server) imageList(c *gin.Context) error {
 	it := c.GetString(ContextLoginName)
 
 	resp := types.ImageListResponse{}
@@ -36,21 +35,18 @@ func (s *Server) imageList(c *gin.Context) {
 		if errors.Is(err, pgx.ErrNoRows) {
 			// No image found
 			c.JSON(http.StatusOK, resp)
-			return
+			return nil
 		} else {
-			logrus.Warnf("cannot get the image info: %+v", err)
-			c.JSON(http.StatusInternalServerError, "internal error")
-			return
+			return NewError(http.StatusInternalServerError, err, "db.list-image")
 		}
 	}
 	for _, info := range images {
 		item, err := util.DaoToImageMeta(info)
 		if err != nil {
-			logrus.Warnf("cannot convert dao to image info: %+v", err)
-			c.JSON(http.StatusInternalServerError, "internal error")
-			return
+			return NewError(http.StatusInternalServerError, err, "db.list-image")
 		}
 		resp.Items = append(resp.Items, *item)
 	}
 	c.JSON(http.StatusOK, resp)
+	return nil
 }

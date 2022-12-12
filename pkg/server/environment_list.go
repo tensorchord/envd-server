@@ -23,15 +23,14 @@ import (
 // @Param       login_name     path     string true "login name" example("alice")
 // @Success     200            {object} types.EnvironmentListResponse
 // @Router      /users/{login_name}/environments [get]
-func (s *Server) environmentList(c *gin.Context) {
+func (s Server) environmentList(c *gin.Context) error {
 	owner := c.GetString(ContextLoginName)
 	logger := logrus.WithField(ContextLoginName, owner)
 
 	items, err := s.Runtime.EnvironmentList(c.Request.Context(), owner)
 	if err != nil {
 		if errdefs.IsNotFound(err) {
-			c.JSON(http.StatusNotFound, err)
-			return
+			return NewError(http.StatusNotFound, err, "runtime.list-environment")
 		}
 	}
 
@@ -41,5 +40,6 @@ func (s *Server) environmentList(c *gin.Context) {
 
 	logger.WithField("count", len(res.Items)).
 		Debug("list the environments successfully")
-	c.JSON(200, res)
+	c.JSON(http.StatusOK, res)
+	return nil
 }
