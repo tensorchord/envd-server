@@ -36,7 +36,7 @@ Option 2: Automatically generate migration file based on current db schema
 
 1. You need to spin up an empty db as the `dev database` for atlas to compare with the current db schema. You can use the following command to spin up a docker container for the `dev database`:
 ```
-docker run --name atlasdev -e POSTGRES_PASSWORD=atlasdev -p 5432:5432 -d postgres
+docker run --rm --name atlasdev -e POSTGRES_PASSWORD=atlasdev -p 5432:5432 -d postgres
 ```
 
 2. Generate hcl file following the guide above
