@@ -26,42 +26,38 @@ import (
 // @Param       request        body     types.EnvironmentCreateRequest true "query params"
 // @Success     201            {object} types.EnvironmentCreateResponse
 // @Router      /users/{login_name}/environments [post]
-func (s *Server) environmentCreate(c *gin.Context) {
+func (s Server) environmentCreate(c *gin.Context) error {
 	it := c.GetString(ContextLoginName)
 
 	var req types.EnvironmentCreateRequest
 	if err := c.BindJSON(&req); err != nil {
-		c.JSON(500, err)
-		return
+		return NewError(http.StatusInternalServerError, err, "gin.bind-json")
 	}
 
 	meta, err := image.FetchMetadata(c.Request.Context(), req.Spec.Image)
 	if err != nil {
-		c.JSON(500, err)
-		return
+		return NewError(http.StatusInternalServerError, err, "image.fetch-metadata")
 	}
 	var pglabel pgtype.JSONB
 	err = pglabel.Set(meta.Labels)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err)
-		return
+		return NewError(http.StatusInternalServerError, err, "pglabel.set")
 	}
 	_, err = s.Queries.CreateImageInfo(context.Background(),
 		query.CreateImageInfoParams{OwnerToken: it,
 			Name: meta.Name, Digest: meta.Digest, Created: meta.Created, Size: meta.Size, Labels: pglabel})
 	if err != nil {
-		c.JSON(500, err)
-		return
+		return NewError(http.StatusInternalServerError, err, "db.create-image")
 	}
 
 	env, err := s.Runtime.EnvironmentCreate(c.Request.Context(), it, req.Environment, meta)
 	if err != nil {
-		c.JSON(500, err)
-		return
+		return NewError(http.StatusInternalServerError, err, "runtime.create-environment")
 	}
 
 	resp := types.EnvironmentCreateResponse{
 		Created: *env,
 	}
-	c.JSON(201, resp)
+	c.JSON(http.StatusCreated, resp)
+	return nil
 }

@@ -5,8 +5,6 @@
 package server
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -18,6 +16,6 @@ import (
 // @Produce     json
 // @Success     200 {object} map[string]interface{}
 // @Router      / [get]
-func (s *Server) handlePing(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"hello": "world!", "goto": "https://github.com/tensorchord/envd"})
+func (s Server) handlePing(c *gin.Context) error {
+	return nil
 }

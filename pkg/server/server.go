@@ -139,9 +139,9 @@ func (s *Server) BindHandlers() {
 
 	v1 := engine.Group("/api/v1")
 
-	v1.GET("/", s.handlePing)
-	v1.POST("/register", s.register)
-	v1.POST("/login", s.login)
+	v1.GET("/", WrapHandler(s.handlePing))
+	v1.POST("/register", WrapHandler(s.register))
+	v1.POST("/login", WrapHandler(s.login))
 	v1.POST("/config", s.OnConfig)
 	v1.POST("/pubkey", s.OnPubKey)
 
@@ -153,7 +153,7 @@ func (s *Server) BindHandlers() {
 	}
 
 	// env
-	authorized.POST("/:login_name/environments", s.environmentCreate)
+	authorized.POST("/:login_name/environments", WrapHandler(s.environmentCreate))
 	authorized.GET("/:login_name/environments", s.environmentList)
 	authorized.GET("/:login_name/environments/:name", s.environmentGet)
 	authorized.DELETE("/:login_name/environments/:name", s.environmentRemove)

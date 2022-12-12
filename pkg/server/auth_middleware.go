@@ -5,7 +5,7 @@
 package server
 
 import (
-	"fmt"
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -18,8 +18,7 @@ func (s *Server) AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		amURI := AuthMiddlewareURIRequest{}
 		if err := c.BindUri(&amURI); err != nil {
-			respondWithError(c, http.StatusUnauthorized,
-				fmt.Sprintf("auth failed: %v", err))
+			respondWithError(c, NewError(http.StatusUnauthorized, err, "auth.middleware.bind-uri"))
 			c.Next()
 			return
 		}
@@ -30,8 +29,7 @@ func (s *Server) AuthMiddleware() gin.HandlerFunc {
 
 		amr := AuthMiddlewareHeaderRequest{}
 		if err := c.BindHeader(&amr); err != nil {
-			respondWithError(c, http.StatusUnauthorized,
-				fmt.Sprintf("auth failed: %v", err))
+			respondWithError(c, NewError(http.StatusUnauthorized, err, "auth.middleware"))
 			c.Next()
 			return
 		}
@@ -39,8 +37,7 @@ func (s *Server) AuthMiddleware() gin.HandlerFunc {
 		userService := user.NewService(s.Queries, s.JWTSecret, s.JWTExpirationTimeout)
 		loginName, err := userService.ValidateJWT(amr.JWTToken)
 		if err != nil {
-			respondWithError(c, http.StatusUnauthorized,
-				fmt.Sprintf("failed to validate the JWT: %v", err))
+			respondWithError(c, NewError(http.StatusUnauthorized, err, "user.validateJWT"))
 			c.Next()
 			return
 		}
@@ -49,8 +46,7 @@ func (s *Server) AuthMiddleware() gin.HandlerFunc {
 				"login-name":        loginName,
 				"login-name-in-uri": amURI.LoginName,
 			}).Debug("login name in JWT does not match the login name in URI")
-			respondWithError(c, http.StatusUnauthorized,
-				"loginname mismatch")
+			respondWithError(c, NewError(http.StatusUnauthorized, err, "user.validateJWT"))
 			c.Next()
 			return
 		}
@@ -64,8 +60,7 @@ func (s *Server) NoAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		amURI := AuthMiddlewareURIRequest{}
 		if err := c.BindUri(&amURI); err != nil {
-			respondWithError(c, http.StatusUnauthorized,
-				fmt.Sprintf("auth failed: %v", err))
+			respondWithError(c, NewError(http.StatusUnauthorized, err, "auth.middleware.bind-uri"))
 			c.Next()
 			return
 		}
@@ -76,6 +71,11 @@ func (s *Server) NoAuthMiddleware() gin.HandlerFunc {
 }
 
 // nolint:unparam
-func respondWithError(c *gin.Context, code int, message interface{}) {
-	c.AbortWithStatusJSON(code, gin.H{"error": message})
+func respondWithError(c *gin.Context, err error) {
+	var serverErr *Error
+	if errors.As(err, &serverErr) {
+		c.AbortWithStatusJSON(serverErr.HTTPStatusCode, serverErr)
+		return
+	}
+	c.AbortWithError(http.StatusInternalServerError, err)
 }
