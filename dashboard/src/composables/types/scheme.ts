@@ -276,6 +276,7 @@ export interface TypesAuthResponse {
 export interface TypesEnvironment {
   labels?: Record<string, string>;
   name?: string;
+  resource?: TypesResourceSpec;
   spec?: TypesEnvironmentSpec;
   status?: TypesEnvironmentStatus;
 }
@@ -283,6 +284,7 @@ export interface TypesEnvironment {
 export interface TypesEnvironmentCreateRequest {
   labels?: Record<string, string>;
   name?: string;
+  resource?: TypesResourceSpec;
   spec?: TypesEnvironmentSpec;
   status?: TypesEnvironmentStatus;
 }
@@ -299,6 +301,7 @@ export interface TypesEnvironmentCreateResponse {
 export interface TypesEnvironmentGetResponse {
   labels?: Record<string, string>;
   name?: string;
+  resource?: TypesResourceSpec;
   spec?: TypesEnvironmentSpec;
   status?: TypesEnvironmentStatus;
 }
@@ -348,4 +351,10 @@ export interface TypesImageMeta {
   /** @example "pytorch-cuda:dev" */
   name?: string;
   size?: number;
+}
+
+export interface TypesResourceSpec {
+  cpu?: string;
+  gpu?: string;
+  memory?: string;
 }
