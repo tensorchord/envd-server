@@ -2,7 +2,7 @@
 import { useEnvdFetch } from '~/composables/request'
 import type { TypesEnvironmentListResponse } from '~/composables/types/scheme'
 const { userInfo } = useUserStore()
-const { data, isFinished } = useEnvdFetch<TypesEnvironmentListResponse>(`/users/${userInfo.username}/environments`).get().json()
+const { data, isFinished } = useEnvdFetch(`/users/${userInfo.username}/environments`).get().json<TypesEnvironmentListResponse>()
 </script>
 
 <template>
@@ -14,7 +14,7 @@ const { data, isFinished } = useEnvdFetch<TypesEnvironmentListResponse>(`/users/
         <div class="container py-5">
           <span class="font-semibold text-lg ">envd Environments</span>
         </div>
-        <EnvDataTable v-if="isFinished" :datas="data" />
+        <EnvDataTable v-if="isFinished" :datas="data!" />
       </div>
     </div>
   </div>

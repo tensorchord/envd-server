@@ -49,7 +49,7 @@ func (s *Server) register(c *gin.Context) {
 	res := types.AuthNResponse{
 		LoginName:     req.LoginName,
 		IdentityToken: token,
-		Status:        "login succeeded",
+		Status:        types.AuthSuccess,
 	}
 	c.JSON(200, res)
 }
@@ -72,7 +72,7 @@ func (s *Server) login(c *gin.Context) {
 
 	userService := user.NewService(s.Queries,
 		s.JWTSecret, s.JWTExpirationTimeout)
-	succeeded, token, err := userService.Login(req.LoginName, req.Password)
+	succeeded, token, err := userService.Login(req.LoginName, req.Password, s.Auth)
 	if err != nil {
 		logrus.Debug("login error: ", err)
 		respondWithError(c, http.StatusUnauthorized,
@@ -87,7 +87,7 @@ func (s *Server) login(c *gin.Context) {
 	res := types.AuthNResponse{
 		LoginName:     req.LoginName,
 		IdentityToken: token,
-		Status:        "login succeeded",
+		Status:        types.AuthSuccess,
 	}
 	c.JSON(200, res)
 }

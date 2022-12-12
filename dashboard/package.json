@@ -8,7 +8,8 @@
   "author": "envd-maintainer",
   "license": "Apache 2.0",
   "scripts": {
-    "build": "vite-ssg build",
+    "ssg-build": "vite-ssg build",
+    "build": "vite build",
     "tbuild": "pnpm lint && pnpm typecheck && vite-ssg build",
     "dev": "vite --port 3333",
     "open": "vite --port 3333 --open",
@@ -20,7 +21,7 @@
     "test:unit": "vitest",
     "typecheck": "vue-tsc --noEmit",
     "dep": "taze major -IR",
-    "tsschema": " npx swagger-typescript-api -p ../pkg/docs/swagger.yaml -o src/composables/types/ -n scheme.ts --no-client"
+    "tsschema": "npx swagger-typescript-api -p ../pkg/docs/swagger.yaml -o src/composables/types/ -n scheme.ts --no-client"
   },
   "dependencies": {
     "@tailwindcss/aspect-ratio": "^0.4.2",

@@ -13,8 +13,16 @@ type AuthNRequest struct {
 	LoginName string `json:"login_name,omitempty" example:"alice"`
 
 	// Password stores the hashed password.
-	Password []byte `json:"password,omitempty"`
+	Password string `json:"password,omitempty"`
 }
+
+type AuthStatus string
+
+const (
+	AuthSuccess AuthStatus = "Login Success"
+	AuthFail    AuthStatus = "Login Fail"
+	Error       AuthStatus = "Internal_Error"
+)
 
 type AuthNResponse struct {
 	// LoginName is used to authenticate the user and get
@@ -25,5 +33,5 @@ type AuthNResponse struct {
 	IdentityToken string `json:"identity_token" example:"a332139d39b89a241400013700e665a3"`
 	// The status of the authentication
 	// Required: true
-	Status string `json:"status" example:"Login successfully"`
+	Status AuthStatus `json:"status" example:"Login successfully"`
 }
