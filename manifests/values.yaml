@@ -17,6 +17,10 @@ dbUrl: ""
 # envd server debug mode
 envdServer:
   debug: false
+  # Whether to run the database migration process
+  migration: false
+  # Leave blank will use ${image.Repository}-migration:${image.tag} as the migration image
+  migrationImage: ""
 
 containersshimage:
   repository: tensorchord/containerssh

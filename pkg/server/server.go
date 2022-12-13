@@ -26,7 +26,6 @@ import (
 	"github.com/tensorchord/envd-server/pkg/query"
 	"github.com/tensorchord/envd-server/pkg/runtime"
 	runtimek8s "github.com/tensorchord/envd-server/pkg/runtime/kubernetes"
-	"github.com/tensorchord/envd-server/pkg/util"
 	"github.com/tensorchord/envd-server/pkg/web"
 )
 
@@ -73,11 +72,6 @@ func New(opt Opt) (*Server, error) {
 	conn, err := pgx.Connect(context.Background(), opt.DBURL)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		os.Exit(1)
-	}
-	err = util.ApplySchema(conn)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to apply schema: %v\n", err)
 		os.Exit(1)
 	}
 

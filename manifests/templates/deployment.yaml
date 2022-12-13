@@ -1,3 +1,12 @@
+
+{{- $dburl := printf "postgres://%s:%s@postgres-service:5432/%s?sslmode=disable" .Values.postgres.username .Values.postgres.password .Values.postgres.dbname -}}
+{{- if .Values.dbUrl -}}
+{{- $dburl := .Values.dbUrl -}}
+{{- end -}}
+{{- $migrationImage := printf "%s-migration:%s" .Values.image.repository .Values.image.tag -}}
+{{- if .Values.envdServer.migrationImage -}}
+{{- $migrationImage := .Values.envdServer.migrationImage -}}
+{{- end -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -36,6 +45,16 @@ spec:
             secretName: {{ include "envd-server.fullname" . }}
             defaultMode: 0666
           name: secret
+      {{- if .Values.envdServer.migration }}      
+      initContainers:
+      - name: migrate
+        image: {{ $migrationImage }}
+        imagePullPolicy: Always
+        args: ["migrate", "apply", "--url", "$(ENVD_DB_URL)", "--dir=file://migrations/?format=goose", "--allow-dirty"]
+        env:
+          - name: ENVD_DB_URL
+            value: {{ $dburl }}
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -43,12 +62,8 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-            - name: ENVD_DB_URL            
-              {{- if .Values.dbUrl }}
-              value: {{ .Values.dbUrl }}
-              {{- else }}
-              value: "postgres://{{ .Values.postgres.username }}:{{ .Values.postgres.password }}@postgres-service:5432/{{ .Values.postgres.dbname }}"
-              {{- end }}  
+            - name: ENVD_DB_URL
+              value: {{ $dburl }}
               {{- if .Values.envdServer.debug }}
             - name: GIN_MODE          
               value: debug
