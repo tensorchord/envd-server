@@ -26,6 +26,7 @@ import (
 	"github.com/tensorchord/envd-server/pkg/query"
 	"github.com/tensorchord/envd-server/pkg/runtime"
 	runtimek8s "github.com/tensorchord/envd-server/pkg/runtime/kubernetes"
+	"github.com/tensorchord/envd-server/pkg/service/user"
 	"github.com/tensorchord/envd-server/pkg/web"
 )
 
@@ -39,10 +40,8 @@ type Server struct {
 
 	// Auth shows if the auth is enabled.
 	Auth bool
-	// JWTSecret is the secret used to sign the JWT token.
-	JWTSecret string
-	// JWTExpirationTimeout is the expiration time of the JWT token.
-	JWTExpirationTimeout time.Duration
+
+	UserService user.Service
 }
 
 type Opt struct {
@@ -90,12 +89,16 @@ func New(opt Opt) (*Server, error) {
 		}))
 	}
 	admin := gin.New()
+
+	userService := user.NewService(queries, opt.JWTSecret, opt.JWTExpirationTimeout)
 	s := &Server{
 		Router:             router,
 		AdminRouter:        admin,
 		Queries:            queries,
 		serverFingerPrints: make([]string, 0),
 		Runtime:            runtimek8s.NewProvisioner(cli),
+		UserService:        userService,
+		Auth:               !opt.NoAuth,
 	}
 
 	// Load host key.
@@ -114,11 +117,6 @@ func New(opt Opt) (*Server, error) {
 			s.serverFingerPrints = append(s.serverFingerPrints, fingerPrint)
 		}
 	}
-
-	// Set the auth information.
-	s.Auth = !opt.NoAuth
-	s.JWTSecret = opt.JWTSecret
-	s.JWTExpirationTimeout = opt.JWTExpirationTimeout
 
 	// Bind the HTTP handlers.
 	s.BindHandlers()

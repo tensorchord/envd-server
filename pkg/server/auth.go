@@ -11,7 +11,6 @@ import (
 	"golang.org/x/crypto/ssh"
 
 	"github.com/tensorchord/envd-server/api/types"
-	"github.com/tensorchord/envd-server/pkg/service/user"
 )
 
 // @Summary     register the user.
@@ -32,9 +31,8 @@ func (s Server) register(c *gin.Context) error {
 	if err != nil {
 		return NewError(http.StatusInternalServerError, err, "ssh.parse-auth-key")
 	}
-	userService := user.NewService(s.Queries,
-		s.JWTSecret, s.JWTExpirationTimeout)
-	token, err := userService.Register(req.LoginName, req.Password, key.Marshal())
+
+	token, err := s.UserService.Register(req.LoginName, req.Password, key.Marshal())
 	if err != nil {
 		return NewError(http.StatusInternalServerError, err, "user.register")
 	}
@@ -61,9 +59,7 @@ func (s Server) login(c *gin.Context) error {
 		return NewError(http.StatusInternalServerError, err, "gin.bind-json")
 	}
 
-	userService := user.NewService(s.Queries,
-		s.JWTSecret, s.JWTExpirationTimeout)
-	succeeded, token, err := userService.Login(req.LoginName, req.Password, s.Auth)
+	succeeded, token, err := s.UserService.Login(req.LoginName, req.Password, s.Auth)
 	if err != nil {
 		return NewError(http.StatusUnauthorized, err, "user.login")
 	}

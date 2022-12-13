@@ -10,8 +10,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
-
-	"github.com/tensorchord/envd-server/pkg/service/user"
 )
 
 func (s *Server) AuthMiddleware() gin.HandlerFunc {
@@ -34,8 +32,7 @@ func (s *Server) AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		userService := user.NewService(s.Queries, s.JWTSecret, s.JWTExpirationTimeout)
-		loginName, err := userService.ValidateJWT(amr.JWTToken)
+		loginName, err := s.UserService.ValidateJWT(amr.JWTToken)
 		if err != nil {
 			respondWithError(c, NewError(http.StatusUnauthorized, err, "user.validateJWT"))
 			c.Next()
