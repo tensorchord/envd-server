@@ -5,11 +5,9 @@
 package server
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/ssh"
 
 	"github.com/tensorchord/envd-server/api/types"
@@ -24,34 +22,29 @@ import (
 // @Param       request body     types.AuthNRequest true "query params"
 // @Success     200     {object} types.AuthNResponse
 // @Router      /register [post]
-func (s *Server) register(c *gin.Context) {
+func (s Server) register(c *gin.Context) error {
 	var req types.AuthNRequest
 	if err := c.BindJSON(&req); err != nil {
-		logrus.Debug("failed to bind json", err)
-		c.JSON(500, err)
-		return
+		return NewError(http.StatusInternalServerError, err, "gin.bind-json")
 	}
 
 	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(req.PublicKey))
 	if err != nil {
-		logrus.Debug("failed to parse auth key", err)
-		c.JSON(500, err)
-		return
+		return NewError(http.StatusInternalServerError, err, "ssh.parse-auth-key")
 	}
 	userService := user.NewService(s.Queries,
 		s.JWTSecret, s.JWTExpirationTimeout)
 	token, err := userService.Register(req.LoginName, req.Password, key.Marshal())
 	if err != nil {
-		logrus.Warnf("register error: %+v", err)
-		c.JSON(500, err)
-		return
+		return NewError(http.StatusInternalServerError, err, "user.register")
 	}
 	res := types.AuthNResponse{
 		LoginName:     req.LoginName,
 		IdentityToken: token,
 		Status:        types.AuthSuccess,
 	}
-	c.JSON(200, res)
+	c.JSON(http.StatusOK, res)
+	return nil
 }
 
 // @Summary     login the user.
@@ -62,27 +55,20 @@ func (s *Server) register(c *gin.Context) {
 // @Param       request body     types.AuthNRequest true "query params"
 // @Success     200     {object} types.AuthNResponse
 // @Router      /login [post]
-func (s *Server) login(c *gin.Context) {
+func (s Server) login(c *gin.Context) error {
 	var req types.AuthNRequest
 	if err := c.BindJSON(&req); err != nil {
-		logrus.Debug("failed to bind json", err)
-		c.JSON(500, err)
-		return
+		return NewError(http.StatusInternalServerError, err, "gin.bind-json")
 	}
 
 	userService := user.NewService(s.Queries,
 		s.JWTSecret, s.JWTExpirationTimeout)
 	succeeded, token, err := userService.Login(req.LoginName, req.Password, s.Auth)
 	if err != nil {
-		logrus.Debug("login error: ", err)
-		respondWithError(c, http.StatusUnauthorized,
-			fmt.Sprintf("auth failed: %+v", err))
-		return
+		return NewError(http.StatusUnauthorized, err, "user.login")
 	}
 	if !succeeded {
-		respondWithError(c, http.StatusUnauthorized,
-			fmt.Sprintf("auth failed: %+v", err))
-		return
+		return NewError(http.StatusUnauthorized, err, "user.login")
 	}
 	res := types.AuthNResponse{
 		LoginName:     req.LoginName,
@@ -90,4 +76,5 @@ func (s *Server) login(c *gin.Context) {
 		Status:        types.AuthSuccess,
 	}
 	c.JSON(200, res)
+	return nil
 }

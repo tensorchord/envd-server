@@ -23,29 +23,26 @@ import (
 // @Param       name           path     string true "environment name" example("pytorch-example")
 // @Success     200            {object} types.EnvironmentGetResponse
 // @Router      /users/{login_name}/environments/{name} [get]
-func (s *Server) environmentGet(c *gin.Context) {
+func (s Server) environmentGet(c *gin.Context) error {
 	owner := c.GetString(ContextLoginName)
 
 	var req types.EnvironmentGetRequest
 	if err := c.BindUri(&req); err != nil {
-		c.JSON(500, err)
-		return
+		return NewError(http.StatusInternalServerError, err, "gin.bind-json")
 	}
 
 	e, err := s.Runtime.EnvironmentGet(c.Request.Context(), owner, req.Name)
 	if err != nil {
 		if errdefs.IsNotFound(err) {
-			c.JSON(http.StatusNotFound, err)
-			return
+			return NewError(http.StatusNotFound, err, "runtime.get-environment")
 		} else if errdefs.IsUnauthorized(err) {
-			c.JSON(http.StatusUnauthorized, err)
-			return
+			return NewError(http.StatusUnauthorized, err, "runtime.get-environment")
 		}
-		c.JSON(http.StatusInternalServerError, err)
-		return
+		return NewError(http.StatusInternalServerError, err, "runtime.get-environment")
 	}
 
 	c.JSON(http.StatusOK, types.EnvironmentGetResponse{
 		Environment: *e,
 	})
+	return nil
 }

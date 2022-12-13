@@ -7,9 +7,9 @@ package server
 import (
 	"crypto/subtle"
 	"encoding/json"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
 	"go.containerssh.io/libcontainerssh/auth"
 	"go.containerssh.io/libcontainerssh/config"
 	"golang.org/x/crypto/ssh"
@@ -26,17 +26,15 @@ import (
 // @Param       request body config.Request true "query params"
 // @Success     200
 // @Router      /config [post]
-func (s *Server) OnConfig(c *gin.Context) {
+func (s Server) OnConfig(c *gin.Context) error {
 	var req config.Request
 	if err := c.BindJSON(&req); err != nil {
-		c.JSON(500, err)
-		return
+		return NewError(http.StatusInternalServerError, err, "gin.bind-json")
 	}
 
 	_, name, err := sshname.GetInfo(req.Username)
 	if err != nil {
-		c.JSON(500, err)
-		return
+		return NewError(http.StatusInternalServerError, err, "sshname.get-info")
 	}
 
 	cfg := config.AppConfig{
@@ -52,7 +50,8 @@ func (s *Server) OnConfig(c *gin.Context) {
 	res := config.ResponseBody{
 		Config: cfg,
 	}
-	c.JSON(200, res)
+	c.JSON(http.StatusOK, res)
+	return nil
 }
 
 // @Summary     authenticate the public key.
@@ -63,50 +62,42 @@ func (s *Server) OnConfig(c *gin.Context) {
 // @Param       request body     auth.PublicKeyAuthRequest true "query params"
 // @Success     200     {object} auth.ResponseBody
 // @Router      /pubkey [post]
-func (s *Server) OnPubKey(c *gin.Context) {
+func (s Server) OnPubKey(c *gin.Context) error {
 	var req auth.PublicKeyAuthRequest
 	if err := c.BindJSON(&req); err != nil {
-		logrus.WithError(err).WithField("req", req).Error("failed to bind the json")
-		c.JSON(500, err)
-		return
+		return NewError(http.StatusInternalServerError, err, "gin.bind-json")
 	}
 
 	owner, _, err := sshname.GetInfo(req.Username)
 	if err != nil {
-		c.JSON(500, err)
-		return
+		return NewError(http.StatusInternalServerError, err, "sshname.get-info")
 	}
 
 	userService := user.NewService(s.Queries,
 		s.JWTSecret, s.JWTExpirationTimeout)
 	skey, err := userService.GetPubKey(owner)
 	if err != nil {
-		logrus.WithError(err).Errorf("db query failed: %v", err)
-		c.JSON(500, "Internal error")
-		return
+		return NewError(http.StatusInternalServerError, err, "db.get-pubkey-from-user")
 	}
 	if skey == nil {
-		logrus.WithError(err).Error("user not found")
-		c.JSON(500, "user not found")
-		return
+		return NewError(http.StatusInternalServerError, err, "db.get-pubkey-from-user")
 	}
 	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(req.PublicKey.PublicKey))
 	if err != nil {
-		logrus.WithError(err).Error("failed to parse key")
-		c.JSON(500, err)
-		return
+		return NewError(http.StatusInternalServerError, err, "ssh.parse-auth-key")
 	}
 	if subtle.ConstantTimeCompare(key.Marshal(), skey) == 1 {
 		res := auth.ResponseBody{
 			Success: true,
 		}
-		c.JSON(200, res)
-		return
+		c.JSON(http.StatusOK, res)
+		return nil
 	}
 	res := auth.ResponseBody{
 		Success: false,
 	}
-	c.JSON(200, res)
+	c.JSON(http.StatusOK, res)
+	return nil
 }
 
 func PrettyStruct(data interface{}) (string, error) {

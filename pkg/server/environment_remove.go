@@ -23,26 +23,23 @@ import (
 // @Param       name           path     string true "environment name" example("pytorch-example")
 // @Success     200            {object} types.EnvironmentRemoveResponse
 // @Router      /users/{login_name}/environments/{name} [delete]
-func (s *Server) environmentRemove(c *gin.Context) {
+func (s *Server) environmentRemove(c *gin.Context) error {
 	owner := c.GetString(ContextLoginName)
 
 	var req types.EnvironmentRemoveRequest
 	if err := c.BindUri(&req); err != nil {
-		c.JSON(500, err)
-		return
+		return NewError(http.StatusInternalServerError, err, "gin.bind-json")
 	}
 
 	if err := s.Runtime.EnvironmentRemove(c.Request.Context(), owner, req.Name); err != nil {
 		if k8serrors.IsNotFound(err) {
-			c.JSON(http.StatusNotFound, err)
-			return
+			return NewError(http.StatusNotFound, err, "runtime.remove-environment")
 		} else if k8serrors.IsUnauthorized(err) {
-			c.JSON(http.StatusUnauthorized, err)
-			return
+			return NewError(http.StatusUnauthorized, err, "runtime.remove-environment")
 		}
-		c.JSON(http.StatusInternalServerError, err)
-		return
+		return NewError(http.StatusInternalServerError, err, "runtime.remove-environment")
 	}
 
-	c.JSON(200, types.EnvironmentRemoveResponse{})
+	c.JSON(http.StatusOK, types.EnvironmentRemoveResponse{})
+	return nil
 }
