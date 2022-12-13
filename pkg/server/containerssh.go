@@ -14,7 +14,6 @@ import (
 	"go.containerssh.io/libcontainerssh/config"
 	"golang.org/x/crypto/ssh"
 
-	"github.com/tensorchord/envd-server/pkg/service/user"
 	"github.com/tensorchord/envd-server/sshname"
 )
 
@@ -73,9 +72,7 @@ func (s Server) OnPubKey(c *gin.Context) error {
 		return NewError(http.StatusInternalServerError, err, "sshname.get-info")
 	}
 
-	userService := user.NewService(s.Queries,
-		s.JWTSecret, s.JWTExpirationTimeout)
-	skey, err := userService.GetPubKey(owner)
+	skey, err := s.UserService.GetPubKey(owner)
 	if err != nil {
 		return NewError(http.StatusInternalServerError, err, "db.get-pubkey-from-user")
 	}

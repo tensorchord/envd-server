@@ -15,20 +15,29 @@ import (
 	"github.com/tensorchord/envd-server/pkg/query"
 )
 
-type Service struct {
+type Service interface {
+	Register(loginName, pwd string,
+		PublicKey []byte) (string, error)
+	GetPubKey(loginName string) ([]byte, error)
+	Login(loginName, pwd string, auth bool) (bool, string, error)
+
+	ValidateJWT(token string) (string, error)
+}
+
+type generalService struct {
 	querier   query.Querier
 	jwtIssuer *JWTIssuer
 }
 
 func NewService(querier query.Querier,
-	secret string, expirationTimeDefault time.Duration) *Service {
-	return &Service{
+	secret string, expirationTimeDefault time.Duration) Service {
+	return &generalService{
 		querier:   querier,
 		jwtIssuer: newJWTIssuer(expirationTimeDefault, secret),
 	}
 }
 
-func (u *Service) Register(loginName, pwd string,
+func (u *generalService) Register(loginName, pwd string,
 	PublicKey []byte) (string, error) {
 	hashed, err := GenerateHashedSaltPassword([]byte(pwd))
 	if err != nil {
@@ -59,7 +68,7 @@ func (u *Service) Register(loginName, pwd string,
 	return token, nil
 }
 
-func (u *Service) GetPubKey(loginName string) ([]byte, error) {
+func (u *generalService) GetPubKey(loginName string) ([]byte, error) {
 	user, err := u.querier.GetUser(context.Background(), loginName)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -71,7 +80,7 @@ func (u *Service) GetPubKey(loginName string) ([]byte, error) {
 	return user.PublicKey, nil
 }
 
-func (u *Service) Login(loginName, pwd string, auth bool) (bool, string, error) {
+func (u *generalService) Login(loginName, pwd string, auth bool) (bool, string, error) {
 	if auth {
 		rawUser, err := u.querier.GetUser(context.Background(), loginName)
 		if err != nil {
@@ -95,6 +104,6 @@ func (u *Service) Login(loginName, pwd string, auth bool) (bool, string, error) 
 	return true, token, nil
 }
 
-func (u *Service) ValidateJWT(token string) (string, error) {
+func (u *generalService) ValidateJWT(token string) (string, error) {
 	return u.jwtIssuer.Validate(token)
 }
