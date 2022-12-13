@@ -17,7 +17,7 @@ import (
 
 type Service interface {
 	Register(loginName, pwd string,
-		PublicKey []byte) (string, error)
+		publicKey []byte) (string, error)
 	GetPubKey(loginName string) ([]byte, error)
 	Login(loginName, pwd string, auth bool) (bool, string, error)
 
@@ -38,7 +38,7 @@ func NewService(querier query.Querier,
 }
 
 func (u *generalService) Register(loginName, pwd string,
-	PublicKey []byte) (string, error) {
+	publicKey []byte) (string, error) {
 	hashed, err := GenerateHashedSaltPassword([]byte(pwd))
 	if err != nil {
 		return "", err
@@ -47,7 +47,7 @@ func (u *generalService) Register(loginName, pwd string,
 		context.Background(), query.CreateUserParams{
 			LoginName:    loginName,
 			PasswordHash: string(hashed),
-			PublicKey:    PublicKey,
+			PublicKey:    publicKey,
 		})
 
 	if err != nil {
