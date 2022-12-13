@@ -72,6 +72,9 @@ spec:
             - /envd-server
             - --hostkey
             - /etc/containerssh/hostkey
+            {{- if .Values.envdServer.noauth }}
+            - --no-auth
+            {{- end }}
           ports:
             - name: envdserver
               containerPort: 8080

@@ -10,6 +10,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"go.containerssh.io/libcontainerssh/auth"
 	"go.containerssh.io/libcontainerssh/config"
 	"golang.org/x/crypto/ssh"
@@ -84,12 +85,21 @@ func (s Server) OnPubKey(c *gin.Context) error {
 		return NewError(http.StatusInternalServerError, err, "ssh.parse-auth-key")
 	}
 	if subtle.ConstantTimeCompare(key.Marshal(), skey) == 1 {
+		logrus.WithFields(logrus.Fields{
+			"username":    req.Username,
+			"remote-addr": req.RemoteAddress,
+		}).Debug("auth success")
 		res := auth.ResponseBody{
 			Success: true,
 		}
 		c.JSON(http.StatusOK, res)
 		return nil
 	}
+
+	logrus.WithFields(logrus.Fields{
+		"username":    req.Username,
+		"remote-addr": req.RemoteAddress,
+	}).Debug("auth failed")
 	res := auth.ResponseBody{
 		Success: false,
 	}

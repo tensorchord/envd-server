@@ -8,7 +8,7 @@ image:
   repository: tensorchord/envd-server
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.0.9"
+  tag: "0.0.14"
 
 # Will generate from postgres info below if thie field is empty
 # example: postgres://username:password@localhost:5432/database_name
@@ -17,6 +17,7 @@ dbUrl: ""
 # envd server debug mode
 envdServer:
   debug: false
+  noauth: true
   # Whether to run the database migration process
   migration: false
   # Leave blank will use ${image.Repository}-migration:${image.tag} as the migration image
