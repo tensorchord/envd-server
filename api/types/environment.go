@@ -9,6 +9,7 @@ type Environment struct {
 	Spec       EnvironmentSpec   `json:"spec,omitempty"`
 	Status     EnvironmentStatus `json:"status,omitempty"`
 	Resources  ResourceSpec      `json:"resource,omitempty"`
+	CreatedAt  int64             `json:"created_at,omitempty"`
 }
 
 type ResourceSpec struct {

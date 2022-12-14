@@ -86,6 +86,8 @@ func environmentFromKubernetesPod(pod *v1.Pod) (*types.Environment, error) {
 		env.Status.RStudioServerAddr = &rstudioServerAddr
 	}
 
+	env.CreatedAt = pod.CreationTimestamp.Unix()
+
 	// only reserve labels with prefix `ai.tensorchord.envd.`
 	env.Labels = util.Filter(env.Labels, util.IsEnvdLabel)
 	env.Status.Phase = string(pod.Status.Phase)

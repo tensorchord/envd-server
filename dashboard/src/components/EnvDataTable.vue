@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import dayjs from 'dayjs'
 import type { TypesEnvironmentListResponse } from '~/composables/types/scheme'
 const props = defineProps<{ datas: TypesEnvironmentListResponse }>()
 </script>
@@ -40,7 +41,7 @@ const props = defineProps<{ datas: TypesEnvironmentListResponse }>()
             SSH | Jupyter | Tensorboard
           </td>
           <td class="py-4 px-6">
-            "Unknown for now"
+            {{ dayjs(e.created_at! * 1000).toISOString() }}
           </td>
           <td class="py-4 px-6">
             <span
@@ -50,7 +51,9 @@ const props = defineProps<{ datas: TypesEnvironmentListResponse }>()
             </span>
           </td>
           <td class="py-4 px-6">
-            <i-mdi-bin class="h-6 w-6" />
+            <button class="hover:bg-grey-200">
+              <i-mdi-bin class="h-6 w-6" />
+            </button>
           </td>
         </tr>
       </tbody>

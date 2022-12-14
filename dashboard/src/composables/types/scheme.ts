@@ -295,6 +295,7 @@ export interface TypesEnvVar {
 }
 
 export interface TypesEnvironment {
+  created_at?: number;
   labels?: Record<string, string>;
   name?: string;
   resource?: TypesResourceSpec;
@@ -303,6 +304,7 @@ export interface TypesEnvironment {
 }
 
 export interface TypesEnvironmentCreateRequest {
+  created_at?: number;
   labels?: Record<string, string>;
   name?: string;
   resource?: TypesResourceSpec;
@@ -320,6 +322,7 @@ export interface TypesEnvironmentCreateResponse {
 }
 
 export interface TypesEnvironmentGetResponse {
+  created_at?: number;
   labels?: Record<string, string>;
   name?: string;
   resource?: TypesResourceSpec;
