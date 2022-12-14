@@ -80,7 +80,10 @@ jobs:
         with:
           valueFile: 'manifests/values.yaml'
           propertyPath: 'image.tag'
-          value: ${{ steps.rmprefix.outputs.value }}
+          value: ${{ steps.rmprefix.outputs.value }}          
+          branch: auto-manifest-update
+          masterBranchName: main
+          targetBranch: main
 
   chart-publisher:
     if: github.repository == 'tensorchord/envd-server'
