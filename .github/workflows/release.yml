@@ -74,7 +74,6 @@ jobs:
         env:
           VERSION: ${{ github.ref_name }}        
         run: |
-          echo $VERSION
           echo "${VERSION:1}"
       - name: Update values.yaml
         uses: fjogeleit/yaml-update-action@main
@@ -107,7 +106,6 @@ jobs:
         env:
           VERSION: ${{ github.ref_name }}        
         run: |
-          echo $VERSION
           echo "${VERSION:1}"
 
       - name: Update values.yaml
