@@ -76,7 +76,7 @@ jobs:
         run: |
           echo "${VERSION:1}"
       - name: Update values.yaml
-        uses: fjogeleit/yaml-update-action@main
+        uses: fjogeleit/yaml-update-action@v0.12.3
         with:
           valueFile: 'manifests/values.yaml'
           propertyPath: 'image.tag'
@@ -109,7 +109,7 @@ jobs:
           echo "${VERSION:1}"
 
       - name: Update values.yaml
-        uses: fjogeleit/yaml-update-action@main
+        uses: fjogeleit/yaml-update-action@v0.12.3
         with:
           valueFile: 'manifests/values.yaml'
           propertyPath: 'image.tag'
