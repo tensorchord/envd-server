@@ -61,6 +61,28 @@ jobs:
           args: release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  update-manifest:
+    if: github.repository == 'tensorchord/envd-server'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Remove v- prefix
+        id: rmprefix
+        env:
+          VERSION: ${{ github.ref_name }}        
+        run: |
+          echo $VERSION
+          echo "${VERSION:1}"
+      - name: Update values.yaml
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          valueFile: 'manifests/values.yaml'
+          propertyPath: 'image.tag'
+          value: ${{ steps.rmprefix.outputs.value }}
+
   chart-publisher:
     if: github.repository == 'tensorchord/envd-server'
     needs: goreleaser
@@ -78,7 +100,23 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@v3
         with:
-          version: v3.10.0
+          version: v3.10.0      
+      
+      - name: Remove v- prefix
+        id: rmprefix
+        env:
+          VERSION: ${{ github.ref_name }}        
+        run: |
+          echo $VERSION
+          echo "${VERSION:1}"
+
+      - name: Update values.yaml
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          valueFile: 'manifests/values.yaml'
+          propertyPath: 'image.tag'
+          value: ${{ steps.rmprefix.outputs.value }}
+          commitChange: false
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.4.1
