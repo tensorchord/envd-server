@@ -2,6 +2,7 @@
 import dayjs from 'dayjs'
 import type { TypesEnvironmentListResponse } from '~/composables/types/scheme'
 const props = defineProps<{ datas: TypesEnvironmentListResponse }>()
+defineEmits(['deleteEnv'])
 </script>
 
 <template>
@@ -38,21 +39,17 @@ const props = defineProps<{ datas: TypesEnvironmentListResponse }>()
             <span class="text-blue-500">{{ e.spec!.image }}</span>
           </td>
           <td class="py-4 px-6">
-            SSH | Jupyter | Tensorboard
+            {{ e.spec?.ports?.map((e) => `${e.name} : ${e.port}`).join(' | ') }}
           </td>
           <td class="py-4 px-6">
-            {{ dayjs(e.created_at! * 1000).toISOString() }}
+            {{ dayjs(e.created_at! * 1000).fromNow() }}
           </td>
           <td class="py-4 px-6">
-            <span
-              class="bg-green-100 text-green-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded dark:bg-green-200 dark:text-green-900"
-            >
-              {{ e.status!.phase }}
-            </span>
+            <StatusTag :status="e.status!.phase" />
           </td>
           <td class="py-4 px-6">
             <button class="hover:bg-grey-200">
-              <i-mdi-bin class="h-6 w-6" />
+              <i-mdi-bin class="h-6 w-6" @click="$emit('deleteEnv', e.name)" />
             </button>
           </td>
         </tr>
