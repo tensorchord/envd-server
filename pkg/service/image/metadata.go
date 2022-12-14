@@ -1,3 +1,7 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 package image
 
 import (
@@ -8,6 +12,7 @@ import (
 	"github.com/containers/image/v5/image"
 	containertypes "github.com/containers/image/v5/types"
 	"github.com/sirupsen/logrus"
+
 	"github.com/tensorchord/envd-server/api/types"
 )
 
