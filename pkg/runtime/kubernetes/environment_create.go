@@ -16,7 +16,6 @@ import (
 	"github.com/tensorchord/envd-server/api/types"
 	servertypes "github.com/tensorchord/envd-server/api/types"
 	"github.com/tensorchord/envd-server/pkg/consts"
-	"github.com/tensorchord/envd-server/pkg/util/imageutil"
 )
 
 func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
@@ -45,7 +44,7 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 	repoLabel, ok := meta.Labels[consts.ImageLabelRepo]
 	repoInfo := &types.EnvironmentRepoInfo{}
 	if ok {
-		repoInfo, err = imageutil.RepoInfoFromLabel(repoLabel)
+		repoInfo, err = repoInfoFromLabel(repoLabel)
 		if err != nil {
 			logrus.Info("failed to parse repo from label")
 			return nil, errors.Wrap(err, "failed to parse repo from label")
