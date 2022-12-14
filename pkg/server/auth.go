@@ -5,6 +5,7 @@
 package server
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -25,6 +26,10 @@ func (s Server) register(c *gin.Context) error {
 	var req types.AuthNRequest
 	if err := c.BindJSON(&req); err != nil {
 		return NewError(http.StatusInternalServerError, err, "gin.bind-json")
+	}
+
+	if req.PublicKey == "" {
+		return NewError(http.StatusBadRequest, errors.New("public key is not provided"), "user.register")
 	}
 
 	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(req.PublicKey))

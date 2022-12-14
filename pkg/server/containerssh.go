@@ -7,6 +7,7 @@ package server
 import (
 	"crypto/subtle"
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -78,7 +79,7 @@ func (s Server) OnPubKey(c *gin.Context) error {
 		return NewError(http.StatusInternalServerError, err, "db.get-pubkey-from-user")
 	}
 	if skey == nil {
-		return NewError(http.StatusInternalServerError, err, "db.get-pubkey-from-user")
+		return NewError(http.StatusInternalServerError, errors.New("key is not found"), "db.get-pubkey-from-user")
 	}
 	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(req.PublicKey.PublicKey))
 	if err != nil {
