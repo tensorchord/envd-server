@@ -29,7 +29,7 @@ func WrapHandler(handler HandlerFunc) gin.HandlerFunc {
 			serverErr.Request = c.Request.Method + " " + c.Request.URL.String()
 
 			if gin.Mode() == "debug" {
-				logrus.Debug("error: ", err)
+				logrus.Debugf("error: %+v", err)
 			}
 
 			c.JSON(serverErr.HTTPStatusCode, serverErr)

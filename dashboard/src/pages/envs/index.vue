@@ -2,7 +2,13 @@
 import { useEnvdFetch } from '~/composables/request'
 import type { TypesEnvironmentListResponse } from '~/composables/types/scheme'
 const { userInfo } = useUserStore()
-const { data, isFinished } = useEnvdFetch(`/users/${userInfo.username}/environments`).get().json<TypesEnvironmentListResponse>()
+const { data, isFinished, execute } = useEnvdFetch(`/users/${userInfo.username}/environments`).get().json<TypesEnvironmentListResponse>()
+
+const deleteEnv = async (envName: string) => {
+  const { isFinished } = await useEnvdFetch(`/users/${userInfo.username}/environments/${envName}`).delete()
+  if (isFinished)
+    execute()
+}
 </script>
 
 <template>
@@ -14,7 +20,7 @@ const { data, isFinished } = useEnvdFetch(`/users/${userInfo.username}/environme
         <div class="container py-5">
           <span class="font-semibold text-lg ">envd Environments</span>
         </div>
-        <EnvDataTable v-if="isFinished" :datas="data!" />
+        <EnvDataTable v-if="isFinished" :datas="data!" @delete-env="deleteEnv" />
       </div>
     </div>
   </div>

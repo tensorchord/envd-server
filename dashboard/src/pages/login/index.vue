@@ -10,11 +10,14 @@ const { userInfo, login } = useUserStore()
 const username = ref(userInfo.username)
 const password = ref('')
 const router = useRouter()
+const failWarning = ref(false)
 
 async function loginAction() {
   const isLogin = await login(username.value, password.value)
   if (isLogin)
     router.push('/envs')
+  else
+    failWarning.value = true
 }
 </script>
 
@@ -30,7 +33,7 @@ async function loginAction() {
 
         <div class="mt-8">
           <div class="mt-6">
-            <form action="#" method="POST" class="space-y-6">
+            <form class="space-y-6">
               <div>
                 <label for="email" class="block text-sm font-medium text-gray-700 py-2"> Username
                 </label>
@@ -68,6 +71,10 @@ async function loginAction() {
                   <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500"> Forgot your
                     password? </a>
                 </div>
+              </div>
+
+              <div class="flex item-center">
+                <label for="" />
               </div>
 
               <div>

@@ -672,6 +672,9 @@ const docTemplate = `{
         "types.Environment": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "integer"
+                },
                 "labels": {
                     "type": "object",
                     "additionalProperties": {
@@ -695,6 +698,9 @@ const docTemplate = `{
         "types.EnvironmentCreateRequest": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "integer"
+                },
                 "labels": {
                     "type": "object",
                     "additionalProperties": {
@@ -733,6 +739,9 @@ const docTemplate = `{
         "types.EnvironmentGetResponse": {
             "type": "object",
             "properties": {
+                "created_at": {
+                    "type": "integer"
+                },
                 "labels": {
                     "type": "object",
                     "additionalProperties": {
