@@ -5,9 +5,9 @@
 package server
 
 import (
-	"errors"
 	"net/http"
 
+	"github.com/cockroachdb/errors"
 	"github.com/gin-gonic/gin"
 
 	"github.com/tensorchord/envd-server/api/types"
@@ -43,7 +43,7 @@ func (s *Server) imageGet(c *gin.Context) error {
 	}
 	if meta == nil {
 		return NewError(http.StatusNotFound,
-			errors.New("meta is nil"), "image.get")
+			errors.New("image metadata is not found"), "image.get")
 	}
 
 	c.JSON(http.StatusOK, types.ImageGetResponse{

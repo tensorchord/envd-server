@@ -5,9 +5,9 @@
 package server
 
 import (
-	"errors"
 	"net/http"
 
+	"github.com/cockroachdb/errors"
 	"github.com/gin-gonic/gin"
 
 	"github.com/tensorchord/envd-server/api/types"
@@ -40,7 +40,7 @@ func (s Server) environmentCreate(c *gin.Context) error {
 	}
 	if meta == nil {
 		return NewError(http.StatusInternalServerError,
-			errors.New("meta is nil"), "image-service.create-image")
+			errors.New("image is not found"), "image-service.create-image")
 	}
 
 	// Create the environment.
