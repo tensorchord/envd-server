@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-package imageutil
+package kubernetes
 
 import (
 	"reflect"
@@ -49,7 +49,7 @@ func TestPortsFromLabel(t *testing.T) {
 	}
 
 	for _, tc := range tcs {
-		p, err := PortsFromLabel(tc.label)
+		p, err := portsFromLabel(tc.label)
 		if tc.expectedErr {
 			if err == nil {
 				t.Errorf("Expected err, got nil")

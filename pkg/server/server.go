@@ -26,6 +26,7 @@ import (
 	"github.com/tensorchord/envd-server/pkg/query"
 	"github.com/tensorchord/envd-server/pkg/runtime"
 	runtimek8s "github.com/tensorchord/envd-server/pkg/runtime/kubernetes"
+	"github.com/tensorchord/envd-server/pkg/service/image"
 	"github.com/tensorchord/envd-server/pkg/service/user"
 	"github.com/tensorchord/envd-server/pkg/web"
 )
@@ -33,7 +34,6 @@ import (
 type Server struct {
 	Router      *gin.Engine
 	AdminRouter *gin.Engine
-	Queries     *query.Queries
 	Runtime     runtime.Provisioner
 
 	serverFingerPrints []string
@@ -41,7 +41,8 @@ type Server struct {
 	// Auth shows if the auth is enabled.
 	Auth bool
 
-	UserService user.Service
+	UserService  user.Service
+	ImageService image.Service
 }
 
 type Opt struct {
@@ -91,13 +92,14 @@ func New(opt Opt) (*Server, error) {
 	admin := gin.New()
 
 	userService := user.NewService(queries, opt.JWTSecret, opt.JWTExpirationTimeout)
+	imageService := image.NewService(queries)
 	s := &Server{
 		Router:             router,
 		AdminRouter:        admin,
-		Queries:            queries,
 		serverFingerPrints: make([]string, 0),
 		Runtime:            runtimek8s.NewProvisioner(cli),
 		UserService:        userService,
+		ImageService:       imageService,
 		Auth:               !opt.NoAuth,
 	}
 

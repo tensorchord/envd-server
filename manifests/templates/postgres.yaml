@@ -66,11 +66,10 @@ metadata:
     type: local
     app: postgres
 spec:
-  storageClassName: manual
   capacity:
     storage: 5Gi
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   hostPath:
     path: "/mnt/data"
 ---
@@ -81,9 +80,8 @@ metadata:
   labels:
     app: postgres
 spec:
-  storageClassName: manual
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: 5Gi

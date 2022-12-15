@@ -17,7 +17,7 @@ import (
 )
 
 // TODO(gaocegege): Support image registry auth.
-func FetchMetadata(ctx context.Context, imageName string) (
+func (s generalService) fetchMetadata(ctx context.Context, imageName string) (
 	meta types.ImageMeta, err error) {
 	ref, err := docker.ParseReference(fmt.Sprintf("//%s", imageName))
 	if err != nil {
