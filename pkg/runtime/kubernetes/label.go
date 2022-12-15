@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-package imageutil
+package kubernetes
 
 import (
 	"encoding/json"
@@ -10,7 +10,7 @@ import (
 	"github.com/tensorchord/envd-server/api/types"
 )
 
-func PortsFromLabel(label string) ([]types.EnvironmentPort, error) {
+func portsFromLabel(label string) ([]types.EnvironmentPort, error) {
 	var ports []types.EnvironmentPort
 	if err := json.Unmarshal([]byte(label), &ports); err != nil {
 		return nil, err
@@ -19,7 +19,7 @@ func PortsFromLabel(label string) ([]types.EnvironmentPort, error) {
 	return ports, nil
 }
 
-func RepoInfoFromLabel(label string) (*types.EnvironmentRepoInfo, error) {
+func repoInfoFromLabel(label string) (*types.EnvironmentRepoInfo, error) {
 	var repo *types.EnvironmentRepoInfo
 	if err := json.Unmarshal([]byte(label), &repo); err != nil {
 		return nil, err

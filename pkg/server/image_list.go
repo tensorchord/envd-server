@@ -5,15 +5,12 @@
 package server
 
 import (
-	"context"
 	"net/http"
 
-	"github.com/cockroachdb/errors"
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v4"
 
 	"github.com/tensorchord/envd-server/api/types"
-	"github.com/tensorchord/envd-server/pkg/util"
+	"github.com/tensorchord/envd-server/errdefs"
 )
 
 // @Summary     List the images.
@@ -27,26 +24,19 @@ import (
 // @Success     200            {object} types.ImageListResponse
 // @Router      /users/{login_name}/images [get]
 func (s *Server) imageList(c *gin.Context) error {
-	it := c.GetString(ContextLoginName)
+	owner := c.GetString(ContextLoginName)
 
 	resp := types.ImageListResponse{}
-	images, err := s.Queries.ListImageByOwner(context.Background(), it)
+	images, err := s.ImageService.ListImages(c.Request.Context(), owner)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			// No image found
-			c.JSON(http.StatusOK, resp)
-			return nil
+		if errdefs.IsNotFound(err) {
+			return NewError(http.StatusNotFound, err, "image.list")
 		} else {
-			return NewError(http.StatusInternalServerError, err, "db.list-image")
+			return NewError(http.StatusInternalServerError, err, "image.list")
 		}
 	}
-	for _, info := range images {
-		item, err := util.DaoToImageMeta(info)
-		if err != nil {
-			return NewError(http.StatusInternalServerError, err, "db.list-image")
-		}
-		resp.Items = append(resp.Items, *item)
-	}
+
+	resp.Items = images
 	c.JSON(http.StatusOK, resp)
 	return nil
 }

@@ -5,6 +5,8 @@
 package kubernetes
 
 import (
+	"strings"
+
 	"github.com/cockroachdb/errors"
 	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"
@@ -12,8 +14,6 @@ import (
 
 	"github.com/tensorchord/envd-server/api/types"
 	"github.com/tensorchord/envd-server/pkg/consts"
-	"github.com/tensorchord/envd-server/pkg/util"
-	"github.com/tensorchord/envd-server/pkg/util/imageutil"
 )
 
 func extractResourceRequest(env types.Environment) (v1.ResourceList, error) {
@@ -72,7 +72,7 @@ func environmentFromKubernetesPod(pod *v1.Pod) (*types.Environment, error) {
 		logrus.Info("failed to get port label")
 		return nil, errors.New("failed to get port annotation")
 	}
-	ports, err := imageutil.PortsFromLabel(portLabel)
+	ports, err := portsFromLabel(portLabel)
 	if err != nil {
 		logrus.Infof("failed to get ports from: %s", portLabel)
 		return nil, errors.Wrap(err, "failed to get ports from label")
@@ -89,7 +89,7 @@ func environmentFromKubernetesPod(pod *v1.Pod) (*types.Environment, error) {
 	env.CreatedAt = pod.CreationTimestamp.Unix()
 
 	// only reserve labels with prefix `ai.tensorchord.envd.`
-	env.Labels = util.Filter(env.Labels, util.IsEnvdLabel)
+	env.Labels = filter(env.Labels, isEnvdLabel)
 	env.Status.Phase = string(pod.Status.Phase)
 	return env, nil
 }
@@ -103,4 +103,20 @@ func envVarsfromKubernetes(env []v1.EnvVar) []types.EnvVar {
 		}
 	}
 	return envVars
+}
+
+// Filter filter elements in map
+func filter(origin map[string]string, predicate func(string) bool) map[string]string {
+	result := make(map[string]string)
+	for k, v := range origin {
+		if predicate(k) {
+			result[k] = v
+		}
+	}
+	return result
+}
+
+// IsEnvdLabel check if envd label
+func isEnvdLabel(key string) bool {
+	return strings.HasPrefix(key, consts.EnvdLabelPrefix)
 }
