@@ -1,11 +1,11 @@
 
 {{- $dburl := printf "postgres://%s:%s@postgres-service:5432/%s?sslmode=disable" .Values.postgres.username .Values.postgres.password .Values.postgres.dbname -}}
 {{- if .Values.dbUrl -}}
-{{- $dburl := .Values.dbUrl -}}
+{{- $dburl = .Values.dbUrl -}}
 {{- end -}}
-{{- $migrationImage := printf "%s-migration:%s" .Values.image.repository .Values.image.tag -}}
-{{- if .Values.envdServer.migrationImage -}}
-{{- $migrationImage := .Values.envdServer.migrationImage -}}
+{{- $migrationImage := printf "%s-migration:v%s" .Values.image.repository .Values.image.tag -}}
+{{- if .Values.server.migrationImage -}}
+{{- $migrationImage = .Values.server.migrationImage -}}
 {{- end -}}
 apiVersion: apps/v1
 kind: Deployment
@@ -45,7 +45,7 @@ spec:
             secretName: {{ include "envd-server.fullname" . }}
             defaultMode: 0666
           name: secret
-      {{- if .Values.envdServer.migration }}      
+      {{- if .Values.server.migration }}      
       initContainers:
       - name: migrate
         image: {{ $migrationImage }}
@@ -64,7 +64,7 @@ spec:
           env:
             - name: ENVD_DB_URL
               value: {{ $dburl }}
-              {{- if .Values.envdServer.debug }}
+              {{- if .Values.server.debug }}
             - name: GIN_MODE          
               value: debug
               {{- end }}
@@ -72,6 +72,9 @@ spec:
             - /envd-server
             - --hostkey
             - /etc/containerssh/hostkey
+            {{- if .Values.server.noauth }}
+            - --no-auth
+            {{- end }}
           ports:
             - name: envdserver
               containerPort: 8080

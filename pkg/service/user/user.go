@@ -6,9 +6,9 @@ package user
 
 import (
 	"context"
-	"errors"
 	"time"
 
+	"github.com/cockroachdb/errors"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 
