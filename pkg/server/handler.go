@@ -30,6 +30,10 @@ func WrapHandler(handler HandlerFunc) gin.HandlerFunc {
 
 			if gin.Mode() == "debug" {
 				logrus.Debugf("error: %+v", err)
+			} else {
+				// Remove detailed info when in the release mode
+				serverErr.Op = ""
+				serverErr.Err = nil
 			}
 
 			c.JSON(serverErr.HTTPStatusCode, serverErr)
