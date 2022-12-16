@@ -12,6 +12,7 @@ import (
 	"golang.org/x/crypto/ssh"
 
 	"github.com/tensorchord/envd-server/api/types"
+	"github.com/tensorchord/envd-server/errdefs"
 )
 
 // @Summary     register the user.
@@ -39,6 +40,9 @@ func (s Server) register(c *gin.Context) error {
 
 	token, err := s.UserService.Register(req.LoginName, req.Password, key.Marshal())
 	if err != nil {
+		if errdefs.IsConflict(err) {
+			return NewError(http.StatusConflict, err, "user.register")
+		}
 		return NewError(http.StatusInternalServerError, err, "user.register")
 	}
 	res := types.AuthNResponse{
