@@ -13,22 +13,22 @@
       </a>
       <ul class="space-y-2">
         <li>
-          <a
-            href="#"
+          <router-link
+            to="/envs"
             class="flex items-center px-2 py-3 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
           >
             <i-mdi-drive-document class="h-6 w-6 text-gray-500" />
             <span class="ml-3">Environments</span>
-          </a>
+          </router-link>
         </li>
         <li>
-          <a
-            href="#"
+          <router-link
+            to="/images"
             class="flex items-center px-2 py-3 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
           >
             <i-material-symbols-insert-chart-rounded class="h-6 w-6 text-gray-500" />
             <span class="flex-1 ml-3 whitespace-nowrap">Images</span>
-          </a>
+          </router-link>
         </li>
         <li>
           <a

@@ -8,6 +8,7 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     EnvDataTable: typeof import('./components/EnvDataTable.vue')['default']
+    ImageDataTable: typeof import('./components/ImageDataTable.vue')['default']
     IMaterialSymbolsCalendarMonth: typeof import('~icons/material-symbols/calendar-month')['default']
     IMaterialSymbolsInsertChartRounded: typeof import('~icons/material-symbols/insert-chart-rounded')['default']
     IMdiAccountCircleOutline: typeof import('~icons/mdi/account-circle-outline')['default']
