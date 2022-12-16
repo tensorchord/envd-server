@@ -12,6 +12,7 @@ import (
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 
+	"github.com/tensorchord/envd-server/errdefs"
 	"github.com/tensorchord/envd-server/pkg/query"
 )
 
@@ -55,7 +56,7 @@ func (u *generalService) Register(loginName, pwd string,
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
 			case "23505":
-				return "", errors.New("login name already exists")
+				return "", errdefs.Conflict(errors.New("login name already exists"))
 			}
 		}
 		return "", err
