@@ -18,6 +18,7 @@ dbUrl: ""
 server:
   debug: false
   noauth: true
+  imagePullSecret: ""
   # Whether to run the database migration process
   migration: true
   # Leave blank will use ${image.Repository}-migration:${image.tag} as the migration image

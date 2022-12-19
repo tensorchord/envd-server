@@ -156,6 +156,14 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 		})
 	}
 
+	if p.imagePullSecretName != nil {
+		expectedPod.Spec.ImagePullSecrets = []v1.LocalObjectReference{
+			{
+				Name: *p.imagePullSecretName,
+			},
+		}
+	}
+
 	created, err := p.client.CoreV1().Pods(
 		p.namespace).Create(ctx, &expectedPod, metav1.CreateOptions{})
 	if err != nil {

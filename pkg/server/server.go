@@ -54,6 +54,7 @@ type Opt struct {
 	NoAuth               bool
 	JWTSecret            string
 	JWTExpirationTimeout time.Duration
+	ImagePullSecretName  string
 }
 
 func New(opt Opt) (*Server, error) {
@@ -97,7 +98,7 @@ func New(opt Opt) (*Server, error) {
 		Router:             router,
 		AdminRouter:        admin,
 		serverFingerPrints: make([]string, 0),
-		Runtime:            runtimek8s.NewProvisioner(cli),
+		Runtime:            runtimek8s.NewProvisioner(cli, "default", opt.ImagePullSecretName),
 		UserService:        userService,
 		ImageService:       imageService,
 		Auth:               !opt.NoAuth,

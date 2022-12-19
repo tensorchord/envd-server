@@ -13,12 +13,18 @@ import (
 type generalProvisioner struct {
 	client kubernetes.Interface
 
-	namespace string
+	namespace           string
+	imagePullSecretName *string
 }
 
-func NewProvisioner(client kubernetes.Interface) runtime.Provisioner {
-	return &generalProvisioner{
+func NewProvisioner(client kubernetes.Interface,
+	namespace, imagePullSecretName string) runtime.Provisioner {
+	p := &generalProvisioner{
 		client:    client,
-		namespace: "default",
+		namespace: namespace,
 	}
+	if imagePullSecretName != "" {
+		p.imagePullSecretName = &imagePullSecretName
+	}
+	return p
 }
