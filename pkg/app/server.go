@@ -66,6 +66,12 @@ func New() EnvdServerApp {
 			EnvVars: []string{"ENVD_JWT_EXPIRATION_TIMEOUT"},
 			Aliases: []string{"jet"},
 		},
+		&cli.StringFlag{
+			Name:    "image-pull-secret-name",
+			Usage:   "name of the image pull secret in the cluster",
+			EnvVars: []string{"ENVD_IMAGE_PULL_SECRET_NAME"},
+			Aliases: []string{"ipsn"},
+		},
 	}
 	internalApp.Action = runServer
 
@@ -89,12 +95,13 @@ func New() EnvdServerApp {
 
 func runServer(clicontext *cli.Context) error {
 	s, err := server.New(server.Opt{
-		Debug:       clicontext.Bool("debug"),
-		KubeConfig:  clicontext.Path("kubeconfig"),
-		HostKeyPath: clicontext.Path("hostkey"),
-		DBURL:       clicontext.String("dburl"),
-		NoAuth:      clicontext.Bool("no-auth"),
-		JWTSecret:   clicontext.String("jwt-secret"),
+		Debug:               clicontext.Bool("debug"),
+		KubeConfig:          clicontext.Path("kubeconfig"),
+		HostKeyPath:         clicontext.Path("hostkey"),
+		DBURL:               clicontext.String("dburl"),
+		NoAuth:              clicontext.Bool("no-auth"),
+		JWTSecret:           clicontext.String("jwt-secret"),
+		ImagePullSecretName: clicontext.String("image-pull-secret-name"),
 	})
 	if err != nil {
 		return err
