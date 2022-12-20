@@ -5,6 +5,7 @@
 package kubernetes
 
 import (
+	"github.com/sirupsen/logrus"
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/tensorchord/envd-server/pkg/runtime"
@@ -12,6 +13,7 @@ import (
 
 type generalProvisioner struct {
 	client kubernetes.Interface
+	logger *logrus.Entry
 
 	namespace           string
 	imagePullSecretName *string
@@ -22,6 +24,10 @@ func NewProvisioner(client kubernetes.Interface,
 	p := &generalProvisioner{
 		client:    client,
 		namespace: namespace,
+		logger: logrus.WithFields(logrus.Fields{
+			"namespace":              namespace,
+			"image-pull-secret-name": imagePullSecretName,
+		}),
 	}
 	if imagePullSecretName != "" {
 		p.imagePullSecretName = &imagePullSecretName

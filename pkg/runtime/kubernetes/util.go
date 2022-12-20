@@ -77,26 +77,22 @@ func environmentFromKubernetesPod(pod *v1.Pod) (*types.Environment, error) {
 	env.Spec.Ports = ports
 
 	// Get the apt packages
-	aptLabel, ok := pod.Annotations[consts.ImageLabelAPTPackages]
-	if !ok {
-		return nil, errors.New("failed to get apt packages annotation")
+	if aptLabel, ok := pod.Annotations[consts.ImageLabelAPTPackages]; ok {
+		packages, err := aptPackagesFromLabel(aptLabel)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to get apt packages from label")
+		}
+		env.Spec.APTPackages = packages
 	}
-	packages, err := aptPackagesFromLabel(aptLabel)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get apt packages from label")
-	}
-	env.Spec.APTPackages = packages
 
 	// Get the python commands
-	pythonLabel, ok := pod.Annotations[consts.ImageLabelPythonCommands]
-	if !ok {
-		return nil, errors.New("failed to get python commands annotation")
+	if pythonLabel, ok := pod.Annotations[consts.ImageLabelPythonCommands]; ok {
+		pythonCommands, err := pythonCommandsFromLabel(pythonLabel)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to get python commands from label")
+		}
+		env.Spec.PythonCommands = pythonCommands
 	}
-	pythonCommands, err := pythonCommandsFromLabel(pythonLabel)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get python commands from label")
-	}
-	env.Spec.PythonCommands = pythonCommands
 
 	if jupyterAddr, ok := pod.Annotations[consts.PodLabelJupyterAddr]; ok {
 		env.Status.JupyterAddr = &jupyterAddr
