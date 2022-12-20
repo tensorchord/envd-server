@@ -28,7 +28,7 @@ func NewServer(objects ...runtime.Object) (*server.Server, error) {
 	s := &server.Server{
 		Router:      router,
 		AdminRouter: admin,
-		Runtime:     runtimek8s.NewProvisioner(cli),
+		Runtime:     runtimek8s.NewProvisioner(cli, "default", ""),
 		Auth:        false,
 	}
 
