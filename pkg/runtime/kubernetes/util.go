@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/cockroachdb/errors"
-	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 
@@ -69,15 +68,35 @@ func environmentFromKubernetesPod(pod *v1.Pod) (*types.Environment, error) {
 	// Get the ports
 	portLabel, ok := pod.Annotations[consts.ImageLabelPorts]
 	if !ok {
-		logrus.Info("failed to get port label")
 		return nil, errors.New("failed to get port annotation")
 	}
 	ports, err := portsFromLabel(portLabel)
 	if err != nil {
-		logrus.Infof("failed to get ports from: %s", portLabel)
 		return nil, errors.Wrap(err, "failed to get ports from label")
 	}
 	env.Spec.Ports = ports
+
+	// Get the apt packages
+	aptLabel, ok := pod.Annotations[consts.ImageLabelAPTPackages]
+	if !ok {
+		return nil, errors.New("failed to get apt packages annotation")
+	}
+	packages, err := aptPackagesFromLabel(aptLabel)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get apt packages from label")
+	}
+	env.Spec.APTPackages = packages
+
+	// Get the python commands
+	pythonLabel, ok := pod.Annotations[consts.ImageLabelPythonCommands]
+	if !ok {
+		return nil, errors.New("failed to get python commands annotation")
+	}
+	pythonCommands, err := pythonCommandsFromLabel(pythonLabel)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get python commands from label")
+	}
+	env.Spec.PythonCommands = pythonCommands
 
 	if jupyterAddr, ok := pod.Annotations[consts.PodLabelJupyterAddr]; ok {
 		env.Status.JupyterAddr = &jupyterAddr
@@ -89,7 +108,8 @@ func environmentFromKubernetesPod(pod *v1.Pod) (*types.Environment, error) {
 	env.CreatedAt = pod.CreationTimestamp.Unix()
 
 	// only reserve labels with prefix `ai.tensorchord.envd.`
-	env.Labels = filter(env.Labels, isEnvdLabel)
+	env.Labels = filter(pod.Labels, isEnvdLabel)
+	env.Annotations = filter(pod.Annotations, isEnvdLabel)
 	env.Status.Phase = string(pod.Status.Phase)
 	return env, nil
 }
