@@ -12,7 +12,7 @@ const props = defineProps<{ data: TypesImageListResponse }>()
           <th scope="col" class="py-3 px-3 font-semibold">
             Image Name
           </th>
-          <th scope="col" class="py-3 px-6 font-semibold">
+          <th scope="col" class="py-3 px-6 font-semibold max-w-2">
             Digest
           </th>
           <th scope="col" class="py-3 px-6 font-semibold">
@@ -31,7 +31,7 @@ const props = defineProps<{ data: TypesImageListResponse }>()
           <th scope="row" class="py-4 px-3 font-medium text-gray-500 whitespace-nowrap dark:text-white">
             {{ e.name }}
           </th>
-          <td class="py-4 px-6">
+          <td class="py-4 px-6 max-w-2">
             <span class="text-blue-500">{{ e.digest }}</span>
           </td>
           <td class="py-4 px-6">

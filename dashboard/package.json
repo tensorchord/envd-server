@@ -24,8 +24,10 @@
     "tsschema": "npx swagger-typescript-api -p ../pkg/docs/swagger.yaml -o src/composables/types/ -n scheme.ts --no-client"
   },
   "dependencies": {
+    "@headlessui/vue": "^1.7.7",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/typography": "^0.5.8",
+    "@tanstack/vue-table": "^8.7.4",
     "@types/node": "18.11.9",
     "@vue/runtime-core": "^3.2.45",
     "@vueuse/core": "^9.6.0",

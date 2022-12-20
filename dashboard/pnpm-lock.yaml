@@ -2,9 +2,11 @@ lockfileVersion: 5.4
 
 specifiers:
   '@antfu/eslint-config': ^0.33.0
+  '@headlessui/vue': ^1.7.7
   '@iconify/json': ^2.1.145
   '@tailwindcss/aspect-ratio': ^0.4.2
   '@tailwindcss/typography': ^0.5.8
+  '@tanstack/vue-table': ^8.7.4
   '@types/node': 18.11.9
   '@vitejs/plugin-vue': ^3.2.0
   '@vue/runtime-core': ^3.2.45
@@ -47,8 +49,10 @@ specifiers:
   vue-tsc: ^1.0.10
 
 dependencies:
+  '@headlessui/vue': 1.7.7_vue@3.2.45
   '@tailwindcss/aspect-ratio': 0.4.2_tailwindcss@3.2.4
   '@tailwindcss/typography': 0.5.8_tailwindcss@3.2.4
+  '@tanstack/vue-table': 8.7.4_vue@3.2.45
   '@types/node': 18.11.9
   '@vue/runtime-core': 3.2.45
   '@vueuse/core': 9.6.0_vue@3.2.45
@@ -340,6 +344,15 @@ packages:
     resolution: {integrity: sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==}
     dev: true
 
+  /@headlessui/vue/1.7.7_vue@3.2.45:
+    resolution: {integrity: sha512-dkdNhJkxyT9rXW5fHx/MkKaM3U13P3duYuwoGTRmDGjE7xAsvcWOSJRJpw1AmCQTvjZF44bh2wSlySLaHW+WuQ==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      vue: ^3.2.0
+    dependencies:
+      vue: 3.2.45
+    dev: false
+
   /@humanwhocodes/config-array/0.11.7:
     resolution: {integrity: sha512-kBbPWzN8oVMLb0hOUYXhmxggL/1cJE6ydvjDIGi9EnAGUyA7cLVKQg+d/Dsm+KZwx2czGHrCmMVLiyg8s5JPKw==}
     engines: {node: '>=10.10.0'}
@@ -561,6 +574,21 @@ packages:
       lodash.merge: 4.6.2
       postcss-selector-parser: 6.0.10
       tailwindcss: 3.2.4_postcss@8.4.19
+    dev: false
+
+  /@tanstack/table-core/8.7.4:
+    resolution: {integrity: sha512-OPhzca7e83KGukxLpZ+4F9OBp9CZXi9b/OGJBH8dlC3wpffcSSDczYGUGJKG7wirXQ6cUVYL+9G6UrrdnblKNQ==}
+    engines: {node: '>=12'}
+    dev: false
+
+  /@tanstack/vue-table/8.7.4_vue@3.2.45:
+    resolution: {integrity: sha512-SqxtitheJdEot6vRzEBw0plGEIoM8T4Yf6UoMadtoWZn2OKFOtARwr7t0XeJ6A/VHJgZ/xQOpZw1oCKwPoYV5w==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      vue: ^3.2.33
+    dependencies:
+      '@tanstack/table-core': 8.7.4
+      vue: 3.2.45
     dev: false
 
   /@tootallnate/once/2.0.0:

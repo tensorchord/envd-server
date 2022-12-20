@@ -3,7 +3,7 @@
 
 <template>
   <aside class="w-64 flex" aria-label="Sidebar">
-    <div class="overflow-y-auto flex-1 py-4 px-3  bg-gray-100 rounded dark:bg-gray-800">
+    <div class="overflow-y-auto flex-1 py-4 px-3  bg-gray-100 bg-opacity-50 rounded dark:bg-gray-800">
       <a href="https://envd.tensorchord.ai" class="flex items-center pl-2.5 mb-5 h-20">
         <img
           src="https://user-images.githubusercontent.com/12974685/200007223-cd94fe9a-266d-4bbd-ac23-e71043d0c3dc.svg"
