@@ -19,10 +19,6 @@ const { setNavHeader } = useNav()
 watch(index, (val) => {
   setNavHeader(navigation[val].name)
 })
-
-// defineExpose({
-//   navigation,
-// })
 </script>
 
 <template>
