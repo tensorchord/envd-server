@@ -10,9 +10,6 @@ const navigation = [
   { name: 'Images', icon: IMaterialSymbolsInsertChartRounded, href: '/images', current: true },
   { name: 'Data', icon: IMaterialSymbolsCalendarMonth, href: '#', current: false },
   { name: 'Settings', icon: IMdiGear, href: '#', current: false },
-//   { name: 'Calendar', icon: IconAccountBox, href: '#', current: false },
-//   { name: 'Documents', icon: IconAccountBox, href: '#', count: 12, current: false },
-//   { name: 'Reports', icon: IconAccountBox, href: '#', current: false },
 ]
 
 const index = ref(0)
