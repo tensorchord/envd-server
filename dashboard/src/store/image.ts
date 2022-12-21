@@ -5,7 +5,7 @@ import type { TypesImageListResponse, TypesImageMeta } from '~/composables/types
 export const useImageStore = defineStore('image', () => {
   const imgs = ref<TypesImageMeta[]>([])
   const user = useUserStore()
-  const { data, execute } = useEnvdFetch(`/users/${user.userInfo.username}/images`, { immediate: false }).get().json<TypesImageListResponse>()
+  const { data, execute } = useEnvdFetch(`/users/${encodeURIComponent(user.userInfo.username)}/images`).get().json<TypesImageListResponse>()
 
   async function fetchImages(): Promise<TypesImageMeta[]> {
     await execute()
@@ -15,12 +15,15 @@ export const useImageStore = defineStore('image', () => {
     imgs.value = await fetchImages()
   }
   function getImages(): Ref<TypesImageMeta[]> {
-    if (imgs.value.length === 0)
-      refreshImages()
     return imgs
   }
+  async function getImageInfo(name: string): Promise<TypesImageMeta> {
+    const imgs = getImages()
+    const img = imgs.value.find(img => img.name === name)
+    return img!
+  }
 
-  return { getImages, refreshImages }
+  return { imgs, getImages, refreshImages, getImageInfo }
 },
 )
 

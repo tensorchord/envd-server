@@ -6,7 +6,7 @@ import type { TypesEnvironment, TypesEnvironmentListResponse } from '~/composabl
 
 export const useEnvStore = defineStore('envs', () => {
   const { userInfo } = useUserStore()
-  const { data, execute } = useEnvdFetch(`/users/${userInfo.username}/environments`, { immediate: false }).get().json<TypesEnvironmentListResponse>()
+  const { data, execute } = useEnvdFetch(`/users/${userInfo.username}/environments`).get().json<TypesEnvironmentListResponse>()
   const envs = ref<TypesEnvironment[]>([])
 
   async function fetchEnvs(): Promise<TypesEnvironment[]> {
@@ -18,18 +18,22 @@ export const useEnvStore = defineStore('envs', () => {
     envs.value = await fetchEnvs()
   }
 
-  async function getEnvs(): Promise<Ref<TypesEnvironment[]>> {
-    if (envs.value.length === 0)
-      await refreshEnvs()
+  function getEnvsRef(): Ref<TypesEnvironment[]> {
     return envs
   }
 
-  async function deleteEnvs(id: string): Promise<void> {
+  async function deleteEnv(id: string): Promise<void> {
     await useEnvdFetch(`/environments/${id}`).delete().json()
     await refreshEnvs()
   }
 
-  return { getEnvs, refreshEnvs, deleteEnvs }
+  async function getEnvInfo(name: string): Promise<TypesEnvironment> {
+    const envs = getEnvsRef()
+    const env = envs.value.find(env => env.name === name)
+    return env!
+  }
+
+  return { getEnvsRef, refreshEnvs, deleteEnv, getEnvInfo }
 })
 
 if (import.meta.hot)

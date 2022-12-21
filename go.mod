@@ -31,6 +31,8 @@ require (
 
 require github.com/gin-contrib/cors v1.4.0
 
+require github.com/jackc/puddle v1.3.0 // indirect
+
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect

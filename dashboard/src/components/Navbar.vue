@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { storeToRefs } from 'pinia'
+
+const { header } = storeToRefs(useNav())
 </script>
 
 <template>
   <nav class="bg-white border-gray-200 px-2 sm:px-4 py-2.5 rounded dark:bg-gray-900">
     <div class="container flex flex-wrap justify-between mx-auto">
-      <span class="text-2xl font-bold">Environments</span>
+      <span class="text-2xl font-bold">{{ header }}</span>
       <div id="navbar-default" class="w-auto">
         <button
           type="button"

@@ -1,4 +1,31 @@
 <script setup lang="ts">
+// import { CalendarIcon, ChartBarIcon, FolderIcon, HomeIcon, InboxIcon, UsersIcon } from '@heroicons/vue/outline'
+import IMdiDriveDocument from '~icons/mdi/drive-document'
+import IMaterialSymbolsInsertChartRounded from '~icons/material-symbols/insert-chart-rounded'
+import IMaterialSymbolsCalendarMonth from '~icons/material-symbols/calendar-month'
+import IMdiGear from '~icons/mdi/gear'
+
+const navigation = [
+  { name: 'Environments', icon: IMdiDriveDocument, href: '/envs', current: true },
+  { name: 'Images', icon: IMaterialSymbolsInsertChartRounded, href: '/images', current: true },
+  { name: 'Data', icon: IMaterialSymbolsCalendarMonth, href: '#', current: false },
+  { name: 'Settings', icon: IMdiGear, href: '#', current: false },
+//   { name: 'Calendar', icon: IconAccountBox, href: '#', current: false },
+//   { name: 'Documents', icon: IconAccountBox, href: '#', count: 12, current: false },
+//   { name: 'Reports', icon: IconAccountBox, href: '#', current: false },
+]
+
+const index = ref(0)
+
+const { setNavHeader } = useNav()
+
+watch(index, (val) => {
+  setNavHeader(navigation[val].name)
+})
+
+// defineExpose({
+//   navigation,
+// })
 </script>
 
 <template>
@@ -12,41 +39,18 @@
         <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">envd</span>
       </a>
       <ul class="space-y-2">
-        <li>
+        <li
+          v-for="(item, i) in navigation" :key="item.name"
+        >
           <router-link
-            to="/envs"
-            class="flex items-center px-2 py-3 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
+            :to="item.href"
+            :class="[index === i ? 'bg-gray-200 text-gray-900' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900']"
+            class="flex items-center px-2 py-3 text-base font-normalrounded-lg"
+            @click="index = i"
           >
-            <i-mdi-drive-document class="h-6 w-6 text-gray-500" />
-            <span class="ml-3">Environments</span>
+            <component :is="item.icon" class="mr-3 flex-shrink-0 h-6 w-6" :class="[index === i ? 'text-gray-500' : 'text-gray-400 group-hover:text-gray-500']" aria-hidden="true" />
+            <span class="ml-3">{{ item.name }}</span>
           </router-link>
-        </li>
-        <li>
-          <router-link
-            to="/images"
-            class="flex items-center px-2 py-3 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
-          >
-            <i-material-symbols-insert-chart-rounded class="h-6 w-6 text-gray-500" />
-            <span class="flex-1 ml-3 whitespace-nowrap">Images</span>
-          </router-link>
-        </li>
-        <li>
-          <a
-            href="#"
-            class="flex items-center px-2 py-3 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
-          >
-            <i-material-symbols-calendar-month class="h-6 w-6 text-gray-500" />
-            <span class="flex-1 ml-3 whitespace-nowrap">Data</span>
-          </a>
-        </li>
-        <li>
-          <a
-            href="#"
-            class="flex items-center px-2 py-3 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
-          >
-            <i-mdi-gear class="h-6 w-6 text-gray-500" />
-            <span class="flex-1 ml-3 whitespace-nowrap">Settings</span>
-          </a>
         </li>
       </ul>
     </div>

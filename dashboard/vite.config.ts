@@ -10,6 +10,7 @@ import AutoImport from 'unplugin-auto-import/vite'
 import Inspect from 'vite-plugin-inspect'
 import Icons from 'unplugin-icons/vite'
 import IconsResolver from 'unplugin-icons/resolver'
+import vueJsx from '@vitejs/plugin-vue-jsx'
 
 export default defineConfig({
   base: process.env.NODE_ENV === 'production' ? '/dashboard/' : '/',
@@ -21,6 +22,8 @@ export default defineConfig({
 
   plugins: [
     Preview(),
+
+    vueJsx(),
 
     Vue({
       include: [/\.vue$/],
@@ -75,13 +78,13 @@ export default defineConfig({
   ],
 
   // https://github.com/vitest-dev/vitest
-  test: {
-    include: ['test/**/*.test.ts'],
-    environment: 'jsdom',
-    deps: {
-      inline: ['@vue', '@vueuse', 'vue-demi'],
-    },
-  },
+  // test: {
+  //   include: ['test/**/*.test.ts'],
+  //   environment: 'jsdom',
+  //   deps: {
+  //     inline: ['@vue', '@vueuse', 'vue-demi'],
+  //   },
+  // },
 
   // https://github.com/antfu/vite-ssg
   ssgOptions: {
