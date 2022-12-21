@@ -295,6 +295,7 @@ export interface TypesEnvVar {
 }
 
 export interface TypesEnvironment {
+  annotations?: Record<string, string>;
   created_at?: number;
   labels?: Record<string, string>;
   name?: string;
@@ -304,6 +305,7 @@ export interface TypesEnvironment {
 }
 
 export interface TypesEnvironmentCreateRequest {
+  annotations?: Record<string, string>;
   created_at?: number;
   labels?: Record<string, string>;
   name?: string;
@@ -322,6 +324,7 @@ export interface TypesEnvironmentCreateResponse {
 }
 
 export interface TypesEnvironmentGetResponse {
+  annotations?: Record<string, string>;
   created_at?: number;
   labels?: Record<string, string>;
   name?: string;
@@ -342,11 +345,13 @@ export interface TypesEnvironmentPort {
 export type TypesEnvironmentRemoveResponse = object;
 
 export interface TypesEnvironmentSpec {
+  apt_packages?: string[];
   cmd?: string[];
   env?: TypesEnvVar[];
   image?: string;
   owner?: string;
   ports?: TypesEnvironmentPort[];
+  pypi_commands?: string[];
 }
 
 export interface TypesEnvironmentStatus {
