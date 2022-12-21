@@ -380,14 +380,6 @@ const docTemplate = `{
                         "name": "login_name",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "example": "\"pytorch-example\"",
-                        "description": "image name",
-                        "name": "name",
-                        "in": "path",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -429,9 +421,9 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "example": "\"pytorch-example\"",
-                        "description": "image name",
-                        "name": "name",
+                        "example": "\"sha256:1234567890abcdef\"",
+                        "description": "digest",
+                        "name": "digest",
                         "in": "path",
                         "required": true
                     }
@@ -863,6 +855,12 @@ const docTemplate = `{
         "types.ImageGetResponse": {
             "type": "object",
             "properties": {
+                "apt_packages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "created": {
                     "type": "integer"
                 },
@@ -878,6 +876,18 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "example": "pytorch-cuda:dev"
+                },
+                "ports": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.EnvironmentPort"
+                    }
+                },
+                "python_commands": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "size": {
                     "type": "integer"
@@ -898,6 +908,12 @@ const docTemplate = `{
         "types.ImageMeta": {
             "type": "object",
             "properties": {
+                "apt_packages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "created": {
                     "type": "integer"
                 },
@@ -913,6 +929,18 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "example": "pytorch-cuda:dev"
+                },
+                "ports": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.EnvironmentPort"
+                    }
+                },
+                "python_commands": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "size": {
                     "type": "integer"

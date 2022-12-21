@@ -21,7 +21,7 @@ import (
 // @Accept      json
 // @Produce     json
 // @Param       login_name     path     string true "login name" example("alice")
-// @Param       name           path     string true "image name" example("pytorch-example")
+// @Param       digest         path     string true "digest" example("sha256:1234567890abcdef")
 // @Success     200            {object} types.ImageGetResponse
 // @Router      /users/{login_name}/images/{name} [get]
 func (s *Server) imageGet(c *gin.Context) error {
@@ -32,7 +32,7 @@ func (s *Server) imageGet(c *gin.Context) error {
 		return NewError(http.StatusInternalServerError, err, "gin.bind-json")
 	}
 
-	meta, err := s.ImageService.GetImage(c.Request.Context(), owner, req.Name)
+	meta, err := s.ImageService.GetImageByDigest(c.Request.Context(), owner, req.Name)
 	if err != nil {
 		if errdefs.IsNotFound(err) {
 			return NewError(http.StatusNotFound, err, "image.get")

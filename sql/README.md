@@ -20,7 +20,7 @@ Please find the guide at https://atlasgo.io/getting-started/
 
 ### Generate hcl file from current db schema
 
-Run `atlas schema inspect --url "postgres://postgres:atlasdev@localhost:5432/postgres?sslmode=disable" > atlas_schema.hcl`
+Run `atlas schema inspect --url "postgres://postgres:atlasdev@localhost:5432/postgres?sslmode=disable" --schema=public > atlas_schema.hcl`
 
 ### Rehash the atlas migration 
 

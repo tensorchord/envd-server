@@ -361,11 +361,14 @@ export interface TypesEnvironmentStatus {
 }
 
 export interface TypesImageGetResponse {
+  apt_packages?: string[];
   created?: number;
   digest?: string;
   labels?: Record<string, string>;
   /** @example "pytorch-cuda:dev" */
   name?: string;
+  ports?: TypesEnvironmentPort[];
+  python_commands?: string[];
   size?: number;
 }
 
@@ -374,11 +377,14 @@ export interface TypesImageListResponse {
 }
 
 export interface TypesImageMeta {
+  apt_packages?: string[];
   created?: number;
   digest?: string;
   labels?: Record<string, string>;
   /** @example "pytorch-cuda:dev" */
   name?: string;
+  ports?: TypesEnvironmentPort[];
+  python_commands?: string[];
   size?: number;
 }
 
