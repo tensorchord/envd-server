@@ -27,7 +27,7 @@ const columns = [
         await showEnvDetail(info.getValue()!)
       },
     }),
-    header: () => 'Image Name',
+    header: () => 'Environment Name',
   }),
   columnHelper.accessor('created_at', {
     id: 'created',
@@ -83,7 +83,7 @@ onMounted(async () => {
 <template>
   <InfoModal ref="modal">
     <template #header>
-      Image Detail
+      Environment Detail
     </template>
     <template #body>
       <div class="pt-2">
