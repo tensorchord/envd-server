@@ -23,7 +23,7 @@ export const useEnvStore = defineStore('envs', () => {
   }
 
   async function deleteEnv(id: string): Promise<void> {
-    await useEnvdFetch(`/environments/${id}`).delete().json()
+    await useEnvdFetch(`/users/${userInfo.username}/environments/${id}`).delete().json()
     await refreshEnvs()
   }
 
