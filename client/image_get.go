@@ -15,31 +15,7 @@ import (
 	"github.com/tensorchord/envd-server/api/types"
 )
 
-// ImageGet gets the image info.
-func (cli *Client) ImageGetByDigest(
-	ctx context.Context, digest string) (types.ImageGetResponse, error) {
-	username, headers, err := cli.getUserAndHeaders()
-	if err != nil {
-		return types.ImageGetResponse{},
-			errors.Wrap(err, "failed to get user and headers")
-	}
-
-	url := fmt.Sprintf("/users/%s/images/%s", username, digest)
-	logrus.WithField("url", url).Debug("build image get url")
-	resp, err := cli.get(ctx, url, nil, headers)
-	defer ensureReaderClosed(resp)
-
-	if err != nil {
-		return types.ImageGetResponse{},
-			wrapResponseError(err, resp, "username", username)
-	}
-
-	var response types.ImageGetResponse
-	err = json.NewDecoder(resp.body).Decode(&response)
-	return response, err
-}
-
-// ImageGet gets the image info.
+// ImageGetByName gets the image info.
 func (cli *Client) ImageGetByName(
 	ctx context.Context, name string) (types.ImageGetResponse, error) {
 	username, headers, err := cli.getUserAndHeaders()
@@ -48,7 +24,7 @@ func (cli *Client) ImageGetByName(
 			errors.Wrap(err, "failed to get user and headers")
 	}
 
-	url := fmt.Sprintf("/users/%s/images/%s?type=name", username, url.PathEscape(name))
+	url := fmt.Sprintf("/users/%s/images/%s", username, url.PathEscape(name))
 	logrus.WithField("url", url).Debug("build image get url")
 	resp, err := cli.get(ctx, url, nil, headers)
 	defer ensureReaderClosed(resp)

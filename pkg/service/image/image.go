@@ -11,6 +11,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/jackc/pgtype"
 	"github.com/jackc/pgx/v4"
+	"github.com/sirupsen/logrus"
 
 	"github.com/tensorchord/envd-server/api/types"
 	"github.com/tensorchord/envd-server/errdefs"
@@ -30,10 +31,14 @@ type Service interface {
 
 type generalService struct {
 	querier query.Querier
+	logger  *logrus.Entry
 }
 
 func NewService(querier query.Querier) Service {
-	return &generalService{querier: querier}
+	return &generalService{
+		querier: querier,
+		logger:  logrus.WithField("service", "image"),
+	}
 }
 
 func (g generalService) CreateImageIfNotExist(ctx context.Context,
@@ -125,6 +130,10 @@ func (g generalService) GetImageByName(ctx context.Context,
 		return nil, errors.Wrap(err, "url.PathUnescape")
 	}
 
+	g.logger.WithFields(logrus.Fields{
+		"owner": owner,
+		"name":  name,
+	}).Debug("getting the image by name")
 	imageInfo, err := g.querier.GetImageInfoByName(ctx,
 		query.GetImageInfoByNameParams{LoginName: owner, Name: name})
 	if err != nil {
