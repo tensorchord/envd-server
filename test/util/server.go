@@ -5,9 +5,12 @@
 package util
 
 import (
+	"context"
+
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	ginlogrus "github.com/toorop/gin-logrus"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	kubernetes "k8s.io/client-go/kubernetes/fake"
 
@@ -28,9 +31,10 @@ func NewServer(objects ...runtime.Object) (*server.Server, error) {
 	s := &server.Server{
 		Router:      router,
 		AdminRouter: admin,
-		Runtime:     runtimek8s.NewProvisioner(cli),
+		Runtime:     runtimek8s.NewProvisioner(cli, "default", ""),
 		Auth:        false,
 	}
+	logrus.Debug(cli.CoreV1().Pods("default").List(context.Background(), metav1.ListOptions{}))
 
 	s.BindHandlers()
 	return s, nil

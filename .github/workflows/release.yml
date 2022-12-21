@@ -81,7 +81,7 @@ jobs:
           valueFile: 'manifests/values.yaml'
           propertyPath: 'image.tag'
           value: ${{ steps.rmprefix.outputs.value }}          
-          branch: auto-manifest-update
+          branch: main
           masterBranchName: main
           targetBranch: main
 
@@ -148,6 +148,7 @@ jobs:
         with:
           push: true
           file: sql/Dockerfile
+          platforms: linux/amd64,linux/arm64
           context: sql/
           tags: tensorchord/envd-server-migration:${{ github.ref_name }}
           cache-from: type=gha

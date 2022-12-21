@@ -45,6 +45,12 @@ spec:
             secretName: {{ include "envd-server.fullname" . }}
             defaultMode: 0666
           name: secret
+        {{- if .Values.server.imagePullSecret }}
+        - secret:
+            secretName: {{ .Values.server.imagePullSecret }}
+            defaultMode: 0666
+          name: image-pull-secret
+        {{- end }}
       {{- if .Values.server.migration }}      
       initContainers:
       - name: migrate
@@ -75,6 +81,10 @@ spec:
             {{- if .Values.server.noauth }}
             - --no-auth
             {{- end }}
+            {{- if .Values.server.imagePullSecret }}
+            - --image-pull-secret-name
+            - {{ .Values.server.imagePullSecret }}
+            {{- end }}
           ports:
             - name: envdserver
               containerPort: 8080
@@ -91,6 +101,11 @@ spec:
             - mountPath: /etc/containerssh/hostkey
               name: secret
               subPath: hostkey
+            {{- if .Values.server.imagePullSecret }}
+            - mountPath: /root/.docker/config.json
+              name: image-pull-secret
+              subPath: .dockerconfigjson
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

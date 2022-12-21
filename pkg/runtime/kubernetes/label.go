@@ -19,6 +19,22 @@ func portsFromLabel(label string) ([]types.EnvironmentPort, error) {
 	return ports, nil
 }
 
+func aptPackagesFromLabel(label string) ([]string, error) {
+	var packages []string
+	if err := json.Unmarshal([]byte(label), &packages); err != nil {
+		return nil, err
+	}
+	return packages, nil
+}
+
+func pythonCommandsFromLabel(label string) ([]string, error) {
+	var commands []string
+	if err := json.Unmarshal([]byte(label), &commands); err != nil {
+		return nil, err
+	}
+	return commands, nil
+}
+
 func repoInfoFromLabel(label string) (*types.EnvironmentRepoInfo, error) {
 	var repo *types.EnvironmentRepoInfo
 	if err := json.Unmarshal([]byte(label), &repo); err != nil {

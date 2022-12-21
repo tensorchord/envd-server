@@ -21,15 +21,18 @@ type ResourceSpec struct {
 type ObjectMeta struct {
 	Name string `json:"name,omitempty"`
 
-	Labels map[string]string `json:"labels,omitempty"`
+	Labels      map[string]string `json:"labels,omitempty"`
+	Annotations map[string]string `json:"annotations,omitempty"`
 }
 
 type EnvironmentSpec struct {
-	Owner string            `json:"owner,omitempty"`
-	Image string            `json:"image,omitempty"`
-	Env   []EnvVar          `json:"env,omitempty"`
-	Cmd   []string          `json:"cmd,omitempty"`
-	Ports []EnvironmentPort `json:"ports,omitempty"`
+	Owner          string            `json:"owner,omitempty"`
+	Image          string            `json:"image,omitempty"`
+	Env            []EnvVar          `json:"env,omitempty"`
+	Cmd            []string          `json:"cmd,omitempty"`
+	Ports          []EnvironmentPort `json:"ports,omitempty"`
+	APTPackages    []string          `json:"apt_packages,omitempty"`
+	PythonCommands []string          `json:"pypi_commands,omitempty"`
 	// TODO(gaocegege): Add volume specific spec.
 }
 

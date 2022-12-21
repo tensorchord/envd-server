@@ -672,6 +672,12 @@ const docTemplate = `{
         "types.Environment": {
             "type": "object",
             "properties": {
+                "annotations": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "created_at": {
                     "type": "integer"
                 },
@@ -698,6 +704,12 @@ const docTemplate = `{
         "types.EnvironmentCreateRequest": {
             "type": "object",
             "properties": {
+                "annotations": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "created_at": {
                     "type": "integer"
                 },
@@ -739,6 +751,12 @@ const docTemplate = `{
         "types.EnvironmentGetResponse": {
             "type": "object",
             "properties": {
+                "annotations": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
                 "created_at": {
                     "type": "integer"
                 },
@@ -790,6 +808,12 @@ const docTemplate = `{
         "types.EnvironmentSpec": {
             "type": "object",
             "properties": {
+                "apt_packages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "cmd": {
                     "type": "array",
                     "items": {
@@ -812,6 +836,12 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/types.EnvironmentPort"
+                    }
+                },
+                "pypi_commands": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
                     }
                 }
             }

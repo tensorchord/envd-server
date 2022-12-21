@@ -12,7 +12,9 @@ const (
 	PodLabelJupyterAddr       = EnvdLabelPrefix + "jupyter.address"
 	PodLabelRStudioServerAddr = EnvdLabelPrefix + "rstudio.server.address"
 
-	ImageLabelContainerName = EnvdLabelPrefix + "container.name"
-	ImageLabelPorts         = EnvdLabelPrefix + "ports"
-	ImageLabelRepo          = EnvdLabelPrefix + "repo"
+	ImageLabelContainerName  = EnvdLabelPrefix + "container.name"
+	ImageLabelPorts          = EnvdLabelPrefix + "ports"
+	ImageLabelRepo           = EnvdLabelPrefix + "repo"
+	ImageLabelAPTPackages    = EnvdLabelPrefix + "apt.packages"
+	ImageLabelPythonCommands = EnvdLabelPrefix + "pypi.commands"
 )

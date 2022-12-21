@@ -32,6 +32,7 @@ func (s Server) environmentList(c *gin.Context) error {
 		if errdefs.IsNotFound(err) {
 			return NewError(http.StatusNotFound, err, "runtime.list-environment")
 		}
+		return NewError(http.StatusInternalServerError, err, "runtime.list-environment")
 	}
 
 	res := types.EnvironmentListResponse{
