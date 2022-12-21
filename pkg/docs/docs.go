@@ -421,18 +421,11 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "example": "\"sha256:1234567890abcdef\"",
+                        "example": "\"python-example\"",
                         "description": "digest",
-                        "name": "digest",
+                        "name": "name",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "example": "\"digest\"",
-                        "description": "type",
-                        "name": "type",
-                        "in": "query"
                     }
                 ],
                 "responses": {
