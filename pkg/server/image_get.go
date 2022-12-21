@@ -22,6 +22,7 @@ import (
 // @Produce     json
 // @Param       login_name     path     string true "login name" example("alice")
 // @Param       digest         path     string true "digest" example("sha256:1234567890abcdef")
+// @Param       type           query    string false "type" example("digest")
 // @Success     200            {object} types.ImageGetResponse
 // @Router      /users/{login_name}/images/{name} [get]
 func (s *Server) imageGet(c *gin.Context) error {
@@ -32,7 +33,17 @@ func (s *Server) imageGet(c *gin.Context) error {
 		return NewError(http.StatusInternalServerError, err, "gin.bind-json")
 	}
 
-	meta, err := s.ImageService.GetImageByDigest(c.Request.Context(), owner, req.Name)
+	queryType := c.DefaultQuery("type", "digest")
+	var meta *types.ImageMeta
+	var err error
+
+	switch queryType {
+	case "digest":
+		meta, err = s.ImageService.GetImageByDigest(c.Request.Context(), owner, req.Name)
+	case "name":
+		meta, err = s.ImageService.GetImageByName(c.Request.Context(), owner, req.Name)
+	}
+
 	if err != nil {
 		if errdefs.IsNotFound(err) {
 			return NewError(http.StatusNotFound, err, "image.get")
