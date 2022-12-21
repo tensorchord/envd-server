@@ -24,8 +24,10 @@
     "tsschema": "npx swagger-typescript-api -p ../pkg/docs/swagger.yaml -o src/composables/types/ -n scheme.ts --no-client"
   },
   "dependencies": {
+    "@headlessui/vue": "^1.7.7",
     "@tailwindcss/aspect-ratio": "^0.4.2",
     "@tailwindcss/typography": "^0.5.8",
+    "@tanstack/vue-table": "^8.7.4",
     "@types/node": "18.11.9",
     "@vue/runtime-core": "^3.2.45",
     "@vueuse/core": "^9.6.0",
@@ -46,6 +48,8 @@
     "@antfu/eslint-config": "^0.33.0",
     "@iconify/json": "^2.1.145",
     "@vitejs/plugin-vue": "^3.2.0",
+    "@vitejs/plugin-vue-jsx": "^3.0.0",
+    "@vue/runtime-dom": "^3.2.45",
     "@vue/test-utils": "^2.2.4",
     "autoprefixer": "^10.4.13",
     "cross-env": "^7.0.3",
@@ -61,7 +65,7 @@
     "typescript": "^4.9.3",
     "unplugin-auto-import": "^0.12.0",
     "unplugin-vue-components": "^0.22.11",
-    "vite": "^3.2.4",
+    "vite": "3.2.4",
     "vite-plugin-inspect": "^0.7.9",
     "vite-plugin-pages": "^0.27.1",
     "vite-plugin-vue-component-preview": "^0.3.3",

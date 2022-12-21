@@ -1,22 +1,22 @@
 <script setup lang="ts">
 import { FlexRender, createColumnHelper, getCoreRowModel, useVueTable } from '@tanstack/vue-table'
 import dayjs from 'dayjs'
-import type { Component } from 'vue'
+import { storeToRefs } from 'pinia'
 import InfoModal from '~/components/InfoModal.vue'
-import StatusTag from '~/components/StatusTag.vue'
-import type { TypesEnvironment } from '~/composables/types/scheme'
-import IMdiBin from '~icons/mdi/bin'
+import type { TypesImageMeta } from '~/composables/types/scheme'
 
-const { getEnvsRef, deleteEnv, getEnvInfo, refreshEnvs } = useEnvStore()
-const modalInfo = ref<TypesEnvironment>()
+const { getImageInfo, refreshImages } = useImageStore()
+const { imgs } = storeToRefs(useImageStore())
+// const imgs = getImages()
+const modalInfo = ref<TypesImageMeta>()
 const modal = ref<typeof InfoModal>()
-const envs = getEnvsRef()
-const showEnvDetail = async (name: string) => {
-  modalInfo.value = await getEnvInfo(name)
+
+const showImageDetail = async (name: string) => {
+  modalInfo.value = await getImageInfo(name)
   modal.value!.openModal()
 }
 
-const columnHelper = createColumnHelper<TypesEnvironment>()
+const columnHelper = createColumnHelper<TypesImageMeta>()
 const columns = [
   columnHelper.accessor('name', {
     id: 'name',
@@ -24,46 +24,25 @@ const columns = [
       class: 'text-blue-500 hover:text-blue-800',
       innerText: info.getValue(),
       onClick: async () => {
-        await showEnvDetail(info.getValue()!)
+        await showImageDetail(info.getValue()!)
       },
     }),
-    header: () => 'Environment Name',
+    header: () => 'Image Name',
   }),
-  columnHelper.accessor('created_at', {
+  columnHelper.accessor('created', {
     id: 'created',
     cell: info => dayjs(info.getValue()! * 1000).fromNow(),
     header: () => 'Created',
   }),
-  columnHelper.accessor('spec', {
-    id: 'services',
-    cell: info => info.getValue()!.ports?.map(e => `${e.name} : ${e.port}`).join(' | '),
-    header: () => 'Services',
-  }),
-  columnHelper.accessor('status', {
-    id: 'status',
-    cell: info => h(StatusTag as Component, { status: info.getValue()?.phase }),
-    header: () => 'Status',
-  }),
-  columnHelper.accessor('name', {
-    id: 'delete',
-    cell: info => h('button', {
-      class: 'hover:bg-grey-200',
-    }, [
-      h(IMdiBin, {
-        class: 'h-6 w-6',
-        onClick: async () => {
-          await deleteEnv(info.getValue()!)
-          await refreshEnvs()
-        },
-      }),
-    ]),
-    header: () => 'Operations',
+  columnHelper.accessor('size', {
+    id: 'size',
+    cell: info => formatBytes(info.getValue()!),
+    header: () => 'Size',
   }),
 ]
+const data = ref<TypesImageMeta[]>([])
 
-const data = ref<TypesEnvironment[]>([])
-
-const table = useVueTable<TypesEnvironment>({
+const table = useVueTable<TypesImageMeta>({
   columns,
   get data() {
     return data.value
@@ -71,19 +50,19 @@ const table = useVueTable<TypesEnvironment>({
   getCoreRowModel: getCoreRowModel(),
 })
 
-watch(envs, (newVal) => {
+watch(imgs, (newVal) => {
   data.value = newVal
 })
 
 onMounted(async () => {
-  await refreshEnvs()
+  await refreshImages()
 })
 </script>
 
 <template>
   <InfoModal ref="modal">
     <template #header>
-      Environment Detail
+      Image Detail
     </template>
     <template #body>
       <div class="pt-2">
@@ -98,18 +77,10 @@ onMounted(async () => {
           </div>
           <div class="py-3 flex justify-between text-sm font-medium">
             <dt class="text-gray-500 mr-6">
-              Labels
+              Digest
             </dt>
             <dd class="text-gray-900 text-">
-              {{ JSON.stringify(modalInfo!.labels) }}
-            </dd>
-          </div>
-          <div class="py-3 flex justify-between text-sm font-medium">
-            <dt class="text-gray-500 mr-6">
-              Resource
-            </dt>
-            <dd class="text-gray-900 text-">
-              {{ modalInfo!.resource! }}
+              {{ modalInfo!.digest! }}
             </dd>
           </div>
           <div class="py-3 flex justify-between text-sm font-medium">
@@ -117,7 +88,7 @@ onMounted(async () => {
               Created
             </dt>
             <dd class="text-gray-900 text-">
-              {{ dayjs(modalInfo!.created_at! * 1000).fromNow() }}
+              {{ dayjs(modalInfo!.created! * 1000).fromNow() }}
             </dd>
           </div>
         </dl>
@@ -126,7 +97,7 @@ onMounted(async () => {
   </InfoModal>
   <div class="container p-5">
     <div class="container py-5">
-      <span class="font-semibold text-lg ">envd Environments</span>
+      <span class="font-semibold text-lg ">envd Images</span>
     </div>
     <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
       <thead class="text-gray-600 border-b border-t">

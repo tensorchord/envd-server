@@ -13,7 +13,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/jackc/pgx/v4"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/sirupsen/logrus"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -70,7 +70,7 @@ func New(opt Opt) (*Server, error) {
 	}
 
 	// Connect to database
-	conn, err := pgx.Connect(context.Background(), opt.DBURL)
+	conn, err := pgxpool.Connect(context.Background(), opt.DBURL)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)
