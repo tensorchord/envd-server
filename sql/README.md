@@ -28,20 +28,6 @@ Run `atlas migrate hash --dir file://schema`
 
 ### Author a new migration
 
-Option 1: Manually write the migration file
-
-Run `atlas migrate new --dir file://schema/ --dir-format goose <summary>`, summary will be append to the migration filename. The migration file will be created at `schema/<timestamp>_<summary>.sql`.
-
-Option 2: Automatically generate migration file based on current db schema
-
-1. You need to spin up an empty db as the `dev database` for atlas to compare with the current db schema. You can use the following command to spin up a docker container for the `dev database`:
-```
-docker run --rm --name atlasdev -e POSTGRES_PASSWORD=atlasdev -p 5432:5432 -d postgres
-```
-
-2. Generate hcl file following the guide above
-
-Run `atlas schema inspect --url "postgres://postgres:atlasdev@localhost:5432/postgres?sslmode=disable" > atlas_schema.hcl`. Or you can manually modify the `atlas_schema.hcl`
-
-
-3. Run `atlas migrate diff --dir file://schema/ --dir-format goose <summary> --to "file://atlas_schema.hcl" --dev-url "postgres://postgres:atlasdev@localhost:5432/postgres?sslmode=disable"`. This will generate a migration file from the exsiting schema files to the state described in `atlas_schema.hcl` file. The migration file will be created at `schema/<timestamp>_<summary>.sql`.
+- `docker run --name some-postgres -e POSTGRES_PASSWORD=atlasdev -p5432:5432 -d postgres`
+- Update the `atlas_schema.hcl` file
+- Run `atlas migrate diff --dir file://schema/ --dir-format goose <summary> --to "file://atlas_schema.hcl" --dev-url "postgres://postgres:atlasdev@localhost:5432/postgres?sslmode=disable"`. This will generate a migration file from the exsiting schema files to the state described in `atlas_schema.hcl` file. The migration file will be created at `schema/<timestamp>_<summary>.sql`.
