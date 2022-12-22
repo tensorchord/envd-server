@@ -10,6 +10,7 @@ import (
 
 	"github.com/cockroachdb/errors"
 	"github.com/jackc/pgconn"
+	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v4"
 
 	"github.com/tensorchord/envd-server/errdefs"
@@ -56,7 +57,7 @@ func (u *generalService) Register(ctx context.Context,
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
-			case "23505":
+			case pgerrcode.UniqueViolation:
 				return "", errdefs.Conflict(errors.New("login name already exists"))
 			}
 		}

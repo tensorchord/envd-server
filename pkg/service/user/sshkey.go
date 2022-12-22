@@ -9,6 +9,7 @@ import (
 
 	"github.com/cockroachdb/errors"
 	"github.com/jackc/pgconn"
+	"github.com/jackc/pgerrcode"
 
 	"github.com/tensorchord/envd-server/errdefs"
 	"github.com/tensorchord/envd-server/pkg/query"
@@ -27,7 +28,7 @@ func (u *generalService) CreatePubKey(ctx context.Context, loginName, name strin
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
-			case "23505":
+			case pgerrcode.UniqueViolation:
 				return errdefs.Conflict(errors.New("key already exists"))
 			}
 		}
