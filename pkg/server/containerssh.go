@@ -74,27 +74,31 @@ func (s Server) OnPubKey(c *gin.Context) error {
 		return NewError(http.StatusInternalServerError, err, "sshname.get-info")
 	}
 
-	skey, err := s.UserService.GetPubKey(owner)
+	skeys, err := s.UserService.ListPubKeys(c.Request.Context(), owner)
 	if err != nil {
 		return NewError(http.StatusInternalServerError, err, "db.get-pubkey-from-user")
 	}
-	if skey == nil {
+	if skeys == nil {
 		return NewError(http.StatusInternalServerError, errors.New("key is not found"), "db.get-pubkey-from-user")
 	}
 	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(req.PublicKey.PublicKey))
 	if err != nil {
 		return NewError(http.StatusInternalServerError, err, "ssh.parse-auth-key")
 	}
-	if subtle.ConstantTimeCompare(key.Marshal(), skey) == 1 {
-		logrus.WithFields(logrus.Fields{
-			"username":    req.Username,
-			"remote-addr": req.RemoteAddress,
-		}).Debug("auth success")
-		res := auth.ResponseBody{
-			Success: true,
+
+	for _, skey := range skeys {
+		if subtle.ConstantTimeCompare(key.Marshal(), skey.PublicKey) == 1 {
+			logrus.WithFields(logrus.Fields{
+				"username":    req.Username,
+				"remote-addr": req.RemoteAddress,
+				"key-name":    skey.Name,
+			}).Debug("auth success")
+			res := auth.ResponseBody{
+				Success: true,
+			}
+			c.JSON(http.StatusOK, res)
+			return nil
 		}
-		c.JSON(http.StatusOK, res)
-		return nil
 	}
 
 	logrus.WithFields(logrus.Fields{

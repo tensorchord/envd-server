@@ -20,7 +20,6 @@ var _ = Describe("Mock test for db", func() {
 	When("When change user data", func() {
 		It("should work", func() {
 			username := "test"
-			key := []byte("key")
 			pwd := "pwd"
 
 			hashed, err := user.GenerateHashedSaltPassword([]byte(pwd))
@@ -31,23 +30,19 @@ var _ = Describe("Mock test for db", func() {
 				context.Background(),
 				gomock.All(),
 			).Return(
-				query.CreateUserRow{
-					LoginName: username,
-					PublicKey: key,
-				}, nil,
+				username, nil,
 			)
 			m.EXPECT().GetUser(
 				context.Background(), username).Return(
 				query.User{
 					LoginName:    username,
 					PasswordHash: string(hashed),
-					PublicKey:    key,
 				}, nil,
 			)
 			userService := user.NewService(m, "secret", 0)
-			_, err = userService.Register(username, pwd, key)
+			_, err = userService.Register(context.Background(), username, pwd)
 			Expect(err).NotTo(HaveOccurred())
-			exists, _, err := userService.Login(username, pwd, true)
+			exists, _, err := userService.Login(context.Background(), username, pwd, true)
 			Expect(exists).To(BeTrue())
 			Expect(err).NotTo(HaveOccurred())
 		})

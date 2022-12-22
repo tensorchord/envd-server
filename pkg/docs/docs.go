@@ -437,6 +437,53 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/users/{login_name}/keys": {
+            "post": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
+                "description": "Create the key.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "key"
+                ],
+                "summary": "Create the key.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "\"alice\"",
+                        "description": "login name",
+                        "name": "login_name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "query params",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.KeyCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/types.KeyCreateResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -621,9 +668,6 @@ const docTemplate = `{
                 },
                 "password": {
                     "description": "Password stores the hashed password.",
-                    "type": "string"
-                },
-                "public_key": {
                     "type": "string"
                 }
             }
@@ -944,6 +988,39 @@ const docTemplate = `{
                 },
                 "size": {
                     "type": "integer"
+                }
+            }
+        },
+        "types.KeyCreateRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "Name is the key name.",
+                    "type": "string",
+                    "example": "mykey"
+                },
+                "public_key": {
+                    "description": "PublicKey is the ssh public key",
+                    "type": "string"
+                }
+            }
+        },
+        "types.KeyCreateResponse": {
+            "type": "object",
+            "properties": {
+                "login_name": {
+                    "description": "LoginName is used to authenticate the user and get\nan access token for the registry.",
+                    "type": "string",
+                    "example": "alice"
+                },
+                "name": {
+                    "description": "Name is the key name.",
+                    "type": "string",
+                    "example": "mykey"
+                },
+                "public_key": {
+                    "description": "PublicKey is the ssh public key",
+                    "type": "string"
                 }
             }
         },

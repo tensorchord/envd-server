@@ -26,7 +26,7 @@ table "image_info" {
   }
   column "login_name" {
     null = false
-    type = text
+    type = character_varying(100)
   }
   column "apt_packages" {
     null = false
@@ -54,10 +54,6 @@ table "users" {
     null = false
     type = bigserial
   }
-  column "public_key" {
-    null = false
-    type = bytea
-  }
   column "login_name" {
     null = false
     type = character_varying(100)
@@ -72,6 +68,32 @@ table "users" {
   index "unique_login_name" {
     unique  = true
     columns = [column.login_name]
+  }
+}
+table "keys" {
+  schema = schema.public
+    column "id" {
+    null = false
+    type = bigserial
+  }
+  column "name" {
+    null = false
+    type = text
+  }
+  column "login_name" {
+    null = false
+    type = character_varying(100)
+  }
+  column "public_key" {
+    null = false
+    type = bytea
+  }
+  primary_key {
+    columns = [column.id]
+  }
+  index "unique_login_name_and_key" {
+    unique  = true
+    columns = [column.login_name, column.name]
   }
 }
 schema "public" {

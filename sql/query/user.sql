@@ -8,11 +8,11 @@ ORDER BY id;
 
 -- name: CreateUser :one
 INSERT INTO users (
-  login_name, password_hash, public_key
+  login_name, password_hash
 ) VALUES (
-  $1, $2, $3
+  $1, $2
 )
-RETURNING login_name, public_key;
+RETURNING login_name;
 
 -- name: DeleteUser :exec
 DELETE FROM users
