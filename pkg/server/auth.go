@@ -7,9 +7,7 @@ package server
 import (
 	"net/http"
 
-	"github.com/cockroachdb/errors"
 	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/ssh"
 
 	"github.com/tensorchord/envd-server/api/types"
 	"github.com/tensorchord/envd-server/errdefs"
@@ -29,16 +27,8 @@ func (s Server) register(c *gin.Context) error {
 		return NewError(http.StatusInternalServerError, err, "gin.bind-json")
 	}
 
-	if req.PublicKey == "" {
-		return NewError(http.StatusBadRequest, errors.New("public key is not provided"), "user.register")
-	}
-
-	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(req.PublicKey))
-	if err != nil {
-		return NewError(http.StatusInternalServerError, err, "ssh.parse-auth-key")
-	}
-
-	token, err := s.UserService.Register(req.LoginName, req.Password, key.Marshal())
+	token, err := s.UserService.Register(c.Request.Context(),
+		req.LoginName, req.Password)
 	if err != nil {
 		if errdefs.IsConflict(err) {
 			return NewError(http.StatusConflict, err, "user.register")
@@ -68,13 +58,15 @@ func (s Server) login(c *gin.Context) error {
 		return NewError(http.StatusInternalServerError, err, "gin.bind-json")
 	}
 
-	succeeded, token, err := s.UserService.Login(req.LoginName, req.Password, s.Auth)
+	succeeded, token, err := s.UserService.Login(c.Request.Context(),
+		req.LoginName, req.Password, s.Auth)
 	if err != nil {
 		return NewError(http.StatusUnauthorized, err, "user.login")
 	}
 	if !succeeded {
 		return NewError(http.StatusUnauthorized, err, "user.login")
 	}
+
 	res := types.AuthNResponse{
 		LoginName:     req.LoginName,
 		IdentityToken: token,

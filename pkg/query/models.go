@@ -21,9 +21,15 @@ type ImageInfo struct {
 	Services     pgtype.JSONB `json:"services"`
 }
 
+type Key struct {
+	ID        int64  `json:"id"`
+	Name      string `json:"name"`
+	LoginName string `json:"login_name"`
+	PublicKey []byte `json:"public_key"`
+}
+
 type User struct {
 	ID           int64  `json:"id"`
-	PublicKey    []byte `json:"public_key"`
 	LoginName    string `json:"login_name"`
 	PasswordHash string `json:"password_hash"`
 }

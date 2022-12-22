@@ -6,8 +6,6 @@ package types
 
 // AuthNRequest contains authorization information for connecting to a envd server.
 type AuthNRequest struct {
-	PublicKey string `json:"public_key,omitempty"`
-
 	// LoginName is used to authenticate the user and get
 	// an access token for the registry.
 	LoginName string `json:"login_name,omitempty" example:"alice"`
@@ -19,7 +17,7 @@ type AuthNRequest struct {
 type AuthStatus string
 
 const (
-	AuthSuccess AuthStatus = "Login Success"
+	AuthSuccess AuthStatus = "Login succeeded"
 	AuthFail    AuthStatus = "Login Fail"
 	Error       AuthStatus = "Internal_Error"
 )

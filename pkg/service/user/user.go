@@ -17,10 +17,12 @@ import (
 )
 
 type Service interface {
-	Register(loginName, pwd string,
-		publicKey []byte) (string, error)
-	GetPubKey(loginName string) ([]byte, error)
-	Login(loginName, pwd string, auth bool) (bool, string, error)
+	Register(ctx context.Context, loginName, pwd string) (string, error)
+	Login(ctx context.Context, loginName, pwd string, auth bool) (bool, string, error)
+
+	GetPubKey(ctx context.Context, loginName string, keyName string) ([]byte, error)
+	ListPubKeys(ctx context.Context, loginName string) ([]query.Key, error)
+	CreatePubKey(ctx context.Context, loginName, keyName string, pubKey []byte) error
 
 	ValidateJWT(token string) (string, error)
 }
@@ -38,17 +40,16 @@ func NewService(querier query.Querier,
 	}
 }
 
-func (u *generalService) Register(loginName, pwd string,
-	publicKey []byte) (string, error) {
+func (u *generalService) Register(ctx context.Context,
+	loginName, pwd string) (string, error) {
 	hashed, err := GenerateHashedSaltPassword([]byte(pwd))
 	if err != nil {
 		return "", err
 	}
 	_, err = u.querier.CreateUser(
-		context.Background(), query.CreateUserParams{
+		ctx, query.CreateUserParams{
 			LoginName:    loginName,
 			PasswordHash: string(hashed),
-			PublicKey:    publicKey,
 		})
 
 	if err != nil {
@@ -69,21 +70,10 @@ func (u *generalService) Register(loginName, pwd string,
 	return token, nil
 }
 
-func (u *generalService) GetPubKey(loginName string) ([]byte, error) {
-	user, err := u.querier.GetUser(context.Background(), loginName)
-	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, nil
-		} else {
-			return nil, err
-		}
-	}
-	return user.PublicKey, nil
-}
-
-func (u *generalService) Login(loginName, pwd string, auth bool) (bool, string, error) {
+func (u *generalService) Login(ctx context.Context,
+	loginName, pwd string, auth bool) (bool, string, error) {
 	if auth {
-		rawUser, err := u.querier.GetUser(context.Background(), loginName)
+		rawUser, err := u.querier.GetUser(ctx, loginName)
 		if err != nil {
 			if errors.Is(err, pgx.ErrNoRows) {
 				return false, "", nil
