@@ -15,8 +15,8 @@ import (
 	"github.com/tensorchord/envd-server/api/types"
 )
 
-// ImageGet gets the image info.
-func (cli *Client) ImageGet(
+// ImageGetByName gets the image info.
+func (cli *Client) ImageGetByName(
 	ctx context.Context, name string) (types.ImageGetResponse, error) {
 	username, headers, err := cli.getUserAndHeaders()
 	if err != nil {

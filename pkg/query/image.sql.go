@@ -13,76 +13,117 @@ import (
 
 const createImageInfo = `-- name: CreateImageInfo :one
 INSERT INTO image_info (
-  owner_token, name, digest, created, size, labels
+  login_name, name, digest, created, size, 
+  labels, apt_packages, pypi_commands, services
 ) VALUES (
-  $1, $2, $3, $4, $5, $6
+  $1, $2, $3, $4, $5, $6, $7, $8, $9
 )
-RETURNING id, owner_token, name, digest, created, size, labels
+RETURNING id, name, digest, created, size, labels, login_name, apt_packages, pypi_commands, services
 `
 
 type CreateImageInfoParams struct {
-	OwnerToken string       `json:"owner_token"`
-	Name       string       `json:"name"`
-	Digest     string       `json:"digest"`
-	Created    int64        `json:"created"`
-	Size       int64        `json:"size"`
-	Labels     pgtype.JSONB `json:"labels"`
+	LoginName    string       `json:"login_name"`
+	Name         string       `json:"name"`
+	Digest       string       `json:"digest"`
+	Created      int64        `json:"created"`
+	Size         int64        `json:"size"`
+	Labels       pgtype.JSONB `json:"labels"`
+	AptPackages  pgtype.JSONB `json:"apt_packages"`
+	PypiCommands pgtype.JSONB `json:"pypi_commands"`
+	Services     pgtype.JSONB `json:"services"`
 }
 
 func (q *Queries) CreateImageInfo(ctx context.Context, arg CreateImageInfoParams) (ImageInfo, error) {
 	row := q.db.QueryRow(ctx, createImageInfo,
-		arg.OwnerToken,
+		arg.LoginName,
 		arg.Name,
 		arg.Digest,
 		arg.Created,
 		arg.Size,
 		arg.Labels,
+		arg.AptPackages,
+		arg.PypiCommands,
+		arg.Services,
 	)
 	var i ImageInfo
 	err := row.Scan(
 		&i.ID,
-		&i.OwnerToken,
 		&i.Name,
 		&i.Digest,
 		&i.Created,
 		&i.Size,
 		&i.Labels,
+		&i.LoginName,
+		&i.AptPackages,
+		&i.PypiCommands,
+		&i.Services,
 	)
 	return i, err
 }
 
-const getImageInfo = `-- name: GetImageInfo :one
-SELECT id, owner_token, name, digest, created, size, labels FROM image_info
-WHERE owner_token = $1 AND name = $2 LIMIT 1
+const getImageInfoByDigest = `-- name: GetImageInfoByDigest :one
+SELECT id, name, digest, created, size, labels, login_name, apt_packages, pypi_commands, services FROM image_info
+WHERE login_name = $1 AND digest = $2 LIMIT 1
 `
 
-type GetImageInfoParams struct {
-	OwnerToken string `json:"owner_token"`
-	Name       string `json:"name"`
+type GetImageInfoByDigestParams struct {
+	LoginName string `json:"login_name"`
+	Digest    string `json:"digest"`
 }
 
-func (q *Queries) GetImageInfo(ctx context.Context, arg GetImageInfoParams) (ImageInfo, error) {
-	row := q.db.QueryRow(ctx, getImageInfo, arg.OwnerToken, arg.Name)
+func (q *Queries) GetImageInfoByDigest(ctx context.Context, arg GetImageInfoByDigestParams) (ImageInfo, error) {
+	row := q.db.QueryRow(ctx, getImageInfoByDigest, arg.LoginName, arg.Digest)
 	var i ImageInfo
 	err := row.Scan(
 		&i.ID,
-		&i.OwnerToken,
 		&i.Name,
 		&i.Digest,
 		&i.Created,
 		&i.Size,
 		&i.Labels,
+		&i.LoginName,
+		&i.AptPackages,
+		&i.PypiCommands,
+		&i.Services,
+	)
+	return i, err
+}
+
+const getImageInfoByName = `-- name: GetImageInfoByName :one
+SELECT id, name, digest, created, size, labels, login_name, apt_packages, pypi_commands, services FROM image_info
+WHERE login_name = $1 AND name = $2 LIMIT 1
+`
+
+type GetImageInfoByNameParams struct {
+	LoginName string `json:"login_name"`
+	Name      string `json:"name"`
+}
+
+func (q *Queries) GetImageInfoByName(ctx context.Context, arg GetImageInfoByNameParams) (ImageInfo, error) {
+	row := q.db.QueryRow(ctx, getImageInfoByName, arg.LoginName, arg.Name)
+	var i ImageInfo
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Digest,
+		&i.Created,
+		&i.Size,
+		&i.Labels,
+		&i.LoginName,
+		&i.AptPackages,
+		&i.PypiCommands,
+		&i.Services,
 	)
 	return i, err
 }
 
 const listImageByOwner = `-- name: ListImageByOwner :many
-SELECT id, owner_token, name, digest, created, size, labels FROM image_info
-WHERE owner_token = $1
+SELECT id, name, digest, created, size, labels, login_name, apt_packages, pypi_commands, services FROM image_info
+WHERE login_name = $1
 `
 
-func (q *Queries) ListImageByOwner(ctx context.Context, ownerToken string) ([]ImageInfo, error) {
-	rows, err := q.db.Query(ctx, listImageByOwner, ownerToken)
+func (q *Queries) ListImageByOwner(ctx context.Context, loginName string) ([]ImageInfo, error) {
+	rows, err := q.db.Query(ctx, listImageByOwner, loginName)
 	if err != nil {
 		return nil, err
 	}
@@ -92,12 +133,15 @@ func (q *Queries) ListImageByOwner(ctx context.Context, ownerToken string) ([]Im
 		var i ImageInfo
 		if err := rows.Scan(
 			&i.ID,
-			&i.OwnerToken,
 			&i.Name,
 			&i.Digest,
 			&i.Created,
 			&i.Size,
 			&i.Labels,
+			&i.LoginName,
+			&i.AptPackages,
+			&i.PypiCommands,
+			&i.Services,
 		); err != nil {
 			return nil, err
 		}

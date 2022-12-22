@@ -4,10 +4,6 @@ table "image_info" {
     null = false
     type = bigserial
   }
-  column "owner_token" {
-    null = false
-    type = text
-  }
   column "name" {
     null = false
     type = text
@@ -28,8 +24,28 @@ table "image_info" {
     null = true
     type = jsonb
   }
+  column "login_name" {
+    null = false
+    type = text
+  }
+  column "apt_packages" {
+    null = false
+    type = jsonb
+  }
+  column "pypi_commands" {
+    null = false
+    type = jsonb
+  }
+  column "services" {
+    null = false
+    type = jsonb
+  }
   primary_key {
     columns = [column.id]
+  }
+  index "unique_digest" {
+    unique  = true
+    columns = [column.digest]
   }
 }
 table "users" {
@@ -37,6 +53,10 @@ table "users" {
   column "id" {
     null = false
     type = bigserial
+  }
+  column "public_key" {
+    null = false
+    type = bytea
   }
   column "login_name" {
     null = false
@@ -46,17 +66,12 @@ table "users" {
     null = false
     type = text
   }
-  column "public_key" {
-    null = false
-    type = bytea
-  }
   primary_key {
     columns = [column.id]
   }
   index "unique_login_name" {
     unique  = true
     columns = [column.login_name]
-    type    = BTREE
   }
 }
 schema "public" {
