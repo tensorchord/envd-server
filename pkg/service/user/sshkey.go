@@ -9,6 +9,7 @@ import (
 
 	"github.com/cockroachdb/errors"
 	"github.com/jackc/pgconn"
+
 	"github.com/tensorchord/envd-server/errdefs"
 	"github.com/tensorchord/envd-server/pkg/query"
 )
