@@ -3,7 +3,7 @@
 {{- if .Values.dbUrl -}}
 {{- $dburl = .Values.dbUrl -}}
 {{- end -}}
-{{- $migrationImage := printf "%s-migration:v%s" .Values.image.repository .Values.image.tag -}}
+{{- $migrationImage := printf "%s-migration:%s" .Values.image.repository .Values.image.tag -}}
 {{- if .Values.server.migrationImage -}}
 {{- $migrationImage = .Values.server.migrationImage -}}
 {{- end -}}

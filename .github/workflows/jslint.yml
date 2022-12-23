@@ -38,3 +38,14 @@ jobs:
       - name: ESLint
         run: npx eslint .
         working-directory: ./dashboard
+      - name: build
+        run: pnpm build
+        working-directory: ./dashboard
+      - name: check git status
+        run: |
+          if [[ $(git status --porcelain) ]]; then
+            echo "git tree is not clean after build"
+            exit 1
+          else
+            echo "git tree is clean after build"
+          fi
