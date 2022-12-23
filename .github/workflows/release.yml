@@ -142,7 +142,13 @@ jobs:
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERIO_USERNAME }}
-          password: ${{ secrets.DOCKERIO_TOKEN }}    
+          password: ${{ secrets.DOCKERIO_TOKEN }}           
+      - name: Remove v- prefix
+        id: rmprefix
+        env:
+          VERSION: ${{ github.ref_name }}        
+        run: |
+          echo "${VERSION:1}"
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
@@ -150,6 +156,6 @@ jobs:
           file: sql/Dockerfile
           platforms: linux/amd64,linux/arm64
           context: sql/
-          tags: tensorchord/envd-server-migration:${{ github.ref_name }}
+          tags: tensorchord/envd-server-migration:${{ steps.rmprefix.outputs.value }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
