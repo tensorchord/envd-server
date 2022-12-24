@@ -134,12 +134,6 @@ jobs:
           VERSION: ${{ github.ref_name }}        
         run: |
           echo "::set-output name=ver::${VERSION:1}"
-      - name: test
-        id: t
-        env:
-          VERSION: ${{ github.ref_name }}        
-        run: |
-          echo ${{ steps.rmprefixv.outputs.ver }}
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
@@ -147,6 +141,6 @@ jobs:
           file: sql/Dockerfile
           platforms: linux/amd64,linux/arm64
           context: sql/
-          tags: ${{ steps.migration_image_name.outputs.value }}
+          tags: tensorchord/envd-server-migration:${{ steps.rmprefixv.outputs.ver }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
