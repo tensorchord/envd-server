@@ -149,6 +149,12 @@ jobs:
           VERSION: ${{ github.ref_name }}        
         run: |
           echo "tensorchord/envd-server-migration:${VERSION:1}"
+      - name: test
+        id: t
+        env:
+          VERSION: ${{ github.ref_name }}        
+        run: |
+          echo ${{ steps.migration_image_name.outputs.value }}
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
