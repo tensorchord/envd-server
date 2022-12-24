@@ -102,22 +102,7 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@v3
         with:
-          version: v3.10.0      
-      
-      - name: Remove v- prefix
-        id: rmprefix
-        env:
-          VERSION: ${{ github.ref_name }}        
-        run: |
-          echo "${VERSION:1}"
-
-      - name: Update values.yaml
-        uses: fjogeleit/yaml-update-action@v0.12.3
-        with:
-          valueFile: 'manifests/values.yaml'
-          propertyPath: 'image.tag'
-          value: ${{ steps.rmprefix.outputs.value }}
-          commitChange: false
+          version: v3.10.0
 
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.4.1
@@ -143,12 +128,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKERIO_USERNAME }}
           password: ${{ secrets.DOCKERIO_TOKEN }}           
-      - name: Remove v- prefix
-        id: rmprefix
+      - name: Remove prefix v
+        id: rmprefixv
         env:
           VERSION: ${{ github.ref_name }}        
         run: |
-          echo "${VERSION:1}"
+          echo "::set-output name=ver::${VERSION:1}"
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
@@ -156,6 +141,6 @@ jobs:
           file: sql/Dockerfile
           platforms: linux/amd64,linux/arm64
           context: sql/
-          tags: tensorchord/envd-server-migration:${{ steps.rmprefix.outputs.value }}
+          tags: tensorchord/envd-server-migration:${{ steps.rmprefixv.outputs.ver }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
