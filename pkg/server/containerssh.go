@@ -78,7 +78,7 @@ func (s Server) OnPubKey(c *gin.Context) error {
 	if err != nil {
 		return NewError(http.StatusInternalServerError, err, "db.get-pubkey-from-user")
 	}
-	if skeys == nil {
+	if len(skeys) == 0 {
 		return NewError(http.StatusInternalServerError, errors.New("key is not found"), "db.get-pubkey-from-user")
 	}
 	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(req.PublicKey.PublicKey))
@@ -87,17 +87,20 @@ func (s Server) OnPubKey(c *gin.Context) error {
 	}
 
 	for _, skey := range skeys {
+		logger := logrus.WithFields(logrus.Fields{
+			"username":    req.Username,
+			"remote-addr": req.RemoteAddress,
+			"key-name":    skey.Name,
+		})
 		if subtle.ConstantTimeCompare(key.Marshal(), skey.PublicKey) == 1 {
-			logrus.WithFields(logrus.Fields{
-				"username":    req.Username,
-				"remote-addr": req.RemoteAddress,
-				"key-name":    skey.Name,
-			}).Debug("auth success")
+			logger.Debug("auth success")
 			res := auth.ResponseBody{
 				Success: true,
 			}
 			c.JSON(http.StatusOK, res)
 			return nil
+		} else {
+			logger.Debug("trying next ssh key")
 		}
 	}
 
