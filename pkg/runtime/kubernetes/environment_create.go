@@ -12,6 +12,7 @@ import (
 	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
 
 	"github.com/tensorchord/envd-server/api/types"
 	servertypes "github.com/tensorchord/envd-server/api/types"
@@ -63,6 +64,12 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 	hostKeyPath := "/var/envd/hostkey"
 	authKeyPath := "/var/envd/authkey"
 	var defaultPermMode int32 = 0666
+
+	codeDirectoryVolumeMount := v1.VolumeMount{
+		Name:      "code-dir",
+		MountPath: fmt.Sprintf("/home/envd/%s", projectName),
+	}
+
 	expectedPod := v1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:        env.Name,
@@ -108,11 +115,36 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 							MountPath: authKeyPath,
 							SubPath:   "publickey",
 						},
+						codeDirectoryVolumeMount,
 					},
 					Resources: v1.ResourceRequirements{
 						Requests: resRequest,
 						Limits:   resRequest,
 					},
+				},
+				{
+					Name:  "syncthing",
+					Image: "linuxserver/syncthing:1.22.2",
+					Ports: []v1.ContainerPort{
+						{
+							Name:          "syncthing",
+							ContainerPort: 8384,
+						},
+						{
+							Name:          "st-listen",
+							Protocol:      v1.ProtocolTCP,
+							ContainerPort: 22000,
+						},
+						{
+							Name:          "st-discover",
+							Protocol:      v1.ProtocolUDP,
+							ContainerPort: 22000,
+						},
+					},
+					VolumeMounts: []v1.VolumeMount{
+						codeDirectoryVolumeMount,
+					},
+					// TODO: define resource limit
 				},
 			},
 			Volumes: []v1.Volume{
@@ -125,10 +157,21 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 						},
 					},
 				},
+				{
+					Name: "code-dir",
+					VolumeSource: v1.VolumeSource{
+						EmptyDir: &v1.EmptyDirVolumeSource{},
+						// HostPath: &v1.HostPathVolumeSource{
+						// 	Path: fmt.Sprintf("/var/envd/code/%s", req.Name),
+						// },
+					},
+				},
 			},
 		},
 	}
+
 	if repoInfo != nil && len(repoInfo.URL) > 0 {
+		// TODO: Figure out how the clone directory works with the sync
 		logrus.Debugf("clone code from %s", repoInfo.URL)
 		expectedPod.Spec.InitContainers = append(expectedPod.Spec.InitContainers, v1.Container{
 			Name:  "git-cloner",
@@ -141,19 +184,7 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 				},
 			},
 		})
-		expectedPod.Spec.Containers[0].VolumeMounts = append(expectedPod.Spec.Containers[0].VolumeMounts, v1.VolumeMount{
-			Name:      "code-dir",
-			MountPath: fmt.Sprintf("/home/envd/%s", projectName),
-		})
-		expectedPod.Spec.Volumes = append(expectedPod.Spec.Volumes, v1.Volume{
-			Name: "code-dir",
-			VolumeSource: v1.VolumeSource{
-				EmptyDir: &v1.EmptyDirVolumeSource{},
-				// HostPath: &v1.HostPathVolumeSource{
-				// 	Path: fmt.Sprintf("/var/envd/code/%s", req.Name),
-				// },
-			},
-		})
+
 	}
 
 	if p.imagePullSecretName != nil {
@@ -184,6 +215,23 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 				{
 					Name: "ssh",
 					Port: 2222,
+				},
+				{
+					Name:       "syncthing",
+					Port:       8384,
+					TargetPort: intstr.FromInt(8384),
+				},
+				{
+					Name:       "st-listen",
+					Port:       22000,
+					TargetPort: intstr.FromInt(22000),
+					Protocol:   v1.ProtocolTCP,
+				},
+				{
+					Name:       "st-discover",
+					Port:       22000,
+					TargetPort: intstr.FromInt(22000),
+					Protocol:   v1.ProtocolUDP,
 				},
 			},
 		},
