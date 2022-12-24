@@ -11,30 +11,28 @@ import (
 	"net/url"
 
 	"github.com/cockroachdb/errors"
-	"github.com/sirupsen/logrus"
 	"github.com/tensorchord/envd-server/api/types"
 )
 
-// ImageGetByName gets the image info.
-func (cli *Client) ImageGetByName(
-	ctx context.Context, name string) (types.ImageGetResponse, error) {
+// KeyCreate creates the ssh public key.
+func (cli *Client) KeyCreate(ctx context.Context,
+	req types.KeyCreateRequest) (types.KeyCreateResponse, error) {
+
 	username, headers, err := cli.getUserAndHeaders()
 	if err != nil {
-		return types.ImageGetResponse{},
+		return types.KeyCreateResponse{},
 			errors.Wrap(err, "failed to get user and headers")
 	}
 
-	url := fmt.Sprintf("/users/%s/images/%s", username, url.PathEscape(name))
-	logrus.WithField("url", url).Debug("build image get url")
-	resp, err := cli.get(ctx, url, nil, headers)
+	urlString := fmt.Sprintf("/users/%s/keys", username)
+	resp, err := cli.post(ctx, urlString, url.Values{}, req, headers)
 	defer ensureReaderClosed(resp)
 
 	if err != nil {
-		return types.ImageGetResponse{},
-			wrapResponseError(err, resp, "username", username)
+		return types.KeyCreateResponse{}, err
 	}
 
-	var response types.ImageGetResponse
+	var response types.KeyCreateResponse
 	err = json.NewDecoder(resp.body).Decode(&response)
 	return response, err
 }

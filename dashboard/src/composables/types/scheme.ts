@@ -252,7 +252,6 @@ export interface TypesAuthNRequest {
   login_name?: string;
   /** Password stores the hashed password. */
   password?: string;
-  public_key?: string;
 }
 
 export interface TypesAuthNResponse {
@@ -361,11 +360,14 @@ export interface TypesEnvironmentStatus {
 }
 
 export interface TypesImageGetResponse {
+  apt_packages?: string[];
   created?: number;
   digest?: string;
   labels?: Record<string, string>;
   /** @example "pytorch-cuda:dev" */
   name?: string;
+  ports?: TypesEnvironmentPort[];
+  python_commands?: string[];
   size?: number;
 }
 
@@ -374,12 +376,41 @@ export interface TypesImageListResponse {
 }
 
 export interface TypesImageMeta {
+  apt_packages?: string[];
   created?: number;
   digest?: string;
   labels?: Record<string, string>;
   /** @example "pytorch-cuda:dev" */
   name?: string;
+  ports?: TypesEnvironmentPort[];
+  python_commands?: string[];
   size?: number;
+}
+
+export interface TypesKeyCreateRequest {
+  /**
+   * Name is the key name.
+   * @example "mykey"
+   */
+  name?: string;
+  /** PublicKey is the ssh public key */
+  public_key?: string;
+}
+
+export interface TypesKeyCreateResponse {
+  /**
+   * LoginName is used to authenticate the user and get
+   * an access token for the registry.
+   * @example "alice"
+   */
+  login_name?: string;
+  /**
+   * Name is the key name.
+   * @example "mykey"
+   */
+  name?: string;
+  /** PublicKey is the ssh public key */
+  public_key?: string;
 }
 
 export interface TypesResourceSpec {

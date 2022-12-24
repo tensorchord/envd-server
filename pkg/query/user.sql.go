@@ -11,29 +11,23 @@ import (
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (
-  login_name, password_hash, public_key
+  login_name, password_hash
 ) VALUES (
-  $1, $2, $3
+  $1, $2
 )
-RETURNING login_name, public_key
+RETURNING login_name
 `
 
 type CreateUserParams struct {
 	LoginName    string `json:"login_name"`
 	PasswordHash string `json:"password_hash"`
-	PublicKey    []byte `json:"public_key"`
 }
 
-type CreateUserRow struct {
-	LoginName string `json:"login_name"`
-	PublicKey []byte `json:"public_key"`
-}
-
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error) {
-	row := q.db.QueryRow(ctx, createUser, arg.LoginName, arg.PasswordHash, arg.PublicKey)
-	var i CreateUserRow
-	err := row.Scan(&i.LoginName, &i.PublicKey)
-	return i, err
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (string, error) {
+	row := q.db.QueryRow(ctx, createUser, arg.LoginName, arg.PasswordHash)
+	var login_name string
+	err := row.Scan(&login_name)
+	return login_name, err
 }
 
 const deleteUser = `-- name: DeleteUser :exec
@@ -47,24 +41,19 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 }
 
 const getUser = `-- name: GetUser :one
-SELECT id, public_key, login_name, password_hash FROM users
+SELECT id, login_name, password_hash FROM users
 WHERE login_name = $1 LIMIT 1
 `
 
 func (q *Queries) GetUser(ctx context.Context, loginName string) (User, error) {
 	row := q.db.QueryRow(ctx, getUser, loginName)
 	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.PublicKey,
-		&i.LoginName,
-		&i.PasswordHash,
-	)
+	err := row.Scan(&i.ID, &i.LoginName, &i.PasswordHash)
 	return i, err
 }
 
 const listUsers = `-- name: ListUsers :many
-SELECT id, public_key, login_name, password_hash FROM users
+SELECT id, login_name, password_hash FROM users
 ORDER BY id
 `
 
@@ -77,12 +66,7 @@ func (q *Queries) ListUsers(ctx context.Context) ([]User, error) {
 	var items []User
 	for rows.Next() {
 		var i User
-		if err := rows.Scan(
-			&i.ID,
-			&i.PublicKey,
-			&i.LoginName,
-			&i.PasswordHash,
-		); err != nil {
+		if err := rows.Scan(&i.ID, &i.LoginName, &i.PasswordHash); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

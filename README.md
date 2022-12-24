@@ -28,6 +28,8 @@ envd create --image gaocegege/test-envd
 
 # Development Guide of Dashboard
 
+## Build
+
 Enter into dashboard directory to develop just like normal vue application.
 
 If you want to build envd-server with dashboard
@@ -41,3 +43,20 @@ popd
 ```
 
 When envd-server is running, you can visit https:/localhost:8080/dashboard to see it 
+
+## Develop locally
+
+- Port forward the postgresql service to local
+
+```bash
+kubectl port-forward svc/postgres-service 5432:5432
+```
+- Setup environment variable
+```bash
+export KUBECONFIG=~/.kube/config
+export ENVD_DB_URL=postgres://postgresadmin:admin12345@localhost:5432/postgresdb?sslmode=disable
+```
+- Run envd-server locally
+```bash
+./bin/envd-server --debug --no-auth # Remove no-auth if auth is needed
+```

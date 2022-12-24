@@ -50,11 +50,26 @@ func (mr *MockQuerierMockRecorder) CreateImageInfo(ctx, arg interface{}) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateImageInfo", reflect.TypeOf((*MockQuerier)(nil).CreateImageInfo), ctx, arg)
 }
 
+// CreateKey mocks base method.
+func (m *MockQuerier) CreateKey(ctx context.Context, arg query.CreateKeyParams) (query.CreateKeyRow, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateKey", ctx, arg)
+	ret0, _ := ret[0].(query.CreateKeyRow)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateKey indicates an expected call of CreateKey.
+func (mr *MockQuerierMockRecorder) CreateKey(ctx, arg interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateKey", reflect.TypeOf((*MockQuerier)(nil).CreateKey), ctx, arg)
+}
+
 // CreateUser mocks base method.
-func (m *MockQuerier) CreateUser(ctx context.Context, arg query.CreateUserParams) (query.CreateUserRow, error) {
+func (m *MockQuerier) CreateUser(ctx context.Context, arg query.CreateUserParams) (string, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateUser", ctx, arg)
-	ret0, _ := ret[0].(query.CreateUserRow)
+	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -79,19 +94,49 @@ func (mr *MockQuerierMockRecorder) DeleteUser(ctx, id interface{}) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUser", reflect.TypeOf((*MockQuerier)(nil).DeleteUser), ctx, id)
 }
 
-// GetImageInfo mocks base method.
-func (m *MockQuerier) GetImageInfo(ctx context.Context, arg query.GetImageInfoParams) (query.ImageInfo, error) {
+// GetImageInfoByDigest mocks base method.
+func (m *MockQuerier) GetImageInfoByDigest(ctx context.Context, arg query.GetImageInfoByDigestParams) (query.ImageInfo, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetImageInfo", ctx, arg)
+	ret := m.ctrl.Call(m, "GetImageInfoByDigest", ctx, arg)
 	ret0, _ := ret[0].(query.ImageInfo)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetImageInfo indicates an expected call of GetImageInfo.
-func (mr *MockQuerierMockRecorder) GetImageInfo(ctx, arg interface{}) *gomock.Call {
+// GetImageInfoByDigest indicates an expected call of GetImageInfoByDigest.
+func (mr *MockQuerierMockRecorder) GetImageInfoByDigest(ctx, arg interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetImageInfo", reflect.TypeOf((*MockQuerier)(nil).GetImageInfo), ctx, arg)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetImageInfoByDigest", reflect.TypeOf((*MockQuerier)(nil).GetImageInfoByDigest), ctx, arg)
+}
+
+// GetImageInfoByName mocks base method.
+func (m *MockQuerier) GetImageInfoByName(ctx context.Context, arg query.GetImageInfoByNameParams) (query.ImageInfo, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetImageInfoByName", ctx, arg)
+	ret0, _ := ret[0].(query.ImageInfo)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetImageInfoByName indicates an expected call of GetImageInfoByName.
+func (mr *MockQuerierMockRecorder) GetImageInfoByName(ctx, arg interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetImageInfoByName", reflect.TypeOf((*MockQuerier)(nil).GetImageInfoByName), ctx, arg)
+}
+
+// GetKey mocks base method.
+func (m *MockQuerier) GetKey(ctx context.Context, arg query.GetKeyParams) (query.Key, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetKey", ctx, arg)
+	ret0, _ := ret[0].(query.Key)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetKey indicates an expected call of GetKey.
+func (mr *MockQuerierMockRecorder) GetKey(ctx, arg interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetKey", reflect.TypeOf((*MockQuerier)(nil).GetKey), ctx, arg)
 }
 
 // GetUser mocks base method.
@@ -110,18 +155,33 @@ func (mr *MockQuerierMockRecorder) GetUser(ctx, loginName interface{}) *gomock.C
 }
 
 // ListImageByOwner mocks base method.
-func (m *MockQuerier) ListImageByOwner(ctx context.Context, ownerToken string) ([]query.ImageInfo, error) {
+func (m *MockQuerier) ListImageByOwner(ctx context.Context, loginName string) ([]query.ImageInfo, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListImageByOwner", ctx, ownerToken)
+	ret := m.ctrl.Call(m, "ListImageByOwner", ctx, loginName)
 	ret0, _ := ret[0].([]query.ImageInfo)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // ListImageByOwner indicates an expected call of ListImageByOwner.
-func (mr *MockQuerierMockRecorder) ListImageByOwner(ctx, ownerToken interface{}) *gomock.Call {
+func (mr *MockQuerierMockRecorder) ListImageByOwner(ctx, loginName interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListImageByOwner", reflect.TypeOf((*MockQuerier)(nil).ListImageByOwner), ctx, ownerToken)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListImageByOwner", reflect.TypeOf((*MockQuerier)(nil).ListImageByOwner), ctx, loginName)
+}
+
+// ListKeys mocks base method.
+func (m *MockQuerier) ListKeys(ctx context.Context, loginName string) ([]query.Key, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListKeys", ctx, loginName)
+	ret0, _ := ret[0].([]query.Key)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListKeys indicates an expected call of ListKeys.
+func (mr *MockQuerierMockRecorder) ListKeys(ctx, loginName interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListKeys", reflect.TypeOf((*MockQuerier)(nil).ListKeys), ctx, loginName)
 }
 
 // ListUsers mocks base method.

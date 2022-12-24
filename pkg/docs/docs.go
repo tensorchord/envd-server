@@ -380,14 +380,6 @@ const docTemplate = `{
                         "name": "login_name",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "type": "string",
-                        "example": "\"pytorch-example\"",
-                        "description": "image name",
-                        "name": "name",
-                        "in": "path",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -429,8 +421,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "example": "\"pytorch-example\"",
-                        "description": "image name",
+                        "example": "\"python-example\"",
+                        "description": "digest",
                         "name": "name",
                         "in": "path",
                         "required": true
@@ -441,6 +433,53 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/types.ImageGetResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{login_name}/keys": {
+            "post": {
+                "security": [
+                    {
+                        "Authentication": []
+                    }
+                ],
+                "description": "Create the key.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "key"
+                ],
+                "summary": "Create the key.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "\"alice\"",
+                        "description": "login name",
+                        "name": "login_name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "query params",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/types.KeyCreateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/types.KeyCreateResponse"
                         }
                     }
                 }
@@ -629,9 +668,6 @@ const docTemplate = `{
                 },
                 "password": {
                     "description": "Password stores the hashed password.",
-                    "type": "string"
-                },
-                "public_key": {
                     "type": "string"
                 }
             }
@@ -863,6 +899,12 @@ const docTemplate = `{
         "types.ImageGetResponse": {
             "type": "object",
             "properties": {
+                "apt_packages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "created": {
                     "type": "integer"
                 },
@@ -878,6 +920,18 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "example": "pytorch-cuda:dev"
+                },
+                "ports": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.EnvironmentPort"
+                    }
+                },
+                "python_commands": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "size": {
                     "type": "integer"
@@ -898,6 +952,12 @@ const docTemplate = `{
         "types.ImageMeta": {
             "type": "object",
             "properties": {
+                "apt_packages": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "created": {
                     "type": "integer"
                 },
@@ -914,8 +974,53 @@ const docTemplate = `{
                     "type": "string",
                     "example": "pytorch-cuda:dev"
                 },
+                "ports": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.EnvironmentPort"
+                    }
+                },
+                "python_commands": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "size": {
                     "type": "integer"
+                }
+            }
+        },
+        "types.KeyCreateRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "description": "Name is the key name.",
+                    "type": "string",
+                    "example": "mykey"
+                },
+                "public_key": {
+                    "description": "PublicKey is the ssh public key",
+                    "type": "string"
+                }
+            }
+        },
+        "types.KeyCreateResponse": {
+            "type": "object",
+            "properties": {
+                "login_name": {
+                    "description": "LoginName is used to authenticate the user and get\nan access token for the registry.",
+                    "type": "string",
+                    "example": "alice"
+                },
+                "name": {
+                    "description": "Name is the key name.",
+                    "type": "string",
+                    "example": "mykey"
+                },
+                "public_key": {
+                    "description": "PublicKey is the ssh public key",
+                    "type": "string"
                 }
             }
         },

@@ -10,11 +10,14 @@ type ImageInfo struct {
 }
 
 type ImageMeta struct {
-	Name    string            `json:"name" example:"pytorch-cuda:dev"`
-	Digest  string            `json:"digest,omitempty"`
-	Created int64             `json:"created,omitempty"`
-	Size    int64             `json:"size,omitempty"`
-	Labels  map[string]string `json:"labels,omitempty"`
+	Name           string            `json:"name,omitempty" example:"pytorch-cuda:dev"`
+	Digest         string            `json:"digest,omitempty"`
+	Created        int64             `json:"created,omitempty"`
+	Size           int64             `json:"size,omitempty"`
+	Labels         map[string]string `json:"labels,omitempty"`
+	APTPackages    []string          `json:"apt_packages,omitempty"`
+	PythonCommands []string          `json:"python_commands,omitempty"`
+	Ports          []EnvironmentPort `json:"ports,omitempty"`
 }
 
 type ImageGetRequest struct {

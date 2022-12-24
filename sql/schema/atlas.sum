@@ -1,4 +1,6 @@
-h1:wwrMlh1phe92RU47Rr3Ry8Kyru10Nf+eVa7L1caTHo8=
+h1:BTO4a98oQQ62Q2z+9JOoKKN7Cf69+wcbNs9RAWkx0rk=
 20221206162738_create_user.sql h1:0GtqhnZp7B19DFTPxOmW3DXKMQiksuvaA2ibjG3Fy3s=
 20221206162846_create_image.sql h1:o/RlrpWmd/VyHQ+zuCBarkE/xT0m5XNt/gsOd81+OTk=
 20221207142402_add_users_name.sql h1:2QRCMcNzoVnrgFosueAdvI1XrNfQVZQxgf74aM1MRlU=
+20221221100643_rename_identity_token_and_add_packages.sql h1:H97Tpz5mv/79Odp13oDrvxn8PrtBKxEYPRNAtzMQQZc=
+20221222034229_add_keys_table.sql h1:hyPYBiEGHAdvZ7zmo11mYni2SrxUcZFBfI+PTfirjgo=
