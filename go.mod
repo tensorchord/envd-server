@@ -21,7 +21,7 @@ require (
 	github.com/swaggo/gin-swagger v1.5.3
 	github.com/swaggo/swag v1.8.9
 	github.com/toorop/gin-logrus v0.0.0-20210225092905-2c785434f26f
-	github.com/urfave/cli/v2 v2.23.6
+	github.com/urfave/cli/v2 v2.23.7
 	go.containerssh.io/libcontainerssh v0.0.0-20220919135854-4f8e76dc0aed
 	golang.org/x/crypto v0.0.0-20221010152910-d6f0a8c073c2
 	k8s.io/api v0.25.4
@@ -29,12 +29,12 @@ require (
 	k8s.io/client-go v0.25.4
 )
 
-require github.com/gin-contrib/cors v1.4.0
-
 require (
-	github.com/jackc/pgerrcode v0.0.0-20220416144525-469b46aa5efa // indirect
-	github.com/jackc/puddle v1.3.0 // indirect
+	github.com/gin-contrib/cors v1.4.0
+	github.com/jackc/pgerrcode v0.0.0-20220416144525-469b46aa5efa
 )
+
+require github.com/jackc/puddle v1.3.0 // indirect
 
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
