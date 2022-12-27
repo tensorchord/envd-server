@@ -143,6 +143,10 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 					},
 					VolumeMounts: []v1.VolumeMount{
 						codeDirectoryVolumeMount,
+						{
+							Name:      "syncthing-config",
+							MountPath: "/config",
+						},
 					},
 					// TODO: define resource limit
 				},
@@ -164,6 +168,12 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 						// HostPath: &v1.HostPathVolumeSource{
 						// 	Path: fmt.Sprintf("/var/envd/code/%s", req.Name),
 						// },
+					},
+				},
+				{
+					Name: "syncthing-config",
+					VolumeSource: v1.VolumeSource{
+						EmptyDir: &v1.EmptyDirVolumeSource{},
 					},
 				},
 			},
