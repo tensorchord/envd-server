@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/ssh"
 
 	"github.com/tensorchord/envd-server/api/types"
 	"github.com/tensorchord/envd-server/errdefs"
@@ -31,8 +32,13 @@ func (s Server) keyCreate(c *gin.Context) error {
 		return NewError(http.StatusInternalServerError, err, "gin.bind-json")
 	}
 
+	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(req.PublicKey))
+	if err != nil {
+		return NewError(http.StatusInternalServerError, err, "ssh.parse-auth-key")
+	}
+
 	if err := s.UserService.CreatePubKey(c.Request.Context(),
-		owner, req.Name, []byte(req.PublicKey)); err != nil {
+		owner, req.Name, key.Marshal()); err != nil {
 		if errdefs.IsConflict(err) {
 			return NewError(http.StatusConflict, err, "user.create-pubkey")
 		}
