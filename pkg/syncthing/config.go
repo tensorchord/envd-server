@@ -2,12 +2,12 @@ package syncthing
 
 import (
 	"encoding/xml"
-	"io/ioutil"
 
 	"github.com/syncthing/syncthing/lib/config"
 )
 
-func initConfig() *config.Configuration {
+// @source: https://docs.syncthing.net/users/config.html
+func InitConfig() *config.Configuration {
 	return &config.Configuration{
 		Version: 0,
 		GUI: config.GUIConfiguration{
@@ -31,16 +31,11 @@ func initConfig() *config.Configuration {
 	}
 }
 
-func WriteConfig(path string, cfg *config.Configuration) error {
-	file, err := xml.MarshalIndent(cfg, "", " ")
+func GetConfigString(cfg *config.Configuration) (string, error) {
+	configStr, err := xml.MarshalIndent(cfg, "", " ")
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	err = ioutil.WriteFile("notes1.xml", file, 0644)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return string(configStr), nil
 }

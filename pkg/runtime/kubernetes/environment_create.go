@@ -17,6 +17,7 @@ import (
 	"github.com/tensorchord/envd-server/api/types"
 	servertypes "github.com/tensorchord/envd-server/api/types"
 	"github.com/tensorchord/envd-server/pkg/consts"
+	"github.com/tensorchord/envd-server/pkg/syncthing"
 )
 
 func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
@@ -64,6 +65,25 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 	hostKeyPath := "/var/envd/hostkey"
 	authKeyPath := "/var/envd/authkey"
 	var defaultPermMode int32 = 0666
+
+	configStr, err := syncthing.GetConfigString(syncthing.InitConfig())
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to generate syncthing initial config")
+	}
+
+	expectedConfigMap := v1.ConfigMap{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "st-config",
+		},
+		Data: map[string]string{
+			"config.xml": configStr,
+		},
+	}
+
+	_, err = p.client.CoreV1().ConfigMaps(p.namespace).Create(ctx, &expectedConfigMap, metav1.CreateOptions{})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create configmap")
+	}
 
 	codeDirectoryVolumeMount := v1.VolumeMount{
 		Name:      "code-dir",
@@ -144,8 +164,9 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 					VolumeMounts: []v1.VolumeMount{
 						codeDirectoryVolumeMount,
 						{
-							Name:      "syncthing-config",
-							MountPath: "/config",
+							Name:      "st-volume",
+							MountPath: "/config/config.xml",
+							SubPath:   "config.xml",
 						},
 					},
 					// TODO: define resource limit
@@ -171,9 +192,19 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 					},
 				},
 				{
-					Name: "syncthing-config",
+					Name: "st-volume",
 					VolumeSource: v1.VolumeSource{
-						EmptyDir: &v1.EmptyDirVolumeSource{},
+						ConfigMap: &v1.ConfigMapVolumeSource{
+							LocalObjectReference: v1.LocalObjectReference{
+								Name: "st-config",
+							},
+							Items: []v1.KeyToPath{
+								{
+									Key:  "config.xml",
+									Path: "config.xml",
+								},
+							},
+						},
 					},
 				},
 			},
