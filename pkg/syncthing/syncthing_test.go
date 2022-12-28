@@ -21,6 +21,7 @@ var _ = Describe("Syncthing", func() {
 		It("Generates configuration string", func() {
 			configStr, err := syncthing.GetConfigString(syncthing.InitConfig())
 			Expect(err).To(BeNil())
+			Expect(configStr).To(ContainSubstring("<configuration"))
 			Expect(configStr).To(ContainSubstring("<apikey>envd</apikey>"))
 			Expect(configStr).To(ContainSubstring("<address>0.0.0.0:8384</address>"))
 			Expect(configStr).To(ContainSubstring("<globalAnnounceEnabled>false</globalAnnounceEnabled>"))

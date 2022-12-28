@@ -9,7 +9,7 @@ import (
 // @source: https://docs.syncthing.net/users/config.html
 func InitConfig() *config.Configuration {
 	return &config.Configuration{
-		Version: 0,
+		Version: 37,
 		GUI: config.GUIConfiguration{
 			Enabled:    true,
 			RawAddress: "0.0.0.0:8384",
@@ -32,10 +32,17 @@ func InitConfig() *config.Configuration {
 }
 
 func GetConfigString(cfg *config.Configuration) (string, error) {
-	configStr, err := xml.MarshalIndent(cfg, "", " ")
+	tmp := struct {
+		XMLName xml.Name `xml:"configuration"`
+		*config.Configuration
+	}{
+		Configuration: cfg,
+	}
+
+	configByte, err := xml.MarshalIndent(tmp, "", "  ")
 	if err != nil {
 		return "", err
 	}
 
-	return string(configStr), nil
+	return string(configByte), nil
 }
