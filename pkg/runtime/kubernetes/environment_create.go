@@ -69,7 +69,7 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 	authKeyPath := "/var/envd/authkey"
 	var defaultPermMode int32 = 0666
 
-	configStr, err := syncthing.GetConfigString(syncthing.InitConfig())
+	configByte, err := syncthing.GetConfigByte(syncthing.InitConfig())
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to generate syncthing initial config")
 	}
@@ -77,6 +77,7 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 	configMapName := "st-config"
 	configMapKind := "ConfigMap"
 	configMapAPIVersion := "v1"
+	configMapPermMode := int32(0777)
 	expectedConfigMap := corev1.ConfigMapApplyConfiguration{
 		TypeMetaApplyConfiguration: configv1.TypeMetaApplyConfiguration{
 			Kind:       &configMapKind,
@@ -86,7 +87,7 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 			Name: &configMapName,
 		},
 		Data: map[string]string{
-			"config.xml": configStr,
+			"config.xml": string(configByte),
 		},
 	}
 
@@ -171,11 +172,23 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 							ContainerPort: 22000,
 						},
 					},
+					Lifecycle: &v1.Lifecycle{
+						PostStart: &v1.LifecycleHandler{
+							Exec: &v1.ExecAction{
+								// Volume mounts based on configmaps are readonly
+								Command: []string{
+									"sh",
+									"-c",
+									"cp /tmp/config.xml /config/config.xml",
+								},
+							},
+						},
+					},
 					VolumeMounts: []v1.VolumeMount{
 						codeDirectoryVolumeMount,
 						{
 							Name:      "st-volume",
-							MountPath: "/config/config.xml",
+							MountPath: "/tmp/config.xml",
 							SubPath:   "config.xml",
 						},
 					},
@@ -206,8 +219,9 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 					VolumeSource: v1.VolumeSource{
 						ConfigMap: &v1.ConfigMapVolumeSource{
 							LocalObjectReference: v1.LocalObjectReference{
-								Name: configMapName,
+								Name: "st-config",
 							},
+							DefaultMode: &configMapPermMode,
 							Items: []v1.KeyToPath{
 								{
 									Key:  "config.xml",

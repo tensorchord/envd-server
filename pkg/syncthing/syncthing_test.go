@@ -19,7 +19,8 @@ var _ = Describe("Syncthing", func() {
 
 	Describe("Syncthing", func() {
 		It("Generates configuration string", func() {
-			configStr, err := syncthing.GetConfigString(syncthing.InitConfig())
+			configByte, err := (syncthing.GetConfigByte(syncthing.InitConfig()))
+			configStr := string(configByte)
 			Expect(err).To(BeNil())
 			Expect(configStr).To(ContainSubstring("<configuration"))
 			Expect(configStr).To(ContainSubstring("<apikey>envd</apikey>"))

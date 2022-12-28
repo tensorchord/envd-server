@@ -31,7 +31,7 @@ func InitConfig() *config.Configuration {
 	}
 }
 
-func GetConfigString(cfg *config.Configuration) (string, error) {
+func GetConfigByte(cfg *config.Configuration) ([]byte, error) {
 	tmp := struct {
 		XMLName xml.Name `xml:"configuration"`
 		*config.Configuration
@@ -41,8 +41,8 @@ func GetConfigString(cfg *config.Configuration) (string, error) {
 
 	configByte, err := xml.MarshalIndent(tmp, "", "  ")
 	if err != nil {
-		return "", err
+		return []byte{}, err
 	}
 
-	return string(configByte), nil
+	return configByte, nil
 }
