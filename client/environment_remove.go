@@ -11,7 +11,7 @@ import (
 	"github.com/cockroachdb/errors"
 )
 
-// EnvironmentList lists the environment.
+// EnvironmentRemove the environment.
 func (cli *Client) EnvironmentRemove(ctx context.Context,
 	name string) error {
 	username, headers, err := cli.getUserAndHeaders()
