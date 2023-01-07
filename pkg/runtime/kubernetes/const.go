@@ -5,5 +5,5 @@
 package kubernetes
 
 const (
-	ResourceNvidiaGPU = "nvidia/gpu"
+	ResourceNvidiaGPU = "nvidia.com/gpu"
 )
