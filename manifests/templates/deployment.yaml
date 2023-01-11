@@ -60,6 +60,10 @@ spec:
         env:
           - name: ENVD_DB_URL
             value: {{ $dburl }}
+        {{-  with .Values.server.resources }}
+        resources:
+        {{- toYaml . | nindent 10 }}
+        {{- end }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -89,6 +93,10 @@ spec:
             - name: envdserver
               containerPort: 8080
               protocol: TCP
+          {{-  with .Values.server.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           # livenessProbe:
           #   httpGet:
           #     path: /v1
@@ -106,8 +114,6 @@ spec:
               name: image-pull-secret
               subPath: .dockerconfigjson
             {{- end }}
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -123,8 +129,8 @@ spec:
         - name: containerssh
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.containersshimage.repository }}:{{ .Values.containersshimage.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.containersshimage.pullPolicy }}
+          image: "{{ .Values.containerssh.repository }}:{{ .Values.containerssh.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.containerssh.pullPolicy }}
           ports:
             - name: ssh
               containerPort: 2222
@@ -142,8 +148,10 @@ spec:
           - mountPath: /etc/containerssh/privatekey
             name: secret
             subPath: privatekey
+          {{- with .Values.containerssh.resources }}
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

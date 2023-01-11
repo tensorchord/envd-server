@@ -1,0 +1,17 @@
+{{- if .Values.resourceQuota.enabled -}}
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: resource-quota
+  labels:
+    {{- include "envd-server.labels" . | nindent 4 }}
+spec:
+  hard:
+    limits.cpu: {{ .Values.resourceQuota.hard.limits.cpu }}
+    limits.memory: {{ .Values.resourceQuota.hard.limits.memory }}
+    limits.nvidia.com/gpu: {{ .Values.resourceQuota.hard.limits.gpu }}
+    requests.cpu: {{ .Values.resourceQuota.hard.requests.cpu }}
+    requests.memory: {{ .Values.resourceQuota.hard.requests.memory }}
+    requests.nvidia.com/gpu: {{ .Values.resourceQuota.hard.requests.gpu }}
+    limits.count/pods: {{ .Values.resourceQuota.hard.limits.pods }}
+{{- end }}
