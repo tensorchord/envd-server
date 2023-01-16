@@ -14,8 +14,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"k8s.io/apimachinery/pkg/util/intstr"
-	corev1 "k8s.io/client-go/applyconfigurations/core/v1"
-	configv1 "k8s.io/client-go/applyconfigurations/meta/v1"
 
 	"github.com/tensorchord/envd-server/api/types"
 	servertypes "github.com/tensorchord/envd-server/api/types"
@@ -75,26 +73,21 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 	}
 
 	configMapName := "st-config"
-	configMapKind := "ConfigMap"
-	configMapAPIVersion := "v1"
 	configMapPermMode := int32(0777)
-	expectedConfigMap := corev1.ConfigMapApplyConfiguration{
-		TypeMetaApplyConfiguration: configv1.TypeMetaApplyConfiguration{
-			Kind:       &configMapKind,
-			APIVersion: &configMapAPIVersion,
-		},
-		ObjectMetaApplyConfiguration: &configv1.ObjectMetaApplyConfiguration{
-			Name: &configMapName,
-		},
+	expectedConfigMap := v1.ConfigMap{
+        ObjectMeta: metav1.ObjectMeta{
+            Name: configMapName,
+            Namespace: p.namespace,
+            Labels: labels,
+        },
 		Data: map[string]string{
 			"config.xml": string(configByte),
 		},
 	}
 
-	_, err = p.client.CoreV1().ConfigMaps(p.namespace).Apply(ctx, &expectedConfigMap, metav1.ApplyOptions{FieldManager: "envd-server"})
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to create configmap")
-	}
+    _, err = p.client.CoreV1().ConfigMaps(p.namespace).Create(ctx, &expectedConfigMap, metav1.CreateOptions{})
+
+
 
 	codeDirectoryVolumeMount := v1.VolumeMount{
 		Name:      "code-dir",
@@ -219,7 +212,7 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 					VolumeSource: v1.VolumeSource{
 						ConfigMap: &v1.ConfigMapVolumeSource{
 							LocalObjectReference: v1.LocalObjectReference{
-								Name: "st-config",
+								Name: configMapName,
 							},
 							DefaultMode: &configMapPermMode,
 							Items: []v1.KeyToPath{

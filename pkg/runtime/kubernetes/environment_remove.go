@@ -19,8 +19,10 @@ import (
 func (p generalProvisioner) EnvironmentRemove(ctx context.Context,
 	owner, envName string) error {
 	logger := logrus.WithField("env", envName)
+
 	pod, err := p.client.CoreV1().Pods(p.namespace).
 		Get(ctx, envName, metav1.GetOptions{})
+
 	if !k8serrors.IsNotFound(err) {
 		if err != nil {
 			return errors.Wrap(err, "failed to get pod")
@@ -41,8 +43,31 @@ func (p generalProvisioner) EnvironmentRemove(ctx context.Context,
 		logger.Debugf("pod %s is deleted", envName)
 	}
 
+	configMapName := "st-config"
+	configMap, err := p.client.CoreV1().ConfigMaps(p.namespace).Get(ctx, configMapName, metav1.GetOptions{})
+
+	if !k8serrors.IsNotFound(err) {
+		if err != nil {
+			return errors.Wrap(err, "failed to get configmap")
+		}
+		if configMap.Labels[consts.PodLabelUID] != owner {
+			logger.WithFields(logrus.Fields{
+				"loginname_in_pod":     pod.Labels[consts.PodLabelUID],
+				"loginname_in_request": owner,
+			}).Debug("mismatch loginname")
+			return errdefs.Unauthorized(errors.New("mismatch loginname"))
+		}
+
+		err = p.client.CoreV1().ConfigMaps(p.namespace).Delete(ctx, configMapName, metav1.DeleteOptions{})
+		if err != nil && !k8serrors.IsNotFound(err) {
+			return errors.Wrap(err, "failed to delete configmap")
+		}
+		logger.Debugf("configmap %s is deleted", envName)
+	}
+
 	service, err := p.client.CoreV1().Services(p.namespace).
 		Get(ctx, envName, metav1.GetOptions{})
+
 	if !k8serrors.IsNotFound(err) {
 		if err != nil {
 			return errors.Wrap(err, "failed to get service")

@@ -12,7 +12,7 @@ func InitConfig() *config.Configuration {
 		Version: 37,
 		GUI: config.GUIConfiguration{
 			Enabled:    true,
-			RawAddress: "0.0.0.0:8384",
+			RawAddress: "127.0.0.1:8384",
 			APIKey:     "envd",
 			Theme:      "default",
 		},
@@ -22,7 +22,7 @@ func InitConfig() *config.Configuration {
 			ReconnectIntervalS:   1,
 			StartBrowser:         true, // TODO: disable later
 			NATEnabled:           false,
-			URAccepted:           1,
+			URAccepted:           -1, // Disallow telemetry
 			URPostInsecurely:     false,
 			URInitialDelayS:      1800,
 			AutoUpgradeIntervalH: 0, // Disable auto upgrade
