@@ -75,19 +75,21 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 	configMapName := "st-config"
 	configMapPermMode := int32(0777)
 	expectedConfigMap := v1.ConfigMap{
-        ObjectMeta: metav1.ObjectMeta{
-            Name: configMapName,
-            Namespace: p.namespace,
-            Labels: labels,
-        },
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      configMapName,
+			Namespace: p.namespace,
+			Labels:    labels,
+		},
 		Data: map[string]string{
 			"config.xml": string(configByte),
 		},
 	}
 
-    _, err = p.client.CoreV1().ConfigMaps(p.namespace).Create(ctx, &expectedConfigMap, metav1.CreateOptions{})
-
-
+	_, err = p.client.CoreV1().ConfigMaps(p.namespace).Create(ctx, &expectedConfigMap, metav1.CreateOptions{})
+	if err != nil {
+		logrus.Infof("failed to create configmap: %v", err)
+		return nil, errors.Wrap(err, "failed to create configmap")
+	}
 
 	codeDirectoryVolumeMount := v1.VolumeMount{
 		Name:      "code-dir",
