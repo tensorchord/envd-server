@@ -17,7 +17,6 @@ func (s *Server) AuthMiddleware() gin.HandlerFunc {
 		amURI := AuthMiddlewareURIRequest{}
 		if err := c.BindUri(&amURI); err != nil {
 			respondWithError(c, NewError(http.StatusUnauthorized, err, "auth.middleware.bind-uri"))
-			c.Next()
 			return
 		}
 
@@ -28,14 +27,12 @@ func (s *Server) AuthMiddleware() gin.HandlerFunc {
 		amr := AuthMiddlewareHeaderRequest{}
 		if err := c.BindHeader(&amr); err != nil {
 			respondWithError(c, NewError(http.StatusUnauthorized, err, "auth.middleware"))
-			c.Next()
 			return
 		}
 
 		loginName, err := s.UserService.ValidateJWT(amr.JWTToken)
 		if err != nil {
 			respondWithError(c, NewError(http.StatusUnauthorized, err, "user.validateJWT"))
-			c.Next()
 			return
 		}
 		if loginName != amURI.LoginName {
@@ -44,7 +41,6 @@ func (s *Server) AuthMiddleware() gin.HandlerFunc {
 				"login-name-in-uri": amURI.LoginName,
 			}).Debug("login name in JWT does not match the login name in URI")
 			respondWithError(c, NewError(http.StatusUnauthorized, err, "user.validateJWT"))
-			c.Next()
 			return
 		}
 		c.Set(ContextLoginName, loginName)
@@ -58,7 +54,6 @@ func (s *Server) NoAuthMiddleware() gin.HandlerFunc {
 		amURI := AuthMiddlewareURIRequest{}
 		if err := c.BindUri(&amURI); err != nil {
 			respondWithError(c, NewError(http.StatusUnauthorized, err, "auth.middleware.bind-uri"))
-			c.Next()
 			return
 		}
 

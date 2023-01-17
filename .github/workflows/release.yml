@@ -41,7 +41,7 @@ jobs:
           run_install: |
             - cwd: "./dashboard"
       - name: Use Node.js 18
-        uses: actions/setup-node@v3.5.1
+        uses: actions/setup-node@v3.6.0
         with:
           node-version: 18
           registry-url: https://registry.npmjs.org/
@@ -105,7 +105,7 @@ jobs:
           version: v3.10.0
 
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.4.1
+        uses: helm/chart-releaser-action@v1.5.0
         with:
           charts_dir: manifests
           config: .github/chart-publish-config.yaml

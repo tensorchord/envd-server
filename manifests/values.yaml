@@ -8,7 +8,7 @@ image:
   repository: tensorchord/envd-server
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.0.22"
+  tag: "0.0.24"
 
 # Will generate from postgres info below if thie field is empty
 # example: postgres://username:password@localhost:5432/database_name
@@ -23,12 +23,27 @@ server:
   migration: true
   # Leave blank will use ${image.Repository}-migration:${image.tag} as the migration image
   migrationImage: ""
+  resourcesEnabled: false
+  resources:
+    limits:
+      cpu: 100m
+      memory: 1G
+    requests:
+      cpu: 100m
+      memory: 1G
 
-containersshimage:
+containerssh:
   repository: tensorchord/containerssh
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "0.0.6"
+  resources:
+    limits:
+      cpu: 100m
+      memory: 1G
+    requests:
+      cpu: 100m
+      memory: 1G
 
 imagePullSecrets: []
 nameOverride: ""
@@ -40,6 +55,13 @@ postgres:
   dbname: postgresdb
   username: postgresadmin
   password: admin12345
+  resources:
+    limits:
+      cpu: 1
+      memory: 2G
+    requests:
+      cpu: 1
+      memory: 2G
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -73,6 +95,19 @@ service:
   # serverNodePort: 30080
   # containersshNodePort: 32222
 
+resourceQuota:
+  enabled: false
+  hard:
+    limits:
+      cpu: 10
+      memory: 50G
+      gpu: 1
+      pods: 15
+    requests:
+      cpu: 10
+      memory: 50G
+      gpu: 1
+
 ingress:
   enabled: false
   className: ""
@@ -88,18 +123,6 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
-
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
 
 autoscaling:
   enabled: false

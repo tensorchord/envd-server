@@ -18,6 +18,6 @@
   Please run these commands:
   kubectl --namespace {{ .Release.Namespace }} port-forward svc/envd-server 8080:8080 2222:2222
 
-  To get the pod name:  
+  To get the pod name:
   export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "envd-server.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
 {{- end }}
