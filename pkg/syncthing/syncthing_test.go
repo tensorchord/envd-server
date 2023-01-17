@@ -29,7 +29,7 @@ var _ = Describe("Syncthing", func() {
 			Expect(err).To(BeNil())
 			Expect(configStr).To(ContainSubstring("<configuration"))
 			Expect(configStr).To(ContainSubstring("<apikey>envd</apikey>"))
-			Expect(configStr).To(ContainSubstring("<address>0.0.0.0:8384</address>"))
+			Expect(configStr).To(ContainSubstring("<address>127.0.0.1:8384</address>"))
 			Expect(configStr).To(ContainSubstring("<globalAnnounceEnabled>false</globalAnnounceEnabled>"))
 		})
 	})
