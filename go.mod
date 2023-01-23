@@ -24,8 +24,8 @@ require (
 	github.com/urfave/cli/v2 v2.23.7
 	go.containerssh.io/libcontainerssh v0.0.0-20220919135854-4f8e76dc0aed
 	golang.org/x/crypto v0.0.0-20221010152910-d6f0a8c073c2
-	k8s.io/api v0.25.4
-	k8s.io/apimachinery v0.25.4
+	k8s.io/api v0.25.6
+	k8s.io/apimachinery v0.25.6
 	k8s.io/client-go v0.25.4
 )
 
