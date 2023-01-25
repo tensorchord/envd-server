@@ -160,9 +160,9 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 	if env.Resources.Shm != "" {
 		shm, err := resource.ParseQuantity(env.Resources.Shm)
 		if err != nil {
-            return nil, errors.Wrapf(err, "failed to parse shm resource: %s", env.Resources.Shm)
+			return nil, errors.Wrapf(err, "failed to parse shm resource: %s", env.Resources.Shm)
 		}
-        logrus.Debugf("configure shared memory to %s", env.Resources.Shm)
+		logrus.Debugf("configure shared memory to %s", env.Resources.Shm)
 		expectedPod.Spec.Volumes = append(expectedPod.Spec.Volumes, v1.Volume{
 			Name: ResourceShm,
 			VolumeSource: v1.VolumeSource{
