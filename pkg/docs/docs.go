@@ -1035,6 +1035,9 @@ const docTemplate = `{
                 },
                 "memory": {
                     "type": "string"
+                },
+                "shm": {
+                    "type": "string"
                 }
             }
         }

@@ -19,9 +19,9 @@ import (
 // @Tags        environment
 // @Accept      json
 // @Produce     json
-// @Param       login_name     path     string true "login name" example("alice")
-// @Param       name           path     string true "environment name" example("pytorch-example")
-// @Success     200            {object} types.EnvironmentGetResponse
+// @Param       login_name path     string true "login name" example("alice")
+// @Param       name       path     string true "environment name" example("pytorch-example")
+// @Success     200        {object} types.EnvironmentGetResponse
 // @Router      /users/{login_name}/environments/{name} [get]
 func (s Server) environmentGet(c *gin.Context) error {
 	owner := c.GetString(ContextLoginName)

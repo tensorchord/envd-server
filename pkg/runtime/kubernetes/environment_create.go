@@ -157,6 +157,27 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 		})
 	}
 
+	if env.Resources.Shm != "" {
+		shm, err := resource.ParseQuantity(env.Resources.Shm)
+		if err != nil {
+			return nil, errors.Wrapf(err, "failed to parse shm resource: %s", env.Resources.Shm)
+		}
+		logrus.Debugf("configure shared memory to %s", env.Resources.Shm)
+		expectedPod.Spec.Volumes = append(expectedPod.Spec.Volumes, v1.Volume{
+			Name: ResourceShm,
+			VolumeSource: v1.VolumeSource{
+				EmptyDir: &v1.EmptyDirVolumeSource{
+					Medium:    "Memory",
+					SizeLimit: &shm,
+				},
+			},
+		})
+		expectedPod.Spec.Containers[0].VolumeMounts = append(expectedPod.Spec.Containers[0].VolumeMounts, v1.VolumeMount{
+			Name:      ResourceShm,
+			MountPath: ResourceShmPath,
+		})
+	}
+
 	if p.imagePullSecretName != nil {
 		expectedPod.Spec.ImagePullSecrets = []v1.LocalObjectReference{
 			{

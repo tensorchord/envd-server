@@ -20,9 +20,9 @@ import (
 // @Tags        image
 // @Accept      json
 // @Produce     json
-// @Param       login_name     path     string true "login name" example("alice")
-// @Param       name           path     string true "digest" example("python-example")
-// @Success     200            {object} types.ImageGetResponse
+// @Param       login_name path     string true "login name" example("alice")
+// @Param       name       path     string true "digest" example("python-example")
+// @Success     200        {object} types.ImageGetResponse
 // @Router      /users/{login_name}/images/{name} [get]
 func (s *Server) imageGet(c *gin.Context) error {
 	owner := c.GetString(ContextLoginName)
