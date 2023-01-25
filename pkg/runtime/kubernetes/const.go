@@ -6,4 +6,6 @@ package kubernetes
 
 const (
 	ResourceNvidiaGPU = "nvidia.com/gpu"
+	ResourceShm       = "shm"
+	ResourceShmPath   = "/dev/shm"
 )

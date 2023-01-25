@@ -19,8 +19,8 @@ import (
 // @Tags        image
 // @Accept      json
 // @Produce     json
-// @Param       login_name     path     string true "login name" example("alice")
-// @Success     200            {object} types.ImageListResponse
+// @Param       login_name path     string true "login name" example("alice")
+// @Success     200        {object} types.ImageListResponse
 // @Router      /users/{login_name}/images [get]
 func (s *Server) imageList(c *gin.Context) error {
 	owner := c.GetString(ContextLoginName)

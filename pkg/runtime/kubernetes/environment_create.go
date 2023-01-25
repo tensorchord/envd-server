@@ -11,6 +11,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/tensorchord/envd-server/api/types"
@@ -153,6 +154,27 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 				// 	Path: fmt.Sprintf("/var/envd/code/%s", req.Name),
 				// },
 			},
+		})
+	}
+
+	if env.Resources.Shm != "" {
+		shm, err := resource.ParseQuantity(env.Resources.Shm)
+		if err != nil {
+            return nil, errors.Wrapf(err, "failed to parse shm resource: %s", env.Resources.Shm)
+		}
+        logrus.Debugf("configure shared memory to %s", env.Resources.Shm)
+		expectedPod.Spec.Volumes = append(expectedPod.Spec.Volumes, v1.Volume{
+			Name: ResourceShm,
+			VolumeSource: v1.VolumeSource{
+				EmptyDir: &v1.EmptyDirVolumeSource{
+					Medium:    "Memory",
+					SizeLimit: &shm,
+				},
+			},
+		})
+		expectedPod.Spec.Containers[0].VolumeMounts = append(expectedPod.Spec.Containers[0].VolumeMounts, v1.VolumeMount{
+			Name:      ResourceShm,
+			MountPath: ResourceShmPath,
 		})
 	}
 

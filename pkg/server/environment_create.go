@@ -19,9 +19,9 @@ import (
 // @Tags        environment
 // @Accept      json
 // @Produce     json
-// @Param       login_name     path     string true "login name" example("alice")
-// @Param       request        body     types.EnvironmentCreateRequest true "query params"
-// @Success     201            {object} types.EnvironmentCreateResponse
+// @Param       login_name path     string                         true "login name" example("alice")
+// @Param       request    body     types.EnvironmentCreateRequest true "query params"
+// @Success     201        {object} types.EnvironmentCreateResponse
 // @Router      /users/{login_name}/environments [post]
 func (s Server) environmentCreate(c *gin.Context) error {
 	owner := c.GetString(ContextLoginName)

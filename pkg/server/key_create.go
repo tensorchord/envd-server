@@ -20,9 +20,9 @@ import (
 // @Tags        key
 // @Accept      json
 // @Produce     json
-// @Param       login_name     path     string true "login name" example("alice")
-// @Param       request        body     types.KeyCreateRequest true "query params"
-// @Success     201            {object} types.KeyCreateResponse
+// @Param       login_name path     string                 true "login name" example("alice")
+// @Param       request    body     types.KeyCreateRequest true "query params"
+// @Success     201        {object} types.KeyCreateResponse
 // @Router      /users/{login_name}/keys [post]
 func (s Server) keyCreate(c *gin.Context) error {
 	owner := c.GetString(ContextLoginName)
