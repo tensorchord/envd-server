@@ -72,6 +72,12 @@ func New() EnvdServerApp {
 			EnvVars: []string{"ENVD_IMAGE_PULL_SECRET_NAME"},
 			Aliases: []string{"ipsn"},
 		},
+		&cli.BoolFlag{
+			Name:    "resource-quota-enabled",
+			Usage:   "enable resource quota",
+			EnvVars: []string{"ENVD_RESOURCE_QUOTA_ENABLED"},
+			Aliases: []string{"rqe"},
+		},
 	}
 	internalApp.Action = runServer
 
@@ -94,15 +100,19 @@ func New() EnvdServerApp {
 }
 
 func runServer(clicontext *cli.Context) error {
-	s, err := server.New(server.Opt{
-		Debug:               clicontext.Bool("debug"),
-		KubeConfig:          clicontext.Path("kubeconfig"),
-		HostKeyPath:         clicontext.Path("hostkey"),
-		DBURL:               clicontext.String("dburl"),
-		NoAuth:              clicontext.Bool("no-auth"),
-		JWTSecret:           clicontext.String("jwt-secret"),
-		ImagePullSecretName: clicontext.String("image-pull-secret-name"),
-	})
+	opt := server.Opt{
+		Debug:                clicontext.Bool("debug"),
+		KubeConfig:           clicontext.Path("kubeconfig"),
+		HostKeyPath:          clicontext.Path("hostkey"),
+		DBURL:                clicontext.String("dburl"),
+		NoAuth:               clicontext.Bool("no-auth"),
+		JWTSecret:            clicontext.String("jwt-secret"),
+		ImagePullSecretName:  clicontext.String("image-pull-secret-name"),
+		ResourceQuotaEnabled: clicontext.Bool("resource-quota-enabled"),
+	}
+
+	logrus.Debug("Starting server with options: ", opt)
+	s, err := server.New(opt)
 	if err != nil {
 		return err
 	}

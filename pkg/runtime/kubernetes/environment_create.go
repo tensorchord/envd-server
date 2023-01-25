@@ -32,7 +32,7 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 		consts.PodLabelEnvironmentName: env.Name,
 	}
 
-	logrus.WithFields(logrus.Fields{
+	p.logger.WithFields(logrus.Fields{
 		"login-name":   owner,
 		"image_labels": meta.Labels,
 		"environment":  env,
@@ -185,6 +185,22 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 			},
 		}
 	}
+	// Set the resource limits if resource quota is enabled.
+	if p.resourceQuotaEnabled {
+		if expectedPod.Spec.Containers[0].Resources.Limits == nil ||
+			expectedPod.Spec.Containers[0].Resources.Limits.Cpu().IsZero() {
+			p.logger.WithField("pod", expectedPod.Name).WithField("namespace", p.namespace).
+				Debug("resource quota is enabled, set the resource limits")
+			expectedPod.Spec.Containers[0].Resources.Limits[v1.ResourceCPU] =
+				resource.MustParse("1")
+			expectedPod.Spec.Containers[0].Resources.Limits[v1.ResourceMemory] =
+				resource.MustParse("2Gi")
+			expectedPod.Spec.Containers[0].Resources.Requests[v1.ResourceCPU] =
+				resource.MustParse("1")
+			expectedPod.Spec.Containers[0].Resources.Requests[v1.ResourceMemory] =
+				resource.MustParse("2Gi")
+		}
+	}
 
 	created, err := p.client.CoreV1().Pods(
 		p.namespace).Create(ctx, &expectedPod, metav1.CreateOptions{})
@@ -209,6 +225,10 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 				},
 			},
 		},
+	}
+	if or := metav1.NewControllerRef(created,
+		v1.SchemeGroupVersion.WithKind("pods")); or != nil {
+		expectedService.OwnerReferences = append(expectedService.OwnerReferences, *or)
 	}
 	_, err = p.client.CoreV1().
 		Services(p.namespace).Create(ctx, &expectedService, metav1.CreateOptions{})

@@ -31,7 +31,7 @@ func NewServer(objects ...runtime.Object) (*server.Server, error) {
 	s := &server.Server{
 		Router:      router,
 		AdminRouter: admin,
-		Runtime:     runtimek8s.NewProvisioner(cli, "default", ""),
+		Runtime:     runtimek8s.NewProvisioner(cli, "default", "", false),
 		Auth:        false,
 	}
 	logrus.Debug(cli.CoreV1().Pods("default").List(context.Background(), metav1.ListOptions{}))

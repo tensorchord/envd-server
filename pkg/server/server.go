@@ -52,6 +52,7 @@ type Opt struct {
 	JWTSecret            string
 	JWTExpirationTimeout time.Duration
 	ImagePullSecretName  string
+	ResourceQuotaEnabled bool
 }
 
 func New(opt Opt) (*Server, error) {
@@ -95,10 +96,11 @@ func New(opt Opt) (*Server, error) {
 		Router:             router,
 		AdminRouter:        admin,
 		serverFingerPrints: make([]string, 0),
-		Runtime:            runtimek8s.NewProvisioner(cli, "default", opt.ImagePullSecretName),
-		UserService:        userService,
-		ImageService:       imageService,
-		Auth:               !opt.NoAuth,
+		Runtime: runtimek8s.NewProvisioner(cli, "default",
+			opt.ImagePullSecretName, opt.ResourceQuotaEnabled),
+		UserService:  userService,
+		ImageService: imageService,
+		Auth:         !opt.NoAuth,
 	}
 
 	// Load host key.
