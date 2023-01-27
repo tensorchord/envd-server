@@ -28,16 +28,16 @@ import (
 func (s Server) OnConfig(c *gin.Context) {
 	var req config.Request
 	if err := c.BindJSON(&req); err != nil {
-        logrus.Debugf("gin.bind err: %w", err)
-        c.Status(http.StatusBadRequest)
-        return
+		logrus.Debugf("gin.bind err: %v", err)
+		c.Status(http.StatusBadRequest)
+		return
 	}
 
 	_, name, err := sshname.GetInfo(req.Username)
 	if err != nil {
-        logrus.Debugf("sshname.get err: %w", err)
-        c.Status(http.StatusBadRequest)
-        return
+		logrus.Debugf("sshname.get err: %v", err)
+		c.Status(http.StatusBadRequest)
+		return
 	}
 
 	cfg := config.AppConfig{
@@ -54,7 +54,6 @@ func (s Server) OnConfig(c *gin.Context) {
 		Config: cfg,
 	}
 	c.JSON(http.StatusOK, res)
-	return
 }
 
 // @Summary     authenticate the public key.
@@ -68,34 +67,34 @@ func (s Server) OnConfig(c *gin.Context) {
 func (s Server) OnPubKey(c *gin.Context) {
 	var req auth.PublicKeyAuthRequest
 	if err := c.BindJSON(&req); err != nil {
-        logrus.Debugf("bind.json err: %w", err)
-        c.JSON(http.StatusBadRequest, auth.ResponseBody{Success: false})
-        return
+		logrus.Debugf("bind.json err: %v", err)
+		c.JSON(http.StatusBadRequest, auth.ResponseBody{Success: false})
+		return
 	}
 
 	owner, _, err := sshname.GetInfo(req.Username)
 	if err != nil {
-        logrus.Debugf("sshname.get-info err: %w", err)
-        c.JSON(http.StatusBadRequest, auth.ResponseBody{Success: false})
-        return
+		logrus.Debugf("sshname.get-info err: %v", err)
+		c.JSON(http.StatusBadRequest, auth.ResponseBody{Success: false})
+		return
 	}
 
 	skeys, err := s.UserService.ListPubKeys(c.Request.Context(), owner)
 	if err != nil {
-        logrus.Debugf("db.get-pubkey err: %w", err)
-        c.JSON(http.StatusBadRequest, auth.ResponseBody{Success: false})
-        return
+		logrus.Debugf("db.get-pubkey err: %v", err)
+		c.JSON(http.StatusBadRequest, auth.ResponseBody{Success: false})
+		return
 	}
 	if len(skeys) == 0 {
-        logrus.Debugf("db.get-pubkey err: %s", err)
-        c.JSON(http.StatusBadRequest, auth.ResponseBody{Success: false})
-        return
+		logrus.Debugf("db.get-pubkey err: %v", err)
+		c.JSON(http.StatusBadRequest, auth.ResponseBody{Success: false})
+		return
 	}
 	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(req.PublicKey.PublicKey))
 	if err != nil {
-        logrus.Debugf("ssh.parse err: %w", err)
-        c.JSON(http.StatusBadRequest, auth.ResponseBody{Success: false})
-        return
+		logrus.Debugf("ssh.parse err: %v", err)
+		c.JSON(http.StatusBadRequest, auth.ResponseBody{Success: false})
+		return
 	}
 
 	for _, skey := range skeys {
@@ -124,5 +123,4 @@ func (s Server) OnPubKey(c *gin.Context) {
 		Success: false,
 	}
 	c.JSON(http.StatusOK, res)
-	return
 }
