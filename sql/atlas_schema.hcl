@@ -43,9 +43,9 @@ table "image_info" {
   primary_key {
     columns = [column.id]
   }
-  index "unique_digest" {
+  index "unique_login_name_and_digest" {
     unique  = true
-    columns = [column.digest]
+    columns = [column.digest, column.login_name]
   }
 }
 table "users" {
