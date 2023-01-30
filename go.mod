@@ -3,7 +3,7 @@ module github.com/tensorchord/envd-server
 go 1.18
 
 require (
-	github.com/cockroachdb/errors v1.9.0
+	github.com/cockroachdb/errors v1.9.1
 	github.com/containers/image/v5 v5.23.1
 	github.com/docker/docker v20.10.18+incompatible
 	github.com/docker/go-connections v0.4.0
