@@ -1,6 +1,6 @@
 # envd-server
 
-envd-server is the backend server for envd, which talks to Kubernetes and manage environments for users.
+envd-server is the backend server for `envd`, which talks to Kubernetes and manages environments for users.
 
 ## Install
 
@@ -30,7 +30,7 @@ envd create --image gaocegege/test-envd
 
 ## Build
 
-Enter into dashboard directory to develop just like normal vue application.
+Enter into [`./dashboard`](./dashboard) directory to develop just like normal vue application.
 
 If you want to build envd-server with dashboard
 
@@ -42,7 +42,7 @@ popd
  DASHBOARD_BUILD=release make build-local
 ```
 
-When envd-server is running, you can visit https:/localhost:8080/dashboard to see it 
+When envd-server is running, you can visit [http://localhost:8080/dashboard](http://localhost:8080/dashboard) to see it.
 
 ## Develop locally
 
