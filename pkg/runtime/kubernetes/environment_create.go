@@ -68,33 +68,166 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 	authKeyPath := "/var/envd/authkey"
 	var defaultPermMode int32 = 0666
 
-	configByte, err := syncthing.GetConfigByte(syncthing.InitConfig())
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to generate syncthing initial config")
-	}
-
-	configMapName := "st-config"
-	configMapPermMode := int32(0777)
-	expectedConfigMap := v1.ConfigMap{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      configMapName,
-			Namespace: p.namespace,
-			Labels:    labels,
-		},
-		Data: map[string]string{
-			"config.xml": string(configByte),
-		},
-	}
-
-	_, err = p.client.CoreV1().ConfigMaps(p.namespace).Create(ctx, &expectedConfigMap, metav1.CreateOptions{})
-	if err != nil {
-		logrus.Infof("failed to create configmap: %v", err)
-		return nil, errors.Wrap(err, "failed to create configmap")
-	}
-
 	codeDirectoryVolumeMount := v1.VolumeMount{
 		Name:      "code-dir",
 		MountPath: fmt.Sprintf("/home/envd/%s", projectName),
+	}
+
+	containers := []v1.Container{
+		{
+			Name:  "envd",
+			Image: env.Spec.Image,
+			Ports: []v1.ContainerPort{
+				{
+					Name:          "ssh",
+					ContainerPort: 2222,
+				},
+			},
+			Env: []v1.EnvVar{
+				{
+					Name:  "ENVD_HOST_KEY",
+					Value: hostKeyPath,
+				},
+				{
+					Name:  "ENVD_AUTHORIZED_KEYS_PATH",
+					Value: authKeyPath,
+				},
+				{
+					Name:  "ENVD_WORKDIR",
+					Value: fmt.Sprintf("/home/envd/%s", projectName),
+				},
+			},
+			VolumeMounts: []v1.VolumeMount{
+				{
+					Name:      "secret",
+					ReadOnly:  true,
+					MountPath: hostKeyPath,
+					SubPath:   "hostkey",
+				},
+				{
+					Name:      "secret",
+					ReadOnly:  true,
+					MountPath: authKeyPath,
+					SubPath:   "publickey",
+				},
+				codeDirectoryVolumeMount,
+			},
+			Resources: v1.ResourceRequirements{
+				Requests: resRequest,
+				Limits:   resRequest,
+			},
+		},
+	}
+
+	volumes := []v1.Volume{
+		{
+			Name: "secret",
+			VolumeSource: v1.VolumeSource{
+				Secret: &v1.SecretVolumeSource{
+					SecretName:  "envd-server",
+					DefaultMode: &defaultPermMode,
+				},
+			},
+		},
+		{
+			Name: "code-dir",
+			VolumeSource: v1.VolumeSource{
+				EmptyDir: &v1.EmptyDirVolumeSource{},
+				// HostPath: &v1.HostPathVolumeSource{
+				// 	Path: fmt.Sprintf("/var/envd/code/%s", req.Name),
+				// },
+			},
+		},
+	}
+
+	if env.Spec.Sync {
+
+		configByte, err := syncthing.GetConfigByte(syncthing.InitConfig())
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to generate syncthing initial config")
+		}
+
+		configMapName := "st-config"
+		configMapPermMode := int32(0777)
+		expectedConfigMap := v1.ConfigMap{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      configMapName,
+				Namespace: p.namespace,
+				Labels:    labels,
+			},
+			Data: map[string]string{
+				"config.xml": string(configByte),
+			},
+		}
+
+		// TODO: check if configmap exists
+		_, err = p.client.CoreV1().ConfigMaps(p.namespace).Create(ctx, &expectedConfigMap, metav1.CreateOptions{})
+		if err != nil {
+			logrus.Infof("failed to create configmap: %v", err)
+			return nil, errors.Wrap(err, "failed to create configmap")
+		}
+
+		syncthingContainer := v1.Container{
+			Name:  "syncthing",
+			Image: "linuxserver/syncthing:1.22.2",
+			Ports: []v1.ContainerPort{
+				{
+					Name:          "syncthing",
+					ContainerPort: 8384,
+				},
+				{
+					Name:          "st-listen",
+					Protocol:      v1.ProtocolTCP,
+					ContainerPort: 22000,
+				},
+				{
+					Name:          "st-discover",
+					Protocol:      v1.ProtocolUDP,
+					ContainerPort: 22000,
+				},
+			},
+			Lifecycle: &v1.Lifecycle{
+				PostStart: &v1.LifecycleHandler{
+					Exec: &v1.ExecAction{
+						// Volume mounts based on configmaps are readonly
+						Command: []string{
+							"sh",
+							"-c",
+							"cp /tmp/config.xml /config/config.xml",
+						},
+					},
+				},
+			},
+			VolumeMounts: []v1.VolumeMount{
+				codeDirectoryVolumeMount,
+				{
+					Name:      "st-volume",
+					MountPath: "/tmp/config.xml",
+					SubPath:   "config.xml",
+				},
+			},
+		}
+
+		syncthingVolume := v1.Volume{
+			Name: "st-volume",
+			VolumeSource: v1.VolumeSource{
+				ConfigMap: &v1.ConfigMapVolumeSource{
+					LocalObjectReference: v1.LocalObjectReference{
+						Name: configMapName,
+					},
+					DefaultMode: &configMapPermMode,
+					Items: []v1.KeyToPath{
+						{
+							Key:  "config.xml",
+							Path: "config.xml",
+						},
+					},
+				},
+			},
+		}
+
+		containers = append(containers, syncthingContainer)
+		volumes = append(volumes, syncthingVolume)
 	}
 
 	expectedPod := v1.Pod{
@@ -105,129 +238,8 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 			Annotations: annotations,
 		},
 		Spec: v1.PodSpec{
-			Containers: []v1.Container{
-				{
-					Name:  "envd",
-					Image: env.Spec.Image,
-					Ports: []v1.ContainerPort{
-						{
-							Name:          "ssh",
-							ContainerPort: 2222,
-						},
-					},
-					Env: []v1.EnvVar{
-						{
-							Name:  "ENVD_HOST_KEY",
-							Value: hostKeyPath,
-						},
-						{
-							Name:  "ENVD_AUTHORIZED_KEYS_PATH",
-							Value: authKeyPath,
-						},
-						{
-							Name:  "ENVD_WORKDIR",
-							Value: fmt.Sprintf("/home/envd/%s", projectName),
-						},
-					},
-					VolumeMounts: []v1.VolumeMount{
-						{
-							Name:      "secret",
-							ReadOnly:  true,
-							MountPath: hostKeyPath,
-							SubPath:   "hostkey",
-						},
-						{
-							Name:      "secret",
-							ReadOnly:  true,
-							MountPath: authKeyPath,
-							SubPath:   "publickey",
-						},
-						codeDirectoryVolumeMount,
-					},
-					Resources: v1.ResourceRequirements{
-						Requests: resRequest,
-						Limits:   resRequest,
-					},
-				},
-				{
-					Name:  "syncthing",
-					Image: "linuxserver/syncthing:1.22.2",
-					Ports: []v1.ContainerPort{
-						{
-							Name:          "syncthing",
-							ContainerPort: 8384,
-						},
-						{
-							Name:          "st-listen",
-							Protocol:      v1.ProtocolTCP,
-							ContainerPort: 22000,
-						},
-						{
-							Name:          "st-discover",
-							Protocol:      v1.ProtocolUDP,
-							ContainerPort: 22000,
-						},
-					},
-					Lifecycle: &v1.Lifecycle{
-						PostStart: &v1.LifecycleHandler{
-							Exec: &v1.ExecAction{
-								// Volume mounts based on configmaps are readonly
-								Command: []string{
-									"sh",
-									"-c",
-									"cp /tmp/config.xml /config/config.xml",
-								},
-							},
-						},
-					},
-					VolumeMounts: []v1.VolumeMount{
-						codeDirectoryVolumeMount,
-						{
-							Name:      "st-volume",
-							MountPath: "/tmp/config.xml",
-							SubPath:   "config.xml",
-						},
-					},
-					// TODO: define resource limit
-				},
-			},
-			Volumes: []v1.Volume{
-				{
-					Name: "secret",
-					VolumeSource: v1.VolumeSource{
-						Secret: &v1.SecretVolumeSource{
-							SecretName:  "envd-server",
-							DefaultMode: &defaultPermMode,
-						},
-					},
-				},
-				{
-					Name: "code-dir",
-					VolumeSource: v1.VolumeSource{
-						EmptyDir: &v1.EmptyDirVolumeSource{},
-						// HostPath: &v1.HostPathVolumeSource{
-						// 	Path: fmt.Sprintf("/var/envd/code/%s", req.Name),
-						// },
-					},
-				},
-				{
-					Name: "st-volume",
-					VolumeSource: v1.VolumeSource{
-						ConfigMap: &v1.ConfigMapVolumeSource{
-							LocalObjectReference: v1.LocalObjectReference{
-								Name: configMapName,
-							},
-							DefaultMode: &configMapPermMode,
-							Items: []v1.KeyToPath{
-								{
-									Key:  "config.xml",
-									Path: "config.xml",
-								},
-							},
-						},
-					},
-				},
-			},
+			Containers: containers,
+			Volumes:    volumes,
 		},
 	}
 
@@ -300,6 +312,36 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 		return nil, errors.Wrap(err, "failed to create pod")
 	}
 
+	servicePorts := []v1.ServicePort{
+		{
+			Name: "ssh",
+			Port: 2222,
+		},
+		{
+			Name:       "syncthing",
+			Port:       8384,
+			TargetPort: intstr.FromInt(8384),
+		},
+	}
+
+	if env.Spec.Sync {
+		syncthingServicePorts := []v1.ServicePort{
+			{Name: "st-listen",
+				Port:       22000,
+				TargetPort: intstr.FromInt(22000),
+				Protocol:   v1.ProtocolTCP,
+			},
+			{
+				Name:       "st-discover",
+				Port:       22000,
+				TargetPort: intstr.FromInt(22000),
+				Protocol:   v1.ProtocolUDP,
+			},
+		}
+
+		servicePorts = append(servicePorts, syncthingServicePorts...)
+	}
+
 	expectedService := v1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      env.Name,
@@ -309,31 +351,10 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 		Spec: v1.ServiceSpec{
 			Selector: labels,
 			Type:     v1.ServiceTypeClusterIP,
-			Ports: []v1.ServicePort{
-				{
-					Name: "ssh",
-					Port: 2222,
-				},
-				{
-					Name:       "syncthing",
-					Port:       8384,
-					TargetPort: intstr.FromInt(8384),
-				},
-				{
-					Name:       "st-listen",
-					Port:       22000,
-					TargetPort: intstr.FromInt(22000),
-					Protocol:   v1.ProtocolTCP,
-				},
-				{
-					Name:       "st-discover",
-					Port:       22000,
-					TargetPort: intstr.FromInt(22000),
-					Protocol:   v1.ProtocolUDP,
-				},
-			},
+			Ports:    servicePorts,
 		},
 	}
+
 	if or := metav1.NewControllerRef(created,
 		v1.SchemeGroupVersion.WithKind("pods")); or != nil {
 		expectedService.OwnerReferences = append(expectedService.OwnerReferences, *or)
