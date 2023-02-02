@@ -6,10 +6,8 @@ package server
 
 import (
 	"crypto/subtle"
-	"encoding/json"
 	"net/http"
 
-	"github.com/cockroachdb/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"go.containerssh.io/libcontainerssh/auth"
@@ -20,22 +18,26 @@ import (
 )
 
 // @Summary     Update the config of containerssh.
-// @Description It is called by the containerssh webhook. and is not expected to be used externally.
+// @Description It is called by the containerssh webhook. It is not expected to be used externally.
 // @Tags        ssh-internal
 // @Accept      json
 // @Produce     json
 // @Param       request body config.Request true "query params"
 // @Success     200
 // @Router      /config [post]
-func (s Server) OnConfig(c *gin.Context) error {
+func (s Server) OnConfig(c *gin.Context) {
 	var req config.Request
 	if err := c.BindJSON(&req); err != nil {
-		return NewError(http.StatusInternalServerError, err, "gin.bind-json")
+		logrus.Debugf("gin.bind err: %v", err)
+		c.Status(http.StatusBadRequest)
+		return
 	}
 
 	_, name, err := sshname.GetInfo(req.Username)
 	if err != nil {
-		return NewError(http.StatusInternalServerError, err, "sshname.get-info")
+		logrus.Debugf("sshname.get err: %v", err)
+		c.Status(http.StatusBadRequest)
+		return
 	}
 
 	cfg := config.AppConfig{
@@ -52,38 +54,47 @@ func (s Server) OnConfig(c *gin.Context) error {
 		Config: cfg,
 	}
 	c.JSON(http.StatusOK, res)
-	return nil
 }
 
 // @Summary     authenticate the public key.
-// @Description It is called by the containerssh webhook. and is not expected to be used externally.
+// @Description It is called by the containerssh webhook. It is not expected to be used externally.
 // @Tags        ssh-internal
 // @Accept      json
 // @Produce     json
 // @Param       request body     auth.PublicKeyAuthRequest true "query params"
 // @Success     200     {object} auth.ResponseBody
 // @Router      /pubkey [post]
-func (s Server) OnPubKey(c *gin.Context) error {
+func (s Server) OnPubKey(c *gin.Context) {
 	var req auth.PublicKeyAuthRequest
 	if err := c.BindJSON(&req); err != nil {
-		return NewError(http.StatusInternalServerError, err, "gin.bind-json")
+		logrus.Debugf("bind.json err: %v", err)
+		c.JSON(http.StatusBadRequest, auth.ResponseBody{Success: false})
+		return
 	}
 
 	owner, _, err := sshname.GetInfo(req.Username)
 	if err != nil {
-		return NewError(http.StatusInternalServerError, err, "sshname.get-info")
+		logrus.Debugf("sshname.get-info err: %v", err)
+		c.JSON(http.StatusBadRequest, auth.ResponseBody{Success: false})
+		return
 	}
 
 	skeys, err := s.UserService.ListPubKeys(c.Request.Context(), owner)
 	if err != nil {
-		return NewError(http.StatusInternalServerError, err, "db.get-pubkey-from-user")
+		logrus.Debugf("db.get-pubkey err: %v", err)
+		c.JSON(http.StatusBadRequest, auth.ResponseBody{Success: false})
+		return
 	}
 	if len(skeys) == 0 {
-		return NewError(http.StatusInternalServerError, errors.New("key is not found"), "db.get-pubkey-from-user")
+		logrus.Debugf("db.get-pubkey err: %v", err)
+		c.JSON(http.StatusBadRequest, auth.ResponseBody{Success: false})
+		return
 	}
 	key, _, _, _, err := ssh.ParseAuthorizedKey([]byte(req.PublicKey.PublicKey))
 	if err != nil {
-		return NewError(http.StatusInternalServerError, err, "ssh.parse-auth-key")
+		logrus.Debugf("ssh.parse err: %v", err)
+		c.JSON(http.StatusBadRequest, auth.ResponseBody{Success: false})
+		return
 	}
 
 	for _, skey := range skeys {
@@ -98,7 +109,7 @@ func (s Server) OnPubKey(c *gin.Context) error {
 				Success: true,
 			}
 			c.JSON(http.StatusOK, res)
-			return nil
+			return
 		} else {
 			logger.Debug("trying next ssh key")
 		}
@@ -112,13 +123,4 @@ func (s Server) OnPubKey(c *gin.Context) error {
 		Success: false,
 	}
 	c.JSON(http.StatusOK, res)
-	return nil
-}
-
-func PrettyStruct(data interface{}) (string, error) {
-	val, err := json.MarshalIndent(data, "", "    ")
-	if err != nil {
-		return "", err
-	}
-	return string(val), nil
 }

@@ -44,8 +44,8 @@ func handleErr(err error) {
 // @license.url  https://mozilla.org/MPL/2.0/
 
 // @securitydefinitions.apikey Authentication
-// @in   header
-// @name JWT
+// @in                         header
+// @name                       JWT
 
 // @host     localhost:8080
 // @BasePath /api/v1

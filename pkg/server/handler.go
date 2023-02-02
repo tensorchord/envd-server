@@ -27,8 +27,8 @@ func (s *Server) BindHandlers() {
 	v1.GET("/", WrapHandler(s.handlePing))
 	v1.POST("/register", WrapHandler(s.register))
 	v1.POST("/login", WrapHandler(s.login))
-	v1.POST("/config", WrapHandler(s.OnConfig))
-	v1.POST("/pubkey", WrapHandler(s.OnPubKey))
+	v1.POST("/config", s.OnConfig)
+	v1.POST("/pubkey", s.OnPubKey)
 
 	authorized := engine.Group("/api/v1/users")
 	if s.Auth {

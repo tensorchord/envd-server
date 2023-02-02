@@ -20,8 +20,8 @@ import (
 // @Tags        environment
 // @Accept      json
 // @Produce     json
-// @Param       login_name     path     string true "login name" example("alice")
-// @Success     200            {object} types.EnvironmentListResponse
+// @Param       login_name path     string true "login name" example("alice")
+// @Success     200        {object} types.EnvironmentListResponse
 // @Router      /users/{login_name}/environments [get]
 func (s Server) environmentList(c *gin.Context) error {
 	owner := c.GetString(ContextLoginName)

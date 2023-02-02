@@ -50,7 +50,7 @@ const docTemplate = `{
         },
         "/config": {
             "post": {
-                "description": "It is called by the containerssh webhook. and is not expected to be used externally.",
+                "description": "It is called by the containerssh webhook. It is not expected to be used externally.",
                 "consumes": [
                     "application/json"
                 ],
@@ -115,7 +115,7 @@ const docTemplate = `{
         },
         "/pubkey": {
             "post": {
-                "description": "It is called by the containerssh webhook. and is not expected to be used externally.",
+                "description": "It is called by the containerssh webhook. It is not expected to be used externally.",
                 "consumes": [
                     "application/json"
                 ],
@@ -1034,6 +1034,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "memory": {
+                    "type": "string"
+                },
+                "shm": {
                     "type": "string"
                 }
             }

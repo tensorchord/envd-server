@@ -11,6 +11,7 @@ import (
 	"github.com/cockroachdb/errors"
 	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"k8s.io/apimachinery/pkg/util/intstr"
@@ -34,7 +35,7 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 		consts.PodLabelEnvironmentName: env.Name,
 	}
 
-	logrus.WithFields(logrus.Fields{
+	p.logger.WithFields(logrus.Fields{
 		"login-name":   owner,
 		"image_labels": meta.Labels,
 		"environment":  env,
@@ -247,11 +248,48 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 
 	}
 
+	if env.Resources.Shm != "" {
+		shm, err := resource.ParseQuantity(env.Resources.Shm)
+		if err != nil {
+			return nil, errors.Wrapf(err, "failed to parse shm resource: %s", env.Resources.Shm)
+		}
+		logrus.Debugf("configure shared memory to %s", env.Resources.Shm)
+		expectedPod.Spec.Volumes = append(expectedPod.Spec.Volumes, v1.Volume{
+			Name: ResourceShm,
+			VolumeSource: v1.VolumeSource{
+				EmptyDir: &v1.EmptyDirVolumeSource{
+					Medium:    "Memory",
+					SizeLimit: &shm,
+				},
+			},
+		})
+		expectedPod.Spec.Containers[0].VolumeMounts = append(expectedPod.Spec.Containers[0].VolumeMounts, v1.VolumeMount{
+			Name:      ResourceShm,
+			MountPath: ResourceShmPath,
+		})
+	}
+
 	if p.imagePullSecretName != nil {
 		expectedPod.Spec.ImagePullSecrets = []v1.LocalObjectReference{
 			{
 				Name: *p.imagePullSecretName,
 			},
+		}
+	}
+	// Set the resource limits if resource quota is enabled.
+	if p.resourceQuotaEnabled {
+		if expectedPod.Spec.Containers[0].Resources.Limits == nil ||
+			expectedPod.Spec.Containers[0].Resources.Limits.Cpu().IsZero() {
+			p.logger.WithField("pod", expectedPod.Name).WithField("namespace", p.namespace).
+				Debug("resource quota is enabled, set the resource limits")
+			expectedPod.Spec.Containers[0].Resources.Limits[v1.ResourceCPU] =
+				resource.MustParse("1")
+			expectedPod.Spec.Containers[0].Resources.Limits[v1.ResourceMemory] =
+				resource.MustParse("2Gi")
+			expectedPod.Spec.Containers[0].Resources.Requests[v1.ResourceCPU] =
+				resource.MustParse("1")
+			expectedPod.Spec.Containers[0].Resources.Requests[v1.ResourceMemory] =
+				resource.MustParse("2Gi")
 		}
 	}
 
@@ -295,6 +333,10 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 				},
 			},
 		},
+	}
+	if or := metav1.NewControllerRef(created,
+		v1.SchemeGroupVersion.WithKind("pods")); or != nil {
+		expectedService.OwnerReferences = append(expectedService.OwnerReferences, *or)
 	}
 	_, err = p.client.CoreV1().
 		Services(p.namespace).Create(ctx, &expectedService, metav1.CreateOptions{})

@@ -89,6 +89,9 @@ spec:
             - --image-pull-secret-name
             - {{ .Values.server.imagePullSecret }}
             {{- end }}
+            {{- if .Values.server.resourcesEnabled }}
+            - --resource-quota-enabled
+            {{- end }}
           ports:
             - name: envdserver
               containerPort: 8080
