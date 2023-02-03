@@ -13,18 +13,23 @@ import (
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
 	"k8s.io/apimachinery/pkg/util/intstr"
 
-	"github.com/tensorchord/envd-server/api/types"
 	servertypes "github.com/tensorchord/envd-server/api/types"
 	"github.com/tensorchord/envd-server/pkg/consts"
 	"github.com/tensorchord/envd-server/pkg/syncthing"
 )
 
+const (
+	SSH_PORT           = 2222
+	SYNCTHING_API_PORT = 8384
+	SYNCTHING_PORT     = 22000
+	ST_CONFIGMAP_NAME  = "syncthing-config"
+)
+
 func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 	owner string, env servertypes.Environment,
-	meta types.ImageMeta) (*servertypes.Environment, error) {
+	meta servertypes.ImageMeta) (*servertypes.Environment, error) {
 	resRequest, err := extractResourceRequest(env)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to extract resource request")
@@ -46,7 +51,7 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 	}
 
 	repoLabel, ok := meta.Labels[consts.ImageLabelRepo]
-	repoInfo := &types.EnvironmentRepoInfo{}
+	repoInfo := &servertypes.EnvironmentRepoInfo{}
 	if ok {
 		repoInfo, err = repoInfoFromLabel(repoLabel)
 		if err != nil {
@@ -80,7 +85,7 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 			Ports: []v1.ContainerPort{
 				{
 					Name:          "ssh",
-					ContainerPort: 2222,
+					ContainerPort: SSH_PORT,
 				},
 			},
 			Env: []v1.EnvVar{
@@ -133,9 +138,6 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 			Name: "code-dir",
 			VolumeSource: v1.VolumeSource{
 				EmptyDir: &v1.EmptyDirVolumeSource{},
-				// HostPath: &v1.HostPathVolumeSource{
-				// 	Path: fmt.Sprintf("/var/envd/code/%s", req.Name),
-				// },
 			},
 		},
 	}
@@ -147,11 +149,10 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 			return nil, errors.Wrap(err, "failed to generate syncthing initial config")
 		}
 
-		configMapName := "st-config"
 		configMapPermMode := int32(0777)
 		expectedConfigMap := v1.ConfigMap{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      configMapName,
+				Name:      ST_CONFIGMAP_NAME,
 				Namespace: p.namespace,
 				Labels:    labels,
 			},
@@ -173,17 +174,17 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 			Ports: []v1.ContainerPort{
 				{
 					Name:          "syncthing",
-					ContainerPort: 8384,
+					ContainerPort: SYNCTHING_API_PORT,
 				},
 				{
 					Name:          "st-listen",
 					Protocol:      v1.ProtocolTCP,
-					ContainerPort: 22000,
+					ContainerPort: SYNCTHING_PORT,
 				},
 				{
 					Name:          "st-discover",
 					Protocol:      v1.ProtocolUDP,
-					ContainerPort: 22000,
+					ContainerPort: SYNCTHING_PORT,
 				},
 			},
 			Lifecycle: &v1.Lifecycle{
@@ -213,7 +214,7 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 			VolumeSource: v1.VolumeSource{
 				ConfigMap: &v1.ConfigMapVolumeSource{
 					LocalObjectReference: v1.LocalObjectReference{
-						Name: configMapName,
+						Name: ST_CONFIGMAP_NAME,
 					},
 					DefaultMode: &configMapPermMode,
 					Items: []v1.KeyToPath{

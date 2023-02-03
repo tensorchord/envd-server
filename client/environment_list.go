@@ -10,6 +10,7 @@ import (
 	"fmt"
 
 	"github.com/cockroachdb/errors"
+
 	"github.com/tensorchord/envd-server/api/types"
 )
 
