@@ -879,6 +879,9 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "sync": {
+                    "type": "boolean"
                 }
             }
         },
