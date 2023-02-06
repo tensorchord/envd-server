@@ -135,7 +135,7 @@ jobs:
         run: |
           echo "::set-output name=ver::${VERSION:1}"
       - name: Build and push
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           push: true
           file: sql/Dockerfile
