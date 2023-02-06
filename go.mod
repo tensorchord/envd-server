@@ -13,7 +13,7 @@ require (
 	github.com/jackc/pgconn v1.13.0
 	github.com/jackc/pgtype v1.13.0
 	github.com/jackc/pgx/v4 v4.17.2
-	github.com/onsi/ginkgo/v2 v2.7.1
+	github.com/onsi/ginkgo/v2 v2.8.0
 	github.com/onsi/gomega v1.25.0
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.0
