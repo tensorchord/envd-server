@@ -78,9 +78,8 @@ func (u *generalService) Login(ctx context.Context,
 		if err != nil {
 			if errors.Is(err, pgx.ErrNoRows) {
 				return false, "", nil
-			} else {
-				return false, "", err
 			}
+			return false, "", err
 		}
 
 		if err := CompareHashAndPassword(

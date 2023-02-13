@@ -15,13 +15,12 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"github.com/tensorchord/envd-server/api/types"
-	servertypes "github.com/tensorchord/envd-server/api/types"
 	"github.com/tensorchord/envd-server/pkg/consts"
 )
 
 func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
-	owner string, env servertypes.Environment,
-	meta types.ImageMeta) (*servertypes.Environment, error) {
+	owner string, env types.Environment,
+	meta types.ImageMeta) (*types.Environment, error) {
 	resRequest, err := extractResourceRequest(env)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to extract resource request")

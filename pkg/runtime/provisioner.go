@@ -8,12 +8,11 @@ import (
 	"context"
 
 	"github.com/tensorchord/envd-server/api/types"
-	servertypes "github.com/tensorchord/envd-server/api/types"
 )
 
 type Provisioner interface {
 	EnvironmentCreate(ctx context.Context,
-		owner string, env servertypes.Environment,
+		owner string, env types.Environment,
 		meta types.ImageMeta) (*types.Environment, error)
 	EnvironmentGet(ctx context.Context,
 		owner, envName string) (*types.Environment, error)
