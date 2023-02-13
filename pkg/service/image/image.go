@@ -56,9 +56,8 @@ func (g generalService) CreateImageIfNotExist(ctx context.Context,
 				return nil, errors.Wrap(err, "g.createImage")
 			}
 			return &originalMeta, nil
-		} else {
-			return nil, errors.Wrap(err, "g.GetImage")
 		}
+		return nil, errors.Wrap(err, "g.GetImage")
 	}
 	return meta, nil
 }
@@ -108,9 +107,8 @@ func (g generalService) ListImages(ctx context.Context,
 		if errors.Is(err, pgx.ErrNoRows) {
 			// No image found
 			return nil, nil
-		} else {
-			return nil, errors.Wrap(err, "failed to list image by owner")
 		}
+		return nil, errors.Wrap(err, "failed to list image by owner")
 	}
 	res := []types.ImageMeta{}
 	for _, info := range images {
@@ -139,9 +137,8 @@ func (g generalService) GetImageByName(ctx context.Context,
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errdefs.NotFound(err)
-		} else {
-			return nil, errors.Wrap(err, "g.querier.GetImageInfoByName")
 		}
+		return nil, errors.Wrap(err, "g.querier.GetImageInfoByName")
 	}
 	meta, err := daoToImageMeta(imageInfo)
 	if err != nil {
@@ -158,9 +155,8 @@ func (g generalService) GetImageByDigest(ctx context.Context,
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, errdefs.NotFound(err)
-		} else {
-			return nil, errors.Wrap(err, "g.querier.GetImageByDigest")
 		}
+		return nil, errors.Wrap(err, "g.querier.GetImageByDigest")
 	}
 	meta, err := daoToImageMeta(imageInfo)
 	if err != nil {

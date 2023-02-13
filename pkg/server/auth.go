@@ -27,8 +27,7 @@ func (s Server) register(c *gin.Context) error {
 		return NewError(http.StatusInternalServerError, err, "gin.bind-json")
 	}
 
-	token, err := s.UserService.Register(c.Request.Context(),
-		req.LoginName, req.Password)
+	token, err := s.UserService.Register(c.Request.Context(), req.LoginName, req.Password)
 	if err != nil {
 		if errdefs.IsConflict(err) {
 			return NewError(http.StatusConflict, err, "user.register")
