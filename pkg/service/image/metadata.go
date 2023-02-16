@@ -18,7 +18,7 @@ import (
 	"github.com/tensorchord/envd-server/pkg/consts"
 )
 
-func (s generalService) fetchMetadata(ctx context.Context, imageName string) (
+func (g generalService) fetchMetadata(ctx context.Context, imageName string) (
 	meta types.ImageMeta, err error) {
 	ref, err := docker.ParseReference(fmt.Sprintf("//%s", imageName))
 	if err != nil {
@@ -44,7 +44,7 @@ func (s generalService) fetchMetadata(ctx context.Context, imageName string) (
 	}
 
 	// correct the image size
-	var size int64 = 0
+	var size int64
 	for _, layer := range inspect.LayersData {
 		size += layer.Size
 	}
