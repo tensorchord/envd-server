@@ -21,10 +21,10 @@ import (
 )
 
 const (
-	SSH_PORT           = 2222
-	SYNCTHING_API_PORT = 8384
-	SYNCTHING_PORT     = 22000
-	ST_CONFIGMAP_NAME  = "syncthing-config"
+	SSHPort          = 2222
+	SyncthingAPIPort = 8384
+	SyncthingPort    = 22000
+	StConfigMapName  = "syncthing-config"
 )
 
 func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
@@ -85,7 +85,7 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 			Ports: []v1.ContainerPort{
 				{
 					Name:          "ssh",
-					ContainerPort: SSH_PORT,
+					ContainerPort: SSHPort,
 				},
 			},
 			Env: []v1.EnvVar{
@@ -152,7 +152,7 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 		configMapPermMode := int32(0777)
 		expectedConfigMap := v1.ConfigMap{
 			ObjectMeta: metav1.ObjectMeta{
-				Name:      ST_CONFIGMAP_NAME,
+				Name:      StConfigMapName,
 				Namespace: p.namespace,
 				Labels:    labels,
 			},
@@ -174,17 +174,17 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 			Ports: []v1.ContainerPort{
 				{
 					Name:          "syncthing",
-					ContainerPort: SYNCTHING_API_PORT,
+					ContainerPort: SyncthingAPIPort,
 				},
 				{
 					Name:          "st-listen",
 					Protocol:      v1.ProtocolTCP,
-					ContainerPort: SYNCTHING_PORT,
+					ContainerPort: SyncthingPort,
 				},
 				{
 					Name:          "st-discover",
 					Protocol:      v1.ProtocolUDP,
-					ContainerPort: SYNCTHING_PORT,
+					ContainerPort: SyncthingPort,
 				},
 			},
 			Lifecycle: &v1.Lifecycle{
@@ -214,7 +214,7 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 			VolumeSource: v1.VolumeSource{
 				ConfigMap: &v1.ConfigMapVolumeSource{
 					LocalObjectReference: v1.LocalObjectReference{
-						Name: ST_CONFIGMAP_NAME,
+						Name: StConfigMapName,
 					},
 					DefaultMode: &configMapPermMode,
 					Items: []v1.KeyToPath{
