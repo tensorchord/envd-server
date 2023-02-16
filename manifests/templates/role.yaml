@@ -10,5 +10,6 @@ rules:
   - pods/logs
   - pods/exec
   - services
+  - configmaps
   verbs:
   - '*'

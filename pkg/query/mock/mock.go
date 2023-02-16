@@ -9,6 +9,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
+
 	query "github.com/tensorchord/envd-server/pkg/query"
 )
 

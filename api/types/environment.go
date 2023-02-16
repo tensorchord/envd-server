@@ -34,6 +34,7 @@ type EnvironmentSpec struct {
 	Ports          []EnvironmentPort `json:"ports,omitempty"`
 	APTPackages    []string          `json:"apt_packages,omitempty"`
 	PythonCommands []string          `json:"pypi_commands,omitempty"`
+	Sync           bool              `json:"sync,omitempty"`
 	// TODO(gaocegege): Add volume specific spec.
 }
 
