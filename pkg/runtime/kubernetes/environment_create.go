@@ -244,7 +244,7 @@ func (p generalProvisioner) EnvironmentCreate(ctx context.Context,
 		},
 	}
 
-	if repoInfo != nil && len(repoInfo.URL) > 0 {
+	if !env.Spec.Sync && repoInfo != nil && len(repoInfo.URL) > 0 {
 		// TODO: Figure out how the clone directory works with the sync
 		logrus.Debugf("clone code from %s", repoInfo.URL)
 		expectedPod.Spec.InitContainers = append(expectedPod.Spec.InitContainers, v1.Container{
