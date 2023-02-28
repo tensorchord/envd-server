@@ -20,7 +20,7 @@ require (
 	github.com/onsi/gomega v1.27.1
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.0
-	github.com/swaggo/files v0.0.0-20220728132757-551d4a08d97a
+	github.com/swaggo/files v1.0.0
 	github.com/swaggo/gin-swagger v1.5.3
 	github.com/swaggo/swag v1.8.10
 	github.com/toorop/gin-logrus v0.0.0-20210225092905-2c785434f26f
