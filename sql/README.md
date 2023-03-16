@@ -30,4 +30,4 @@ Run `atlas migrate hash --dir file://schema`
 
 - `docker run --name atlas-dev-postgres --rm -e POSTGRES_PASSWORD=atlasdev -p5432:5432 -d postgres`
 - Update the `atlas_schema.hcl` file
-- Run `atlas migrate diff --dir file://schema/ --dir-format goose <summary> --to "file://atlas_schema.hcl" --dev-url "postgres://postgres:atlasdev@localhost:5432/postgres?sslmode=disable"`. This will generate a migration file from the exsiting schema files to the state described in `atlas_schema.hcl` file. The migration file will be created at `schema/<timestamp>_<summary>.sql`.
+- Run `atlas migrate diff --dir file://schema/ --dir-format goose <summary> --to "file://atlas_schema.hcl" --dev-url "postgres://postgres:atlasdev@localhost:5432/postgres?sslmode=disable"`. This will generate a migration file from the existing schema files to the state described in `atlas_schema.hcl` file. The migration file will be created at `schema/<timestamp>_<summary>.sql`.
