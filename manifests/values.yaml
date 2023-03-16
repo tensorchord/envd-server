@@ -10,7 +10,7 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: "0.0.25"
 
-# Will generate from postgres info below if thie field is empty
+# Will generate from postgres info below if this field is empty
 # example: postgres://username:password@localhost:5432/database_name
 dbUrl: ""
 
