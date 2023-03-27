@@ -23,7 +23,7 @@ require (
 	github.com/swaggo/files v1.0.0
 	github.com/swaggo/gin-swagger v1.5.3
 	github.com/swaggo/swag v1.8.11
-	github.com/syncthing/syncthing v1.23.1
+	github.com/syncthing/syncthing v1.23.2
 	github.com/toorop/gin-logrus v0.0.0-20210225092905-2c785434f26f
 	github.com/urfave/cli/v2 v2.25.0
 	go.containerssh.io/libcontainerssh v0.0.0-20220919135854-4f8e76dc0aed
@@ -73,7 +73,7 @@ require (
 	github.com/google/gnostic v0.6.9 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
-	github.com/google/pprof v0.0.0-20221203041831-ce31453925ec // indirect
+	github.com/google/pprof v0.0.0-20230207041349-798e818bf904 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/greatroar/blobloom v0.7.2 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
@@ -90,7 +90,7 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.15.15 // indirect
-	github.com/klauspost/cpuid/v2 v2.2.2 // indirect
+	github.com/klauspost/cpuid/v2 v2.2.3 // indirect
 	github.com/klauspost/pgzip v1.2.6-0.20220930104621-17e8dac29df8 // indirect
 	github.com/kr/pretty v0.3.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
@@ -109,14 +109,14 @@ require (
 	github.com/opencontainers/runtime-spec v1.0.3-0.20210326190908-1c3f411f0417 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.6 // indirect
-	github.com/petermattis/goid v0.0.0-20221202122410-a449aaf35945 // indirect
+	github.com/petermattis/goid v0.0.0-20221215004737-a150e88a970d // indirect
 	github.com/pierrec/lz4/v4 v4.1.17 // indirect
-	github.com/power-devops/perfstat v0.0.0-20220216144756-c35f1ee13d7c // indirect
+	github.com/power-devops/perfstat v0.0.0-20221212215047-62379fc7944b // indirect
 	github.com/qdm12/reprint v0.0.0-20200326205758-722754a53494 // indirect
 	github.com/rogpeppe/go-internal v1.8.1 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sasha-s/go-deadlock v0.3.1 // indirect
-	github.com/shirou/gopsutil/v3 v3.22.11 // indirect
+	github.com/shirou/gopsutil/v3 v3.23.1 // indirect
 	github.com/spf13/cobra v1.5.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/syncthing/notify v0.0.0-20210616190510-c6b7342338d2 // indirect
