@@ -20,7 +20,7 @@ require (
 	github.com/onsi/gomega v1.27.4
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.0
-	github.com/swaggo/files v1.0.0
+	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.5.3
 	github.com/swaggo/swag v1.8.11
 	github.com/syncthing/syncthing v1.23.1
