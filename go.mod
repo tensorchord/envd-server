@@ -27,7 +27,7 @@ require (
 	github.com/toorop/gin-logrus v0.0.0-20210225092905-2c785434f26f
 	github.com/urfave/cli/v2 v2.25.3
 	go.containerssh.io/libcontainerssh v0.0.0-20220919135854-4f8e76dc0aed
-	golang.org/x/crypto v0.7.0
+	golang.org/x/crypto v0.8.0
 	k8s.io/api v0.25.4
 	k8s.io/apimachinery v0.25.4
 	k8s.io/client-go v0.25.4
